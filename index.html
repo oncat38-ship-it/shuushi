@@ -14,6 +14,15 @@
         .theme-cute { font-family: 'M PLUS Rounded 1c', sans-serif; }
         .theme-simple { font-family: 'Noto Sans JP', sans-serif; }
         .theme-classic { font-family: 'Noto Sans JP', serif; }
+
+        /* ★5 予定日用の目立つ自己主張アニメーション */
+        @keyframes pulse-attention {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .priority-5-animation {
+            animation: pulse-attention 2s infinite ease-in-out;
+        }
     </style>
 </head>
 <body id="app-body" class="antialiased min-h-screen pb-12 transition-colors duration-300">
@@ -124,13 +133,11 @@
             </div>
             
             <div class="space-y-3 text-xs">
-                <!-- 登録モード切り替え（収支 or 予定日） -->
                 <div class="grid grid-cols-2 gap-1.5 p-1 bg-slate-100 rounded-2xl font-bold">
                     <button type="button" id="mode-tx-btn" onclick="setEntryMode('tx')" class="py-1.5 rounded-xl transition">収支を記帳 💸</button>
                     <button type="button" id="mode-plan-btn" onclick="setEntryMode('plan')" class="py-1.5 rounded-xl transition">予定日を設定 📅</button>
                 </div>
 
-                <!-- 1. 収支入力フォーム -->
                 <div id="form-tx-section" class="space-y-3">
                     <div>
                         <label class="text-slate-400 font-bold block mb-1">区分</label>
@@ -151,11 +158,10 @@
                     </div>
                 </div>
 
-                <!-- 2. 予定日設定フォーム -->
                 <div id="form-plan-section" class="space-y-3 hidden">
                     <div>
                         <label class="text-slate-400 font-bold block mb-1">予定の内容</label>
-                        <input type="text" id="plan-title" placeholder="例: 旅行、美容院、カード引き落としなど" class="w-full border rounded-2xl px-3.5 py-2 font-bold focus:outline-none">
+                        <input type="text" id="plan-title" placeholder="例: 旅行、美容院、支払日など" class="w-full border rounded-2xl px-3.5 py-2 font-bold focus:outline-none">
                     </div>
 
                     <div>
@@ -167,17 +173,15 @@
                             <button type="button" onclick="setPlanPriority(4)" id="prio-4-btn" class="py-2 rounded-xl font-bold border transition text-center">★4</button>
                             <button type="button" onclick="setPlanPriority(5)" id="prio-5-btn" class="py-2 rounded-xl font-bold border transition text-center">★5</button>
                         </div>
-                        <span class="text-[10px] text-slate-400 mt-1 block">※★が大きいほどカレンダー上で目立つ表示になります。</span>
                     </div>
                 </div>
 
-                <!-- 共通日付＆メモ -->
                 <div>
                     <label class="text-slate-400 font-bold block mb-1">日付</label>
                     <input type="date" id="tx-date" class="w-full border rounded-2xl px-3.5 py-2 font-bold focus:outline-none">
                 </div>
 
-                <div id="memo-field-container">
+                <div>
                     <label class="text-slate-400 font-bold block mb-1">詳細・メモ（任意）</label>
                     <input type="text" id="tx-memo" placeholder="例: メモ書きなど" class="w-full border rounded-2xl px-3.5 py-2 focus:outline-none">
                 </div>
@@ -187,7 +191,7 @@
         </div>
     </div>
 
-    <!-- Modal 2: 日別明細＆予定日確認モーダル -->
+    <!-- Modal 2: 日別明細モーダル -->
     <div id="day-detail-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div id="day-detail-modal-content" class="rounded-3xl p-5 max-w-sm w-full shadow-2xl space-y-4 border max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center">
@@ -215,50 +219,86 @@
         </div>
     </div>
 
-    <!-- Modal 4: 設定モーダル -->
+    <!-- Modal 4: 設定モーダル（2段階ページ移動形式） -->
     <div id="settings-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div id="settings-modal-content" class="rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-4 border max-h-[85vh] flex flex-col">
+        <div id="settings-modal-content" class="rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 border max-h-[85vh] flex flex-col">
+            
+            <!-- 設定画面ヘッダー -->
             <div class="flex justify-between items-center border-b pb-3 shrink-0">
-                <h3 class="text-sm font-extrabold">設定 ⚙️</h3>
+                <div class="flex items-center space-x-2">
+                    <button id="settings-back-btn" onclick="showSettingsMenu()" class="hidden p-1 text-slate-400 hover:text-slate-700 transition">
+                        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                    </button>
+                    <h3 id="settings-header-title" class="text-sm font-extrabold">設定 ⚙️</h3>
+                </div>
                 <button onclick="closeSettingsModal()" class="text-slate-400 hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             
-            <div class="space-y-4 overflow-y-auto pr-1 flex-1">
-                <!-- 1. デザインテーマ選択 -->
-                <div class="space-y-2 text-xs p-3.5 rounded-2xl border bg-slate-50/50">
-                    <h4 class="font-extrabold flex items-center space-x-1">
-                        <i data-lucide="palette" class="w-4 h-4"></i>
-                        <span>デザインテーマ</span>
-                    </h4>
-                    <div class="grid grid-cols-3 gap-2 pt-1">
-                        <button onclick="setTheme('cute')" id="theme-cute-btn" class="py-2.5 px-2 rounded-xl font-bold border text-center transition text-xs">かわいい系</button>
-                        <button onclick="setTheme('simple')" id="theme-simple-btn" class="py-2.5 px-2 rounded-xl font-bold border text-center transition text-xs">シンプル</button>
-                        <button onclick="setTheme('classic')" id="theme-classic-btn" class="py-2.5 px-2 rounded-xl font-bold border text-center transition text-xs">クラシック</button>
+            <!-- ページ1: 設定メニュー一覧 -->
+            <div id="settings-page-menu" class="space-y-2.5 text-xs overflow-y-auto flex-1 pr-1">
+                <button onclick="showSettingsDetail('theme')" class="w-full p-3.5 bg-slate-50/80 hover:bg-slate-100 rounded-2xl border flex items-center justify-between font-bold text-slate-700 transition">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2 bg-indigo-100 text-indigo-600 rounded-xl"><i data-lucide="palette" class="w-4 h-4"></i></div>
+                        <span>デザインテーマ設定</span>
+                    </div>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+                </button>
+
+                <button onclick="showSettingsDetail('salary')" class="w-full p-3.5 bg-slate-50/80 hover:bg-slate-100 rounded-2xl border flex items-center justify-between font-bold text-slate-700 transition">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2 bg-amber-100 text-amber-600 rounded-xl"><i data-lucide="coins" class="w-4 h-4"></i></div>
+                        <span>給料日の設定</span>
+                    </div>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+                </button>
+
+                <button onclick="showSettingsDetail('tags')" class="w-full p-3.5 bg-slate-50/80 hover:bg-slate-100 rounded-2xl border flex items-center justify-between font-bold text-slate-700 transition">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2 bg-rose-100 text-rose-600 rounded-xl"><i data-lucide="tags" class="w-4 h-4"></i></div>
+                        <span>タグの追加・編集</span>
+                    </div>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+                </button>
+            </div>
+
+            <!-- ページ2-A: テーマ設定 -->
+            <div id="settings-page-theme" class="space-y-4 text-xs overflow-y-auto flex-1 pr-1 hidden">
+                <div class="space-y-3">
+                    <p class="text-slate-400 font-bold">お好みのデザインテーマを選択してください：</p>
+                    <div class="grid grid-cols-1 gap-2.5">
+                        <button onclick="setTheme('cute')" id="theme-cute-btn" class="p-3.5 rounded-2xl font-bold border text-left transition flex items-center justify-between">
+                            <span>🌸 かわいい系 (パステル＆肉球)</span>
+                            <span class="text-xs">🐾</span>
+                        </button>
+                        <button onclick="setTheme('simple')" id="theme-simple-btn" class="p-3.5 rounded-2xl font-bold border text-left transition flex items-center justify-between">
+                            <span>⚪ シンプル (すっきりホワイト)</span>
+                            <span class="text-xs">✨</span>
+                        </button>
+                        <button onclick="setTheme('classic')" id="theme-classic-btn" class="p-3.5 rounded-2xl font-bold border text-left transition flex items-center justify-between">
+                            <span>📜 クラシック (温かみのある木目調)</span>
+                            <span class="text-xs">🪵</span>
+                        </button>
                     </div>
                 </div>
+            </div>
 
-                <!-- 2. 給料日設定 -->
-                <div class="space-y-3 text-xs p-3.5 rounded-2xl border bg-slate-50/50">
-                    <h4 class="font-extrabold flex items-center space-x-1">
-                        <i data-lucide="coins" class="w-4 h-4"></i>
-                        <span>給料日の設定</span>
-                    </h4>
+            <!-- ページ2-B: 給料日設定 -->
+            <div id="settings-page-salary" class="space-y-4 text-xs overflow-y-auto flex-1 pr-1 hidden">
+                <div class="space-y-3">
+                    <div>
+                        <label class="text-slate-400 font-bold block mb-1">給料日の指定</label>
+                        <select id="salary-day-select" class="w-full border rounded-xl px-3 py-2 font-bold focus:outline-none">
+                            <option value="0">未設定</option>
+                        </select>
+                    </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                            <label class="text-slate-400 font-bold block mb-1">給料日の指定</label>
-                            <select id="salary-day-select" class="w-full border rounded-xl px-3 py-2 font-bold focus:outline-none">
-                                <option value="0">未設定</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="text-slate-400 font-bold block mb-1">土日祝日の場合</label>
-                            <select id="salary-holiday-rule" class="w-full border rounded-xl px-3 py-2 font-bold focus:outline-none">
-                                <option value="prev">前日（前営業日）にずらす</option>
-                                <option value="next">翌日（翌営業日）にずらす</option>
-                                <option value="none">そのまま（変更なし）</option>
-                            </select>
-                        </div>
+                    <div>
+                        <label class="text-slate-400 font-bold block mb-1">土日祝日の場合</label>
+                        <select id="salary-holiday-rule" class="w-full border rounded-xl px-3 py-2 font-bold focus:outline-none">
+                            <option value="prev">前日（前営業日）にずらす</option>
+                            <option value="next">翌日（翌営業日）にずらす</option>
+                            <option value="none">そのまま（変更なし）</option>
+                        </select>
                     </div>
 
                     <div>
@@ -266,22 +306,28 @@
                         <input type="number" id="salary-amount" placeholder="未入力の場合は当日手入力" class="w-full border rounded-xl px-3 py-2 font-bold focus:outline-none">
                     </div>
 
-                    <button onclick="saveSalarySettings()" id="save-salary-btn" class="w-full py-2.5 text-white font-bold rounded-xl transition">給料日設定を保存</button>
+                    <button onclick="saveSalarySettings()" id="save-salary-btn" class="w-full py-2.5 text-white font-bold rounded-xl transition">保存する</button>
                 </div>
+            </div>
 
-                <!-- 3. タグ設定 -->
-                <div class="space-y-3 text-xs border-t pt-3">
-                    <h4 class="font-extrabold">タグの編集・追加 🏷️</h4>
+            <!-- ページ2-C: タグ設定 -->
+            <div id="settings-page-tags" class="space-y-4 text-xs overflow-y-auto flex-1 pr-1 hidden">
+                <div class="space-y-3">
                     <div>
+                        <label class="text-slate-400 font-bold block mb-1">新しいタグを追加</label>
                         <div class="flex space-x-2">
                             <input type="text" id="new-tag-name" placeholder="例: 食費、カフェなど" class="flex-1 border rounded-xl px-3 py-2 focus:outline-none">
                             <button onclick="addNewTag()" id="add-tag-btn" class="px-4 py-2 text-white font-bold rounded-xl transition whitespace-nowrap">追加</button>
                         </div>
                     </div>
 
-                    <div id="settings-tag-list" class="space-y-1.5 max-h-44 overflow-y-auto p-1 border rounded-2xl"></div>
+                    <div>
+                        <label class="text-slate-400 font-bold block mb-1">登録済みタグ一覧</label>
+                        <div id="settings-tag-list" class="space-y-1.5 max-h-52 overflow-y-auto p-1 border rounded-2xl"></div>
+                    </div>
                 </div>
             </div>
+
         </div>
     </div>
 
@@ -301,13 +347,12 @@
             amount: ''
         };
 
-        // 収支データ＆予定日データ
         let transactions = JSON.parse(localStorage.getItem('kakeibo_transactions')) || [];
         let plans = JSON.parse(localStorage.getItem('kakeibo_plans')) || [];
 
-        let currentEntryMode = 'tx'; // 'tx' or 'plan'
+        let currentEntryMode = 'tx';
         let currentTxType = 'expense';
-        let currentPlanPriority = 3; // 1~5
+        let currentPlanPriority = 3;
         let selectedDateForModal = '';
 
         const now = new Date();
@@ -329,7 +374,6 @@
             renderTabs();
             renderSummary();
             renderCalendar();
-            renderSettingsTagList();
         }
 
         function applyTheme(theme) {
@@ -354,10 +398,9 @@
                 document.getElementById('calendar-card').className = "bg-white rounded-3xl p-3 sm:p-4 border border-pink-100 shadow-sm shadow-pink-100 transition-all duration-300";
                 document.getElementById('calendar-icon-bg').className = "p-1.5 bg-pink-100 text-rose-400 rounded-xl";
 
-                document.querySelectorAll('#add-modal-content, #day-detail-modal-content, #add-tab-modal-content').forEach(el => {
-                    el.className = "bg-white border border-pink-100 rounded-3xl p-5 max-w-sm w-full shadow-2xl space-y-4 max-h-[85vh] flex flex-col";
+                document.querySelectorAll('#add-modal-content, #day-detail-modal-content, #add-tab-modal-content, #settings-modal-content').forEach(el => {
+                    el.className = "bg-white border border-pink-100 rounded-3xl p-5 sm:p-6 max-w-md w-full shadow-2xl space-y-4 max-h-[85vh] flex flex-col";
                 });
-                document.getElementById('settings-modal-content').className = "bg-white border border-pink-100 rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-4 max-h-[85vh] flex flex-col";
 
                 document.getElementById('save-tx-btn').className = "w-full py-3 bg-gradient-to-r from-rose-400 to-pink-400 hover:from-rose-500 hover:to-pink-500 text-white font-extrabold rounded-2xl text-xs transition shadow-md";
                 document.getElementById('detail-add-btn').className = "w-full py-2.5 bg-pink-100 hover:bg-pink-200 text-rose-500 font-bold rounded-2xl text-xs transition";
@@ -383,10 +426,9 @@
                 document.getElementById('calendar-card').className = "bg-white rounded-2xl p-3 sm:p-4 border border-slate-200 shadow-sm transition-all duration-300";
                 document.getElementById('calendar-icon-bg').className = "p-1.5 bg-slate-100 text-slate-700 rounded-lg";
 
-                document.querySelectorAll('#add-modal-content, #day-detail-modal-content, #add-tab-modal-content').forEach(el => {
-                    el.className = "bg-white border border-slate-200 rounded-2xl p-5 max-w-sm w-full shadow-xl space-y-4 max-h-[85vh] flex flex-col";
+                document.querySelectorAll('#add-modal-content, #day-detail-modal-content, #add-tab-modal-content, #settings-modal-content').forEach(el => {
+                    el.className = "bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 max-w-md w-full shadow-xl space-y-4 max-h-[85vh] flex flex-col";
                 });
-                document.getElementById('settings-modal-content').className = "bg-white border border-slate-200 rounded-2xl p-6 max-w-lg w-full shadow-xl space-y-4 max-h-[85vh] flex flex-col";
 
                 document.getElementById('save-tx-btn').className = "w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition shadow";
                 document.getElementById('detail-add-btn').className = "w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl text-xs transition";
@@ -412,10 +454,9 @@
                 document.getElementById('calendar-card').className = "bg-[#fcfaf7] rounded-2xl p-3 sm:p-4 border border-[#d8ccbc] shadow-sm transition-all duration-300";
                 document.getElementById('calendar-icon-bg').className = "p-1.5 bg-[#e8dccb] text-[#5c4433] rounded-lg";
 
-                document.querySelectorAll('#add-modal-content, #day-detail-modal-content, #add-tab-modal-content').forEach(el => {
-                    el.className = "bg-[#fcfaf7] border border-[#d8ccbc] rounded-2xl p-5 max-w-sm w-full shadow-xl space-y-4 max-h-[85vh] flex flex-col";
+                document.querySelectorAll('#add-modal-content, #day-detail-modal-content, #add-tab-modal-content, #settings-modal-content').forEach(el => {
+                    el.className = "bg-[#fcfaf7] border border-[#d8ccbc] rounded-2xl p-5 sm:p-6 max-w-md w-full shadow-xl space-y-4 max-h-[85vh] flex flex-col";
                 });
-                document.getElementById('settings-modal-content').className = "bg-[#fcfaf7] border border-[#d8ccbc] rounded-2xl p-6 max-w-lg w-full shadow-xl space-y-4 max-h-[85vh] flex flex-col";
 
                 document.getElementById('save-tx-btn').className = "w-full py-2.5 bg-[#6b4e3d] hover:bg-[#583f30] text-amber-50 font-bold rounded-xl text-xs transition shadow";
                 document.getElementById('detail-add-btn').className = "w-full py-2.5 bg-[#e8dccb] hover:bg-[#dfcfba] text-[#4a3b32] font-bold rounded-xl text-xs transition";
@@ -427,12 +468,39 @@
             ['cute', 'simple', 'classic'].forEach(t => {
                 const btn = document.getElementById(`theme-${t}-btn`);
                 if (t === theme) {
-                    btn.className = "py-2.5 px-2 rounded-xl font-bold border text-center transition text-xs bg-slate-800 text-white border-slate-800 shadow-sm";
+                    btn.className = "p-3.5 rounded-2xl font-bold border text-left transition flex items-center justify-between bg-slate-800 text-white border-slate-800 shadow-sm";
                 } else {
-                    btn.className = "py-2.5 px-2 rounded-xl font-bold border text-center transition text-xs bg-white text-slate-600 border-slate-200 hover:bg-slate-50";
+                    btn.className = "p-3.5 rounded-2xl font-bold border text-left transition flex items-center justify-between bg-white text-slate-600 border-slate-200 hover:bg-slate-50";
                 }
             });
             lucide.createIcons();
+        }
+
+        // --- 設定画面の2段階ページ切り替え機能 ---
+        function showSettingsMenu() {
+            document.getElementById('settings-header-title').innerText = '設定 ⚙️';
+            document.getElementById('settings-back-btn').classList.add('hidden');
+            document.getElementById('settings-page-menu').classList.remove('hidden');
+            document.getElementById('settings-page-theme').classList.add('hidden');
+            document.getElementById('settings-page-salary').classList.add('hidden');
+            document.getElementById('settings-page-tags').classList.add('hidden');
+        }
+
+        function showSettingsDetail(page) {
+            document.getElementById('settings-back-btn').classList.remove('hidden');
+            document.getElementById('settings-page-menu').classList.add('hidden');
+
+            if (page === 'theme') {
+                document.getElementById('settings-header-title').innerText = 'テーマ設定 🎨';
+                document.getElementById('settings-page-theme').classList.remove('hidden');
+            } else if (page === 'salary') {
+                document.getElementById('settings-header-title').innerText = '給料日設定 💰';
+                document.getElementById('settings-page-salary').classList.remove('hidden');
+            } else if (page === 'tags') {
+                document.getElementById('settings-header-title').innerText = 'タグの編集・追加 🏷️';
+                document.getElementById('settings-page-tags').classList.remove('hidden');
+                renderSettingsTagList();
+            }
         }
 
         function isJapaneseHoliday(year, month, day) {
@@ -554,7 +622,7 @@
             document.getElementById('salary-holiday-rule').value = salaryConfig.rule || 'prev';
             document.getElementById('salary-amount').value = salaryConfig.amount || '';
 
-            renderSettingsTagList();
+            showSettingsMenu();
             document.getElementById('settings-modal').classList.remove('hidden');
             document.getElementById('settings-modal').classList.add('flex');
         }
@@ -677,7 +745,7 @@
                             type: 'income',
                             amount: Number(salaryConfig.amount),
                             date: dateStr,
-                            tagName: '給与',
+                            tagName: '給料',
                             memo: '定額自動反映',
                             isSalaryAuto: true
                         });
@@ -711,7 +779,7 @@
             document.getElementById('monthly-expense').innerText = `¥${monthlyExpense.toLocaleString()}`;
         }
 
-        // --- カレンダー機能 (収支 ＋ 予定日の表示) ---
+        // --- カレンダー機能 (重要度★1〜★5に応じた背景変化 ＆ ★5超強調) ---
         function renderCalendar() {
             document.getElementById('calendar-title').innerText = `${currentYear}年 ${currentMonth}月`;
             const grid = document.getElementById('calendar-grid');
@@ -726,7 +794,7 @@
 
             for (let i = 0; i < firstDayIndex; i++) {
                 const emptyCell = document.createElement('div');
-                emptyCell.className = "min-h-[50px] p-0.5 rounded-xl opacity-10 border border-transparent";
+                emptyCell.className = "min-h-[48px] p-0.5 rounded-xl opacity-10 border border-transparent";
                 grid.appendChild(emptyCell);
             }
 
@@ -746,7 +814,7 @@
                     else dayNetTotal -= t.amount;
                 });
 
-                // 予定日データの確認（重要度が最も高いものを判定基準に）
+                // 予定日データの確認
                 const dayPlans = plans.filter(p => p.date === dateStr);
                 let maxPriority = 0;
                 let planInitial = '';
@@ -759,18 +827,23 @@
                     });
                 }
 
-                // マスの装飾スタイル判定（重要度★1〜5に応じた強調）
+                // ★1〜★5 に応じたデザインスタイルの分岐
                 let planClass = '';
                 if (maxPriority === 5) {
-                    planClass = 'bg-gradient-to-br from-amber-100 to-rose-100 border-rose-400 font-extrabold shadow-sm ring-1 ring-rose-300';
-                } else if (maxPriority >= 3) {
-                    planClass = 'bg-amber-50/80 border-amber-300 font-bold';
-                } else if (maxPriority >= 1) {
-                    planClass = 'bg-purple-50/50 border-purple-200';
+                    // ★5: 絶対見逃さない鮮烈なグラデーション背景 & 光る枠線 & パルス移動
+                    planClass = 'bg-gradient-to-br from-rose-400 via-rose-500 to-amber-400 border-rose-600 text-white shadow-md shadow-rose-200 ring-2 ring-rose-400 priority-5-animation z-10';
+                } else if (maxPriority === 4) {
+                    planClass = 'bg-rose-100/90 border-rose-300 font-bold';
+                } else if (maxPriority === 3) {
+                    planClass = 'bg-amber-100/80 border-amber-300 font-bold';
+                } else if (maxPriority === 2) {
+                    planClass = 'bg-purple-50/80 border-purple-200';
+                } else if (maxPriority === 1) {
+                    planClass = 'bg-blue-50/50 border-blue-200';
                 }
 
                 const cell = document.createElement('div');
-                cell.className = `min-h-[52px] p-0.5 sm:p-1 flex flex-col justify-between items-center rounded-xl border transition cursor-pointer relative ${
+                cell.className = `min-h-[48px] p-0.5 sm:p-1 flex flex-col justify-between items-center rounded-xl border transition cursor-pointer relative ${
                     isToday 
                         ? 'border-indigo-500 bg-indigo-50/60 shadow-sm' 
                         : isPayday
@@ -781,25 +854,28 @@
                 // 予定バッジ（頭文字表示）
                 let planBadgeHtml = '';
                 if (planInitial) {
-                    const badgeColor = maxPriority >= 4 ? 'bg-rose-500 text-white' : 'bg-purple-500 text-white';
-                    planBadgeHtml = `<span class="text-[7px] ${badgeColor} px-1 rounded-md font-black">${planInitial}</span>`;
+                    const badgeBg = maxPriority === 5 ? 'bg-white text-rose-600 font-black shadow-sm' : 'bg-rose-500 text-white font-bold';
+                    planBadgeHtml = `<span class="text-[7.5px] ${badgeBg} px-1 rounded-md">${planInitial}</span>`;
                 }
 
                 // 収支バッジ
                 let badgeHtml = '';
                 if (hasTransaction) {
+                    const txTextColor = maxPriority === 5 ? 'text-white font-black drop-shadow-sm' : '';
                     if (dayNetTotal > 0) {
-                        badgeHtml = `<span class="text-[7.5px] sm:text-[9px] bg-emerald-100 text-emerald-700 font-extrabold px-0.5 rounded w-full text-center truncate block">+${dayNetTotal.toLocaleString()}</span>`;
+                        badgeHtml = `<span class="text-[7.5px] sm:text-[9px] ${maxPriority === 5 ? 'bg-black/20 text-emerald-200' : 'bg-emerald-100 text-emerald-700'} font-extrabold px-0.5 rounded w-full text-center truncate block">+${dayNetTotal.toLocaleString()}</span>`;
                     } else if (dayNetTotal < 0) {
-                        badgeHtml = `<span class="text-[7.5px] sm:text-[9px] bg-rose-100 text-rose-600 font-extrabold px-0.5 rounded w-full text-center truncate block">-${Math.abs(dayNetTotal).toLocaleString()}</span>`;
+                        badgeHtml = `<span class="text-[7.5px] sm:text-[9px] ${maxPriority === 5 ? 'bg-black/20 text-white' : 'bg-rose-100 text-rose-600'} font-extrabold px-0.5 rounded w-full text-center truncate block">-${Math.abs(dayNetTotal).toLocaleString()}</span>`;
                     } else {
                         badgeHtml = `<span class="text-[7.5px] sm:text-[9px] bg-slate-100 text-slate-600 font-bold px-0.5 rounded w-full text-center truncate block">0</span>`;
                     }
                 }
 
+                const dayNumColor = maxPriority === 5 ? 'text-white font-black' : isToday ? 'text-indigo-600' : isPayday ? 'text-amber-600' : 'text-slate-600';
+
                 cell.innerHTML = `
                     <div class="w-full flex justify-between items-center px-0.5">
-                        <span class="text-[11px] sm:text-xs font-bold ${isToday ? 'text-indigo-600' : isPayday ? 'text-amber-600' : 'text-slate-600'}">${i}</span>
+                        <span class="text-[11px] sm:text-xs font-bold ${dayNumColor}">${i}</span>
                         <div class="flex items-center space-x-0.5">
                             ${planBadgeHtml}
                             ${isPayday ? '<span class="text-[6px] bg-amber-400 text-white px-1 rounded-full font-bold">給料</span>' : isToday ? '<span class="text-[6px] bg-indigo-500 text-white px-1 rounded-full font-bold">今日</span>' : ''}
@@ -910,7 +986,6 @@
             }
 
             if (currentEntryMode === 'tx') {
-                // 収支保存
                 const amount = Number(document.getElementById('tx-amount').value);
                 if (!amount || amount <= 0) {
                     alert('有効な金額を入力してください。');
@@ -933,7 +1008,6 @@
                 transactions.push(newTx);
                 localStorage.setItem('kakeibo_transactions', JSON.stringify(transactions));
             } else {
-                // 予定日保存
                 const title = document.getElementById('plan-title').value.trim();
                 if (!title) {
                     alert('予定の内容を入力してください。');
@@ -968,7 +1042,6 @@
             if (txs.length === 0 && dayPlans.length === 0) {
                 listContainer.innerHTML = '<p class="text-slate-400 text-center py-4">この日のデータはありません</p>';
             } else {
-                // 予定日の表示
                 dayPlans.forEach(p => {
                     const item = document.createElement('div');
                     item.className = "flex justify-between items-center bg-amber-50/80 p-3 rounded-2xl border border-amber-200";
@@ -987,7 +1060,6 @@
                     listContainer.appendChild(item);
                 });
 
-                // 収支の表示
                 txs.forEach(t => {
                     const item = document.createElement('div');
                     item.className = "flex justify-between items-center bg-slate-50 p-3 rounded-2xl border border-slate-200/80";
