@@ -3,35 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Kakeibo</title>
+    <title>My Kakeibo 🐾</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts (丸みのあるフォント) -->
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'M PLUS Rounded 1c', sans-serif;
+        }
+    </style>
 </head>
-<body class="bg-slate-900 text-slate-100 antialiased min-h-screen pb-12">
+<body class="bg-pink-50/60 text-slate-700 antialiased min-h-screen pb-12">
 
-    <!-- ヘッダー -->
-    <header class="bg-slate-800/80 backdrop-blur border-b border-slate-700/60 sticky top-0 z-20">
+    <!-- ヘッダー (淡いピンク & まるみデザイン) -->
+    <header class="bg-white/80 backdrop-blur border-b border-pink-100 sticky top-0 z-20 shadow-sm">
         <div class="max-w-xl mx-auto px-4 py-3 flex items-center justify-between">
             <div class="flex items-center space-x-2">
-                <div class="bg-indigo-500 text-white p-1.5 rounded-lg">
-                    <i data-lucide="wallet" class="w-4 h-4"></i>
+                <div class="bg-gradient-to-tr from-pink-400 to-rose-400 text-white p-2 rounded-2xl shadow-pink-200 shadow-md">
+                    <!-- 肉球・動物モチーフのアイコン -->
+                    <i data-lucide="paw-print" class="w-5 h-5"></i>
                 </div>
-                <h1 class="text-sm font-bold tracking-wide">My Kakeibo</h1>
+                <div>
+                    <h1 class="text-base font-extrabold text-rose-500 tracking-wide flex items-center gap-1">
+                        My Kakeibo <span class="text-xs">🐾</span>
+                    </h1>
+                </div>
             </div>
             <div class="flex items-center space-x-2">
-                <span class="text-[10px] font-medium px-2 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full">
-                    データ保存中
+                <span class="text-[10px] font-bold px-2.5 py-1 bg-pink-100/80 text-rose-500 border border-pink-200 rounded-full flex items-center gap-1">
+                    <i data-lucide="sparkles" class="w-3 h-3"></i> 保存中
                 </span>
-                <button onclick="openSettingsModal()" class="p-1.5 text-slate-400 hover:text-white hover:bg-slate-700/50 rounded-lg transition" title="設定">
-                    <i data-lucide="settings" class="w-4 h-4"></i>
+                <button onclick="openSettingsModal()" class="p-2 text-rose-400 hover:text-rose-600 hover:bg-pink-100/50 rounded-2xl transition" title="設定">
+                    <i data-lucide="settings" class="w-5 h-5"></i>
                 </button>
             </div>
         </div>
 
         <!-- タブ切り替えバー -->
-        <div class="max-w-xl mx-auto px-4 border-t border-slate-700/40 py-2">
+        <div class="max-w-xl mx-auto px-4 border-t border-pink-100/60 py-2">
             <div id="tabs-container" class="flex items-center space-x-1.5 overflow-x-auto no-scrollbar"></div>
         </div>
     </header>
@@ -39,62 +51,71 @@
     <!-- メインコンテンツ -->
     <main class="max-w-xl mx-auto px-4 mt-4 space-y-4">
 
-        <!-- 1. 収支表示カード -->
-        <div class="bg-gradient-to-br from-slate-800 to-slate-800/90 rounded-2xl p-4 border border-slate-700/60 shadow-lg">
-            <div class="flex justify-between items-start">
+        <!-- 1. 収支表示カード (かわいいグラデーション & 肉球モチーフ) -->
+        <div class="bg-gradient-to-br from-rose-400 via-pink-400 to-amber-300 rounded-3xl p-5 text-white shadow-xl shadow-pink-200/60 relative overflow-hidden">
+            <!-- 背景のデコレーション肉球 -->
+            <div class="absolute -right-4 -bottom-4 opacity-10 pointer-events-none text-white">
+                <i data-lucide="paw-print" class="w-32 h-32"></i>
+            </div>
+
+            <div class="flex justify-between items-start relative z-10">
                 <div>
-                    <span id="current-tab-label" class="text-[11px] font-medium text-indigo-400">総合の総収支</span>
-                    <div id="total-balance" class="text-2xl sm:text-3xl font-extrabold tracking-tight mt-0.5 text-white">
+                    <span id="current-tab-label" class="text-xs font-bold bg-white/20 backdrop-blur px-2.5 py-1 rounded-full text-white inline-flex items-center gap-1">
+                        🐾 総合の総収支
+                    </span>
+                    <div id="total-balance" class="text-3xl sm:text-4xl font-black tracking-tight mt-2 text-white drop-shadow-sm">
                         ¥0
                     </div>
                 </div>
-                <button onclick="openAddModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-3 py-1.5 rounded-xl shadow transition flex items-center space-x-1">
-                    <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-                    <span>収支追加</span>
+                <button onclick="openAddModal()" class="bg-white hover:bg-rose-50 text-rose-500 text-xs font-extrabold px-3.5 py-2 rounded-2xl shadow-md hover:shadow-lg transition flex items-center space-x-1 shrink-0">
+                    <i data-lucide="plus-circle" class="w-4 h-4 text-rose-500"></i>
+                    <span>入力する</span>
                 </button>
             </div>
             
-            <div class="grid grid-cols-2 gap-3 mt-4 pt-3 border-t border-slate-700/60 text-xs">
-                <div class="flex items-center space-x-2">
-                    <div class="bg-emerald-500/10 p-1.5 rounded-lg text-emerald-400">
+            <div class="grid grid-cols-2 gap-3 mt-5 pt-3 border-t border-white/30 text-xs relative z-10">
+                <div class="flex items-center space-x-2.5 bg-white/15 backdrop-blur p-2.5 rounded-2xl">
+                    <div class="bg-white text-emerald-500 p-1.5 rounded-xl shadow-sm">
                         <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
                     </div>
                     <div>
-                        <p class="text-slate-400">今月収入</p>
-                        <p id="monthly-income" class="font-bold text-slate-200">¥0</p>
+                        <p class="text-pink-100 text-[10px] font-bold">今月の収入</p>
+                        <p id="monthly-income" class="font-black text-sm text-white">¥0</p>
                     </div>
                 </div>
-                <div class="flex items-center space-x-2">
-                    <div class="bg-rose-500/10 p-1.5 rounded-lg text-rose-400">
+                <div class="flex items-center space-x-2.5 bg-white/15 backdrop-blur p-2.5 rounded-2xl">
+                    <div class="bg-white text-rose-500 p-1.5 rounded-xl shadow-sm">
                         <i data-lucide="arrow-down-right" class="w-4 h-4"></i>
                     </div>
                     <div>
-                        <p class="text-slate-400">今月支出</p>
-                        <p id="monthly-expense" class="font-bold text-slate-200">¥0</p>
+                        <p class="text-pink-100 text-[10px] font-bold">今月の支出</p>
+                        <p id="monthly-expense" class="font-black text-sm text-white">¥0</p>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- 2. カレンダーセクション -->
-        <div class="bg-slate-800 rounded-2xl p-4 border border-slate-700/60 shadow-sm">
-            <div class="flex items-center justify-between mb-3">
+        <div class="bg-white rounded-3xl p-4 border border-pink-100 shadow-sm shadow-pink-100">
+            <div class="flex items-center justify-between mb-3 px-1">
                 <div class="flex items-center space-x-2">
-                    <i data-lucide="calendar" class="w-4 h-4 text-indigo-400"></i>
-                    <h2 id="calendar-title" class="text-sm font-bold text-white"></h2>
+                    <div class="p-1.5 bg-pink-100 text-rose-400 rounded-xl">
+                        <i data-lucide="calendar-heart" class="w-4 h-4"></i>
+                    </div>
+                    <h2 id="calendar-title" class="text-sm font-extrabold text-slate-800"></h2>
                 </div>
                 <div class="flex items-center space-x-1">
-                    <button onclick="changeMonth(-1)" class="p-1 hover:bg-slate-700 rounded-lg text-slate-400 hover:text-white transition">
+                    <button onclick="changeMonth(-1)" class="p-1.5 hover:bg-pink-50 rounded-xl text-rose-400 hover:text-rose-600 transition">
                         <i data-lucide="chevron-left" class="w-4 h-4"></i>
                     </button>
-                    <button onclick="changeMonth(1)" class="p-1 hover:bg-slate-700 rounded-lg text-slate-400 hover:text-white transition">
+                    <button onclick="changeMonth(1)" class="p-1.5 hover:bg-pink-50 rounded-xl text-rose-400 hover:text-rose-600 transition">
                         <i data-lucide="chevron-right" class="w-4 h-4"></i>
                     </button>
                 </div>
             </div>
 
-            <div class="grid grid-cols-7 text-center text-[10px] font-semibold text-slate-400 mb-2">
-                <span class="text-rose-400">日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span class="text-indigo-400">土</span>
+            <div class="grid grid-cols-7 text-center text-[10px] font-extrabold text-rose-300 mb-2">
+                <span class="text-rose-400">日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span class="text-sky-400">土</span>
             </div>
             
             <div id="calendar-grid" class="grid grid-cols-7 gap-1"></div>
@@ -102,133 +123,129 @@
 
     </main>
 
-    <!-- Modal 1: 収支追加モーダル -->
-    <div id="add-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center z-50 px-4">
-        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 max-w-sm w-full shadow-2xl space-y-4">
+    <!-- Modal 1: 収支入力モーダル -->
+    <div id="add-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center z-50 px-4">
+        <div class="bg-white border border-pink-100 rounded-3xl p-5 max-w-sm w-full shadow-2xl space-y-4">
             <div class="flex justify-between items-center">
-                <h3 class="text-sm font-bold text-white">収支を追加</h3>
-                <button onclick="closeAddModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+                <h3 class="text-sm font-extrabold text-slate-800 flex items-center gap-1">
+                    <span>収支を入力</span> 🐾
+                </h3>
+                <button onclick="closeAddModal()" class="text-slate-400 hover:text-rose-400"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             
             <div class="space-y-3 text-xs">
                 <div>
-                    <label class="text-slate-400 block mb-1">区分</label>
+                    <label class="text-slate-400 font-bold block mb-1">区分</label>
                     <div class="grid grid-cols-2 gap-2">
-                        <button type="button" id="type-expense-btn" onclick="setTxType('expense')" class="py-2 rounded-xl font-semibold bg-rose-600 text-white transition">支出</button>
-                        <button type="button" id="type-income-btn" onclick="setTxType('income')" class="py-2 rounded-xl font-semibold bg-slate-700 text-slate-300 transition">収入</button>
+                        <button type="button" id="type-expense-btn" onclick="setTxType('expense')" class="py-2 rounded-2xl font-bold bg-rose-400 text-white shadow-sm transition">支出 💸</button>
+                        <button type="button" id="type-income-btn" onclick="setTxType('income')" class="py-2 rounded-2xl font-bold bg-slate-100 text-slate-400 transition">収入 💰</button>
                     </div>
                 </div>
 
                 <div>
-                    <label class="text-slate-400 block mb-1">ジャンル（タグ）</label>
-                    <div id="tag-select-container" class="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto p-1 bg-slate-900 border border-slate-700 rounded-xl"></div>
+                    <label class="text-slate-400 font-bold block mb-1">ジャンル（タグ）</label>
+                    <div id="tag-select-container" class="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto p-1.5 bg-pink-50/50 border border-pink-100 rounded-2xl"></div>
                 </div>
 
                 <div>
-                    <label class="text-slate-400 block mb-1">金額 (円)</label>
-                    <input type="number" id="tx-amount" placeholder="例: 1500" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-indigo-500">
+                    <label class="text-slate-400 font-bold block mb-1">金額 (円)</label>
+                    <input type="number" id="tx-amount" placeholder="例: 1500" class="w-full bg-pink-50/30 border border-pink-200 rounded-2xl px-3.5 py-2 text-slate-700 font-bold focus:outline-none focus:border-rose-400">
                 </div>
 
                 <div>
-                    <label class="text-slate-400 block mb-1">日付</label>
-                    <input type="date" id="tx-date" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-indigo-500">
+                    <label class="text-slate-400 font-bold block mb-1">日付</label>
+                    <input type="date" id="tx-date" class="w-full bg-pink-50/30 border border-pink-200 rounded-2xl px-3.5 py-2 text-slate-700 font-bold focus:outline-none focus:border-rose-400">
                 </div>
 
                 <div>
-                    <label class="text-slate-400 block mb-1">詳細・メモ（任意）</label>
-                    <input type="text" id="tx-memo" placeholder="例: スーパー、〇〇購入など" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-indigo-500">
+                    <label class="text-slate-400 font-bold block mb-1">詳細・メモ（任意）</label>
+                    <input type="text" id="tx-memo" placeholder="例: カフェ、〇〇購入など" class="w-full bg-pink-50/30 border border-pink-200 rounded-2xl px-3.5 py-2 text-slate-700 focus:outline-none focus:border-rose-400">
                 </div>
             </div>
 
-            <button onclick="saveTransaction()" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl text-xs transition shadow">追加する</button>
+            <button onclick="saveTransaction()" class="w-full py-3 bg-gradient-to-r from-rose-400 to-pink-400 hover:from-rose-500 hover:to-pink-500 text-white font-extrabold rounded-2xl text-xs transition shadow-md shadow-pink-200">きろくする 🌸</button>
         </div>
     </div>
 
     <!-- Modal 2: 日別明細確認モーダル -->
-    <div id="day-detail-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center z-50 px-4">
-        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 max-w-sm w-full shadow-2xl space-y-4">
+    <div id="day-detail-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center z-50 px-4">
+        <div class="bg-white border border-pink-100 rounded-3xl p-5 max-w-sm w-full shadow-2xl space-y-4">
             <div class="flex justify-between items-center">
-                <h3 id="day-detail-title" class="text-sm font-bold text-white">日付の明細</h3>
-                <button onclick="closeDayDetailModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+                <h3 id="day-detail-title" class="text-sm font-extrabold text-slate-800">日付の明細</h3>
+                <button onclick="closeDayDetailModal()" class="text-slate-400 hover:text-rose-400"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             
             <div id="day-detail-list" class="space-y-2 max-h-60 overflow-y-auto text-xs"></div>
 
-            <button onclick="openAddModalFromDetail()" class="w-full py-2 bg-slate-700 hover:bg-slate-600 text-indigo-300 font-semibold rounded-xl text-xs transition">
-                + この日に明細を追加
+            <button onclick="openAddModalFromDetail()" class="w-full py-2.5 bg-pink-100 hover:bg-pink-200 text-rose-500 font-bold rounded-2xl text-xs transition">
+                + この日に追加する 🐾
             </button>
         </div>
     </div>
 
     <!-- Modal 3: タブ追加モーダル -->
-    <div id="add-tab-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center z-50 px-4">
-        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 max-w-sm w-full shadow-2xl space-y-4">
+    <div id="add-tab-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center z-50 px-4">
+        <div class="bg-white border border-pink-100 rounded-3xl p-5 max-w-sm w-full shadow-2xl space-y-4">
             <div class="flex justify-between items-center">
-                <h3 class="text-sm font-bold text-white">新しいタブを追加</h3>
-                <button onclick="closeAddTabModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+                <h3 class="text-sm font-extrabold text-slate-800">新しいタブを追加</h3>
+                <button onclick="closeAddTabModal()" class="text-slate-400 hover:text-rose-400"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
-            <input type="text" id="new-tab-name" placeholder="例: プライベート、副業など" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-            <button onclick="addNewTab()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl text-xs transition">追加する</button>
+            <input type="text" id="new-tab-name" placeholder="例: プライベート、推し活など" class="w-full bg-pink-50/30 border border-pink-200 rounded-2xl px-3.5 py-2 text-xs text-slate-700 focus:outline-none focus:border-rose-400">
+            <button onclick="addNewTab()" class="w-full py-2.5 bg-rose-400 hover:bg-rose-500 text-white font-bold rounded-2xl text-xs transition">追加する 🌸</button>
         </div>
     </div>
 
-    <!-- Modal 4: 設定モーダル (タグ & 給料日設定) -->
-    <div id="settings-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center z-50 px-4">
-        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 max-w-sm w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center border-b border-slate-700 pb-2">
-                <h3 class="text-sm font-bold text-white">アプリ設定</h3>
-                <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+    <!-- Modal 4: 設定モーダル -->
+    <div id="settings-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center z-50 px-4">
+        <div class="bg-white border border-pink-100 rounded-3xl p-5 max-w-sm w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-pink-100 pb-2">
+                <h3 class="text-sm font-extrabold text-slate-800">設定 ⚙️</h3>
+                <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-rose-400"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             
-            <!-- 給料日設定セクション -->
-            <div class="space-y-3 text-xs bg-slate-900/60 p-3 rounded-xl border border-slate-700/60">
-                <h4 class="font-bold text-indigo-400 flex items-center space-x-1">
-                    <i data-lucide="banknote" class="w-4 h-4"></i>
-                    <span>給料日設定</span>
+            <!-- 給料日設定 -->
+            <div class="space-y-3 text-xs bg-pink-50/50 p-3.5 rounded-2xl border border-pink-100">
+                <h4 class="font-extrabold text-rose-500 flex items-center space-x-1">
+                    <i data-lucide="coins" class="w-4 h-4"></i>
+                    <span>給料日の設定</span>
                 </h4>
 
                 <div>
-                    <label class="text-slate-400 block mb-1">給料日の指定</label>
-                    <select id="salary-day-select" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-white focus:outline-none focus:border-indigo-500">
+                    <label class="text-slate-400 font-bold block mb-1">給料日の指定</label>
+                    <select id="salary-day-select" class="w-full bg-white border border-pink-200 rounded-xl px-3 py-1.5 text-slate-700 font-bold focus:outline-none focus:border-rose-400">
                         <option value="0">未設定</option>
-                        <option value="25">25日</option>
-                        <option value="10">10日</option>
-                        <option value="15">15日</option>
-                        <option value="20">20日</option>
-                        <option value="99">月末</option>
-                        <!-- 動的に全日付追加 -->
                     </select>
                 </div>
 
                 <div>
-                    <label class="text-slate-400 block mb-1">土日祝日の場合</label>
-                    <select id="salary-holiday-rule" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-white focus:outline-none focus:border-indigo-500">
-                        <option value="prev">前の営業日（前日）へ変更</option>
-                        <option value="next">次の営業日（翌日）へ変更</option>
-                        <option value="none">そのまま（変動なし）</option>
+                    <label class="text-slate-400 font-bold block mb-1">土日祝日の場合</label>
+                    <select id="salary-holiday-rule" class="w-full bg-white border border-pink-200 rounded-xl px-3 py-1.5 text-slate-700 font-bold focus:outline-none focus:border-rose-400">
+                        <option value="prev">前日（前営業日）にずらす</option>
+                        <option value="next">翌日（翌営業日）にずらす</option>
+                        <option value="none">そのまま（変更なし）</option>
                     </select>
                 </div>
 
                 <div>
-                    <label class="text-slate-400 block mb-1">金額設定 (任意)</label>
-                    <input type="number" id="salary-amount" placeholder="未入力の場合は当日手入力" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-white focus:outline-none focus:border-indigo-500">
-                    <span class="text-[10px] text-slate-500 mt-1 block">※金額を設定すると給料日に自動で定額収入として反映されます。</span>
+                    <label class="text-slate-400 font-bold block mb-1">金額設定 (任意)</label>
+                    <input type="number" id="salary-amount" placeholder="未入力の場合は当日手入力" class="w-full bg-white border border-pink-200 rounded-xl px-3 py-1.5 text-slate-700 font-bold focus:outline-none focus:border-rose-400">
+                    <span class="text-[10px] text-slate-400 mt-1 block">※設定すると給料日に固定収入として自動計算されます。</span>
                 </div>
 
-                <button onclick="saveSalarySettings()" class="w-full py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl transition">給料日設定を保存</button>
+                <button onclick="saveSalarySettings()" class="w-full py-2 bg-rose-400 hover:bg-rose-500 text-white font-bold rounded-xl transition">給料日設定を保存 ✨</button>
             </div>
 
-            <!-- タグ設定セクション -->
-            <div class="space-y-3 text-xs border-t border-slate-700/60 pt-3">
-                <h4 class="font-bold text-slate-300">タグの編集・並び替え</h4>
+            <!-- タグ設定 -->
+            <div class="space-y-3 text-xs border-t border-pink-100 pt-3">
+                <h4 class="font-extrabold text-slate-700">タグの編集・並び替え 🏷️</h4>
                 <div>
                     <div class="flex space-x-2">
-                        <input type="text" id="new-tag-name" placeholder="例: 食費、交通費など" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-white focus:outline-none focus:border-indigo-500">
-                        <button onclick="addNewTag()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl transition whitespace-nowrap">追加</button>
+                        <input type="text" id="new-tag-name" placeholder="例: 美容、カフェなど" class="flex-1 bg-pink-50/30 border border-pink-200 rounded-xl px-3 py-1.5 text-slate-700 focus:outline-none focus:border-rose-400">
+                        <button onclick="addNewTag()" class="px-3 py-1.5 bg-rose-400 hover:bg-rose-500 text-white font-bold rounded-xl transition whitespace-nowrap">追加</button>
                     </div>
                 </div>
 
-                <div id="settings-tag-list" class="space-y-1.5 max-h-40 overflow-y-auto p-1 bg-slate-900 border border-slate-700 rounded-xl"></div>
+                <div id="settings-tag-list" class="space-y-1.5 max-h-40 overflow-y-auto p-1 bg-pink-50/30 border border-pink-100 rounded-2xl"></div>
             </div>
         </div>
     </div>
@@ -236,23 +253,26 @@
     <!-- アプリケーション制御スクリプト -->
     <script>
         // --- 状態管理 ---
-        let tabs = JSON.parse(localStorage.getItem('kakeibo_tabs')) || [{ id: 'all', name: '総合' }];
+        let tabs = JSON.parse(localStorage.getItem('kakeibo_tabs')) || [
+            { id: 'all', name: '総合 🐾' },
+            { id: 'personal', name: 'プライベート 🎀' }
+        ];
         let currentTabId = tabs[0].id;
 
         let tags = JSON.parse(localStorage.getItem('kakeibo_tags')) || [
-            { id: 'tag_1', name: '給与' },
-            { id: 'tag_2', name: '食費' },
-            { id: 'tag_3', name: '日用品' },
-            { id: 'tag_4', name: '固定費' },
-            { id: 'tag_5', name: 'その他' }
+            { id: 'tag_1', name: '食費 🍰' },
+            { id: 'tag_2', name: '日用品 🛍️' },
+            { id: 'tag_3', name: '美容・服 💄' },
+            { id: 'tag_4', name: '固定費 🏠' },
+            { id: 'tag_5', name: '給与 💰' },
+            { id: 'tag_6', name: 'その他 🌸' }
         ];
         let selectedTagId = tags[0] ? tags[0].id : '';
 
-        // 給料日設定オブジェクト
         let salaryConfig = JSON.parse(localStorage.getItem('kakeibo_salary_config')) || {
-            day: 25,           // 給料日 (1~31, 99:月末)
-            rule: 'prev',      // 'prev'(前営業日), 'next'(翌営業日), 'none'
-            amount: ''         // 金額 (空文字または数値)
+            day: 25,
+            rule: 'prev',
+            amount: ''
         };
 
         let transactions = JSON.parse(localStorage.getItem('kakeibo_transactions')) || [];
@@ -270,19 +290,17 @@
             lucide.createIcons();
         }
 
-        // --- 日本の簡易祝日リスト判定 (2025/2026年等に対応) ---
+        // 祝日判定
         function isJapaneseHoliday(year, month, day) {
             const dateStr = `${month}/${day}`;
-            // 固定祝日
             const fixedHolidays = ["1/1", "1/2", "1/3", "2/11", "2/23", "4/29", "5/3", "5/4", "5/5", "8/11", "11/3", "11/23"];
             if (fixedHolidays.includes(dateStr)) return true;
-            // ハッピーマンデー等簡易判定（成人の日, 海の日, 敬老の日, 体育の日）
             const dayOfWeek = new Date(year, month - 1, day).getDay();
-            if (dayOfWeek === 1) { // 月曜日
-                if (month === 1 && day >= 8 && day <= 14) return true; // 成人の日
-                if (month === 7 && day >= 15 && day <= 21) return true; // 海の日
-                if (month === 9 && day >= 15 && day <= 21) return true; // 敬老の日
-                if (month === 10 && day >= 8 && day <= 14) return true; // スポーツの日
+            if (dayOfWeek === 1) {
+                if (month === 1 && day >= 8 && day <= 14) return true;
+                if (month === 7 && day >= 15 && day <= 21) return true;
+                if (month === 9 && day >= 15 && day <= 21) return true;
+                if (month === 10 && day >= 8 && day <= 14) return true;
             }
             return false;
         }
@@ -290,26 +308,17 @@
         function isHolidayOrWeekend(year, month, day) {
             const date = new Date(year, month - 1, day);
             const dayOfWeek = date.getDay();
-            if (dayOfWeek === 0 || dayOfWeek === 6) return true; // 土日
+            if (dayOfWeek === 0 || dayOfWeek === 6) return true;
             return isJapaneseHoliday(year, month, day);
         }
 
-        // 給料日の実際の支給日を計算
         function calculatePayday(year, month) {
             if (!salaryConfig || !salaryConfig.day || salaryConfig.day == 0) return null;
-
             let targetDay = salaryConfig.day;
             const lastDayOfMonth = new Date(year, month, 0).getDate();
+            if (targetDay === 99 || targetDay > lastDayOfMonth) targetDay = lastDayOfMonth;
+            if (salaryConfig.rule === 'none') return targetDay;
 
-            if (targetDay === 99 || targetDay > lastDayOfMonth) {
-                targetDay = lastDayOfMonth;
-            }
-
-            if (salaryConfig.rule === 'none') {
-                return targetDay;
-            }
-
-            // 土日祝日の調整
             let curr = new Date(year, month - 1, targetDay);
             if (salaryConfig.rule === 'prev') {
                 while (isHolidayOrWeekend(curr.getFullYear(), curr.getMonth() + 1, curr.getDate())) {
@@ -320,15 +329,11 @@
                     curr.setDate(curr.getDate() + 1);
                 }
             }
-
-            // 月を跨いだ場合の補正
-            if (curr.getMonth() + 1 === month) {
-                return curr.getDate();
-            }
+            if (curr.getMonth() + 1 === month) return curr.getDate();
             return targetDay;
         }
 
-        // --- タブ機能 ---
+        // --- タブ機能 (タブごとの完全独立集計 & 総合タブ集計) ---
         function renderTabs() {
             const container = document.getElementById('tabs-container');
             container.innerHTML = '';
@@ -336,8 +341,10 @@
             tabs.forEach(tab => {
                 const isSelected = tab.id === currentTabId;
                 const btn = document.createElement('button');
-                btn.className = `px-3 py-1 text-xs font-semibold rounded-md transition whitespace-nowrap shrink-0 ${
-                    isSelected ? 'bg-indigo-600 text-white shadow' : 'bg-slate-700/50 text-slate-300 hover:text-white hover:bg-slate-700'
+                btn.className = `px-3.5 py-1.5 text-xs font-bold rounded-2xl transition whitespace-nowrap shrink-0 ${
+                    isSelected 
+                        ? 'bg-rose-400 text-white shadow-md shadow-pink-200' 
+                        : 'bg-white/80 text-rose-400 hover:bg-pink-100 border border-pink-200/60'
                 }`;
                 btn.innerText = tab.name;
                 btn.onclick = () => {
@@ -350,14 +357,14 @@
             });
 
             const addBtn = document.createElement('button');
-            addBtn.className = "px-2.5 py-1 text-xs font-semibold rounded-md bg-slate-700/30 hover:bg-slate-700 text-indigo-400 border border-indigo-500/30 transition whitespace-nowrap shrink-0 flex items-center space-x-1";
-            addBtn.innerHTML = '<i data-lucide="plus" class="w-3 h-3"></i><span>追加</span>';
+            addBtn.className = "px-3 py-1.5 text-xs font-bold rounded-2xl bg-pink-100 hover:bg-pink-200 text-rose-500 border border-pink-200 transition whitespace-nowrap shrink-0 flex items-center space-x-1";
+            addBtn.innerHTML = '<i data-lucide="plus" class="w-3.5 h-3.5"></i><span>追加</span>';
             addBtn.onclick = openAddTabModal;
             container.appendChild(addBtn);
 
             const activeTab = tabs.find(t => t.id === currentTabId);
             if (activeTab) {
-                document.getElementById('current-tab-label').innerText = `${activeTab.name}の総収支`;
+                document.getElementById('current-tab-label').innerText = `🐾 ${activeTab.name}の収支`;
             }
             lucide.createIcons();
         }
@@ -382,9 +389,8 @@
             initApp();
         }
 
-        // --- 設定モーダル (給料日 & タグ) ---
+        // --- 設定モーダル ---
         function openSettingsModal() {
-            // 給料日ドロップダウンの準備
             const select = document.getElementById('salary-day-select');
             select.innerHTML = '<option value="0">未設定</option>';
             for (let i = 1; i <= 30; i++) {
@@ -413,7 +419,7 @@
             salaryConfig.amount = amt !== '' ? Number(amt) : '';
 
             localStorage.setItem('kakeibo_salary_config', JSON.stringify(salaryConfig));
-            alert('給料日設定を保存しました');
+            alert('給料日設定を保存しました 🌸');
             renderSummary();
             renderCalendar();
         }
@@ -421,25 +427,24 @@
         function renderSettingsTagList() {
             const container = document.getElementById('settings-tag-list');
             container.innerHTML = '';
-
             if (tags.length === 0) {
-                container.innerHTML = '<p class="text-slate-500 text-center py-2">タグがありません</p>';
+                container.innerHTML = '<p class="text-slate-400 text-center py-2">タグがありません</p>';
                 return;
             }
 
             tags.forEach((tag, index) => {
                 const item = document.createElement('div');
-                item.className = "flex justify-between items-center bg-slate-800 p-2 rounded-lg border border-slate-700/60";
+                item.className = "flex justify-between items-center bg-white p-2 rounded-xl border border-pink-100 shadow-sm";
                 item.innerHTML = `
-                    <span class="font-medium text-white">${tag.name}</span>
+                    <span class="font-bold text-slate-700">${tag.name}</span>
                     <div class="flex items-center space-x-1">
-                        <button onclick="moveTag(${index}, -1)" class="p-1 text-slate-400 hover:text-indigo-400 ${index === 0 ? 'opacity-30 cursor-not-allowed' : ''}">
+                        <button onclick="moveTag(${index}, -1)" class="p-1 text-slate-400 hover:text-rose-400 ${index === 0 ? 'opacity-30 cursor-not-allowed' : ''}">
                             <i data-lucide="arrow-up" class="w-3.5 h-3.5"></i>
                         </button>
-                        <button onclick="moveTag(${index}, 1)" class="p-1 text-slate-400 hover:text-indigo-400 ${index === tags.length - 1 ? 'opacity-30 cursor-not-allowed' : ''}">
+                        <button onclick="moveTag(${index}, 1)" class="p-1 text-slate-400 hover:text-rose-400 ${index === tags.length - 1 ? 'opacity-30 cursor-not-allowed' : ''}">
                             <i data-lucide="arrow-down" class="w-3.5 h-3.5"></i>
                         </button>
-                        <button onclick="deleteTag('${tag.id}')" class="p-1 text-slate-400 hover:text-rose-400 ml-1">
+                        <button onclick="deleteTag('${tag.id}')" class="p-1 text-slate-400 hover:text-rose-500 ml-1">
                             <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                         </button>
                     </div>
@@ -479,7 +484,7 @@
             const container = document.getElementById('tag-select-container');
             container.innerHTML = '';
             if (tags.length === 0) {
-                container.innerHTML = '<span class="text-slate-500 p-1">設定からタグを追加してください</span>';
+                container.innerHTML = '<span class="text-slate-400 p-1">設定からタグを追加してください</span>';
                 return;
             }
             if (!tags.some(t => t.id === selectedTagId)) selectedTagId = tags[0].id;
@@ -488,8 +493,8 @@
                 const isSelected = tag.id === selectedTagId;
                 const btn = document.createElement('button');
                 btn.type = 'button';
-                btn.className = `px-2.5 py-1 text-xs font-medium rounded-lg transition ${
-                    isSelected ? 'bg-indigo-600 text-white font-bold' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                btn.className = `px-2.5 py-1 text-xs font-bold rounded-xl transition ${
+                    isSelected ? 'bg-rose-400 text-white shadow-sm' : 'bg-white text-slate-600 hover:bg-pink-100'
                 }`;
                 btn.innerText = tag.name;
                 btn.onclick = () => {
@@ -500,19 +505,22 @@
             });
         }
 
-        // --- 収支計算 ---
+        // --- 収支計算 (タブごとの完全独立 ＆ 総合まとめ機能) ---
         function getFilteredTransactions() {
-            let list = [...transactions];
-            if (currentTabId !== 'all') {
-                list = list.filter(t => t.tabId === currentTabId);
+            let list = [];
+
+            // 「総合」タブの場合は全明細を取得、個別タブの場合は該当タブの明細のみを取得
+            if (currentTabId === 'all') {
+                list = [...transactions];
+            } else {
+                list = transactions.filter(t => t.tabId === currentTabId);
             }
 
-            // 定額給与設定がある場合、動的に仮収入として集計に反映
+            // 定額給与設定（自動計算）
             if (salaryConfig.amount && Number(salaryConfig.amount) > 0) {
                 const payday = calculatePayday(currentYear, currentMonth);
                 if (payday) {
                     const dateStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(payday).padStart(2, '0')}`;
-                    // 既に同日の給与データが手作業で追加されていない場合のみ追加
                     const hasSalaryTx = list.some(t => t.date === dateStr && t.isSalaryAuto);
                     if (!hasSalaryTx) {
                         list.push({
@@ -522,7 +530,7 @@
                             amount: Number(salaryConfig.amount),
                             date: dateStr,
                             tagName: '給与',
-                            memo: '自動給与設定',
+                            memo: '定額自動反映',
                             isSalaryAuto: true
                         });
                     }
@@ -533,30 +541,28 @@
 
         function renderSummary() {
             const txs = getFilteredTransactions();
+            let monthlyIncome = 0;
+            let monthlyExpense = 0;
             let totalIncome = 0;
             let totalExpense = 0;
 
             txs.forEach(t => {
                 const [y, m] = t.date.split('-').map(Number);
+                // 今月の集計
                 if (y === currentYear && m === currentMonth) {
-                    if (t.type === 'income') totalIncome += t.amount;
-                    else totalExpense += t.amount;
+                    if (t.type === 'income') monthlyIncome += t.amount;
+                    else monthlyExpense += t.amount;
                 }
+                // 総累計の集計
+                if (t.type === 'income') totalIncome += t.amount;
+                else totalExpense += t.amount;
             });
 
-            let allIncome = 0;
-            let allExpense = 0;
-            transactions.forEach(t => {
-                if (t.type === 'income') allIncome += t.amount;
-                else allExpense += t.amount;
-            });
-            if (salaryConfig.amount) allIncome += Number(salaryConfig.amount); // 仮給与加算
-
-            const netTotal = allIncome - allExpense;
+            const netTotal = totalIncome - totalExpense;
 
             document.getElementById('total-balance').innerText = `¥${netTotal.toLocaleString()}`;
-            document.getElementById('monthly-income').innerText = `¥${totalIncome.toLocaleString()}`;
-            document.getElementById('monthly-expense').innerText = `¥${totalExpense.toLocaleString()}`;
+            document.getElementById('monthly-income').innerText = `¥${monthlyIncome.toLocaleString()}`;
+            document.getElementById('monthly-expense').innerText = `¥${monthlyExpense.toLocaleString()}`;
         }
 
         // --- カレンダー機能 ---
@@ -574,7 +580,7 @@
 
             for (let i = 0; i < firstDayIndex; i++) {
                 const emptyCell = document.createElement('div');
-                emptyCell.className = "aspect-[1/1.1] p-1 rounded-xl bg-slate-900/20 border border-slate-800 opacity-30";
+                emptyCell.className = "aspect-[1/1.1] p-1 rounded-2xl bg-pink-50/20 border border-pink-50 opacity-40";
                 grid.appendChild(emptyCell);
             }
 
@@ -594,26 +600,26 @@
                 });
 
                 const cell = document.createElement('div');
-                cell.className = `aspect-[1/1.1] p-1 flex flex-col justify-between items-center rounded-xl border transition cursor-pointer relative ${
+                cell.className = `aspect-[1/1.1] p-1 flex flex-col justify-between items-center rounded-2xl border transition cursor-pointer relative ${
                     isToday 
-                        ? 'bg-indigo-500/20 border-indigo-500 shadow-sm shadow-indigo-500/20' 
+                        ? 'bg-rose-100/80 border-rose-400 shadow-sm shadow-pink-200' 
                         : isPayday
-                        ? 'bg-amber-500/10 border-amber-500/50'
-                        : 'bg-slate-700/30 border-slate-700/50 hover:border-indigo-500/50 hover:bg-indigo-500/10'
+                        ? 'bg-amber-50 border-amber-300'
+                        : 'bg-white/60 border-pink-100 hover:border-rose-300 hover:bg-pink-50/50'
                 }`;
 
                 let badgesHtml = '';
                 if (dayIncome > 0) {
-                    badgesHtml += `<span class="text-[8px] bg-emerald-500/20 text-emerald-300 px-1 rounded w-full text-center truncate">+¥${dayIncome.toLocaleString()}</span>`;
+                    badgesHtml += `<span class="text-[8px] bg-emerald-100 text-emerald-600 font-bold px-1 rounded-md w-full text-center truncate">+¥${dayIncome.toLocaleString()}</span>`;
                 }
                 if (dayExpense > 0) {
-                    badgesHtml += `<span class="text-[8px] bg-rose-500/20 text-rose-300 px-1 rounded w-full text-center truncate">-¥${dayExpense.toLocaleString()}</span>`;
+                    badgesHtml += `<span class="text-[8px] bg-rose-100 text-rose-500 font-bold px-1 rounded-md w-full text-center truncate">-¥${dayExpense.toLocaleString()}</span>`;
                 }
 
                 cell.innerHTML = `
                     <div class="w-full flex justify-between items-center px-0.5">
-                        <span class="text-xs font-medium ${isToday ? 'text-indigo-300 font-bold' : isPayday ? 'text-amber-300 font-bold' : 'text-slate-300'}">${i}</span>
-                        ${isPayday ? '<span class="text-[7px] bg-amber-500 text-slate-950 px-1 rounded font-extrabold">給料日</span>' : isToday ? '<span class="text-[7px] bg-indigo-600 text-white px-1 rounded-full font-bold">今日</span>' : ''}
+                        <span class="text-xs font-bold ${isToday ? 'text-rose-600' : isPayday ? 'text-amber-600' : 'text-slate-600'}">${i}</span>
+                        ${isPayday ? '<span class="text-[7px] bg-amber-400 text-white px-1 rounded-full font-bold">給料日</span>' : isToday ? '<span class="text-[7px] bg-rose-400 text-white px-1 rounded-full font-bold">今日</span>' : ''}
                     </div>
                     <div class="w-full flex flex-col items-center gap-0.5 pb-0.5">
                         ${badgesHtml}
@@ -638,7 +644,7 @@
             renderSummary();
         }
 
-        // --- 追加・明細モーダル操作 ---
+        // --- 入力・明細モーダル操作 ---
         function openAddModal(dateStr = '') {
             closeDayDetailModal();
             if (!dateStr) {
@@ -661,11 +667,11 @@
             const expBtn = document.getElementById('type-expense-btn');
             const incBtn = document.getElementById('type-income-btn');
             if (type === 'expense') {
-                expBtn.className = "py-2 rounded-xl font-semibold bg-rose-600 text-white transition";
-                incBtn.className = "py-2 rounded-xl font-semibold bg-slate-700 text-slate-300 transition";
+                expBtn.className = "py-2 rounded-2xl font-bold bg-rose-400 text-white shadow-sm transition";
+                incBtn.className = "py-2 rounded-2xl font-bold bg-slate-100 text-slate-400 transition";
             } else {
-                expBtn.className = "py-2 rounded-xl font-semibold bg-slate-700 text-slate-300 transition";
-                incBtn.className = "py-2 rounded-xl font-semibold bg-emerald-600 text-white transition";
+                expBtn.className = "py-2 rounded-2xl font-bold bg-slate-100 text-slate-400 transition";
+                incBtn.className = "py-2 rounded-2xl font-bold bg-emerald-400 text-white shadow-sm transition";
             }
         }
         function saveTransaction() {
@@ -680,7 +686,8 @@
 
             const activeTag = tags.find(t => t.id === selectedTagId);
             const tagName = activeTag ? activeTag.name : '未分類';
-            const targetTab = currentTabId === 'all' ? (tabs[1] ? tabs[1].id : tabs[0].id) : currentTabId;
+            // 「総合」タブ選択中の場合はデフォルトで最初の個別タブ（または"general"）に割り当て
+            const targetTab = currentTabId === 'all' ? (tabs[1] ? tabs[1].id : 'general') : currentTabId;
 
             const newTx = {
                 id: 'tx_' + Date.now(),
@@ -703,35 +710,35 @@
         function openDayDetail(dateStr, dayNum) {
             selectedDateForModal = dateStr;
             const [y, m, d] = dateStr.split('-');
-            document.getElementById('day-detail-title').innerText = `${y}年${parseInt(m)}月${parseInt(d)}日の明細`;
+            document.getElementById('day-detail-title').innerText = `${y}年${parseInt(m)}月${parseInt(d)}日の明細 🐾`;
             
             const txs = getFilteredTransactions().filter(t => t.date === dateStr);
             const listContainer = document.getElementById('day-detail-list');
             listContainer.innerHTML = '';
 
             if (txs.length === 0) {
-                listContainer.innerHTML = '<p class="text-slate-400 text-center py-4">この日の明細はありません</p>';
+                listContainer.innerHTML = '<p class="text-slate-400 text-center py-4">この日の明細はありません 🌸</p>';
             } else {
                 txs.forEach(t => {
                     const item = document.createElement('div');
-                    item.className = "flex justify-between items-center bg-slate-900 p-2.5 rounded-xl border border-slate-700/60";
+                    item.className = "flex justify-between items-center bg-pink-50/40 p-3 rounded-2xl border border-pink-100";
                     const isInc = t.type === 'income';
                     const detailText = t.memo ? `${t.tagName} (${t.memo})` : t.tagName;
 
                     item.innerHTML = `
                         <div>
-                            <p class="font-bold text-white">${detailText}</p>
-                            <span class="text-[10px] text-slate-400">${isInc ? '収入' : '支出'}</span>
+                            <p class="font-extrabold text-slate-700">${detailText}</p>
+                            <span class="text-[10px] text-slate-400 font-bold">${isInc ? '収入 💰' : '支出 💸'}</span>
                         </div>
                         <div class="flex items-center space-x-3">
-                            <span class="font-bold ${isInc ? 'text-emerald-400' : 'text-rose-400'}">
+                            <span class="font-black ${isInc ? 'text-emerald-500' : 'text-rose-500'}">
                                 ${isInc ? '+' : '-'}¥${t.amount.toLocaleString()}
                             </span>
                             ${!t.isSalaryAuto ? `
-                                <button onclick="deleteTransaction('${t.id}')" class="text-slate-500 hover:text-rose-400 p-1">
-                                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                <button onclick="deleteTransaction('${t.id}')" class="text-slate-300 hover:text-rose-500 p-1 transition">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
                                 </button>
-                            ` : '<span class="text-[10px] text-indigo-400">自動</span>'}
+                            ` : '<span class="text-[10px] text-rose-400 font-bold">自動</span>'}
                         </div>
                     `;
                     listContainer.appendChild(item);
