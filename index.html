@@ -32,9 +32,7 @@
 
         <!-- タブ切り替えバー -->
         <div class="max-w-xl mx-auto px-4 border-t border-slate-700/40 py-2">
-            <div id="tabs-container" class="flex items-center space-x-1.5 overflow-x-auto no-scrollbar">
-                <!-- 動的生成 -->
-            </div>
+            <div id="tabs-container" class="flex items-center space-x-1.5 overflow-x-auto no-scrollbar"></div>
         </div>
     </header>
 
@@ -123,9 +121,7 @@
 
                 <div>
                     <label class="text-slate-400 block mb-1">ジャンル（タグ）</label>
-                    <div id="tag-select-container" class="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto p-1 bg-slate-900 border border-slate-700 rounded-xl">
-                        <!-- タグボタンが動的に並びます -->
-                    </div>
+                    <div id="tag-select-container" class="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto p-1 bg-slate-900 border border-slate-700 rounded-xl"></div>
                 </div>
 
                 <div>
@@ -176,29 +172,63 @@
         </div>
     </div>
 
-    <!-- Modal 4: 設定・タグ管理モーダル -->
+    <!-- Modal 4: 設定モーダル (タグ & 給料日設定) -->
     <div id="settings-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center z-50 px-4">
-        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 max-w-sm w-full shadow-2xl space-y-4">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 max-w-sm w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b border-slate-700 pb-2">
-                <h3 class="text-sm font-bold text-white">設定 (タグの編集・並び替え)</h3>
+                <h3 class="text-sm font-bold text-white">アプリ設定</h3>
                 <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
             </div>
             
-            <div class="space-y-3 text-xs">
+            <!-- 給料日設定セクション -->
+            <div class="space-y-3 text-xs bg-slate-900/60 p-3 rounded-xl border border-slate-700/60">
+                <h4 class="font-bold text-indigo-400 flex items-center space-x-1">
+                    <i data-lucide="banknote" class="w-4 h-4"></i>
+                    <span>給料日設定</span>
+                </h4>
+
                 <div>
-                    <label class="text-slate-400 block mb-1">新しいタグを追加</label>
+                    <label class="text-slate-400 block mb-1">給料日の指定</label>
+                    <select id="salary-day-select" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-white focus:outline-none focus:border-indigo-500">
+                        <option value="0">未設定</option>
+                        <option value="25">25日</option>
+                        <option value="10">10日</option>
+                        <option value="15">15日</option>
+                        <option value="20">20日</option>
+                        <option value="99">月末</option>
+                        <!-- 動的に全日付追加 -->
+                    </select>
+                </div>
+
+                <div>
+                    <label class="text-slate-400 block mb-1">土日祝日の場合</label>
+                    <select id="salary-holiday-rule" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-white focus:outline-none focus:border-indigo-500">
+                        <option value="prev">前の営業日（前日）へ変更</option>
+                        <option value="next">次の営業日（翌日）へ変更</option>
+                        <option value="none">そのまま（変動なし）</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="text-slate-400 block mb-1">金額設定 (任意)</label>
+                    <input type="number" id="salary-amount" placeholder="未入力の場合は当日手入力" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-white focus:outline-none focus:border-indigo-500">
+                    <span class="text-[10px] text-slate-500 mt-1 block">※金額を設定すると給料日に自動で定額収入として反映されます。</span>
+                </div>
+
+                <button onclick="saveSalarySettings()" class="w-full py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl transition">給料日設定を保存</button>
+            </div>
+
+            <!-- タグ設定セクション -->
+            <div class="space-y-3 text-xs border-t border-slate-700/60 pt-3">
+                <h4 class="font-bold text-slate-300">タグの編集・並び替え</h4>
+                <div>
                     <div class="flex space-x-2">
                         <input type="text" id="new-tag-name" placeholder="例: 食費、交通費など" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-white focus:outline-none focus:border-indigo-500">
                         <button onclick="addNewTag()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl transition whitespace-nowrap">追加</button>
                     </div>
                 </div>
 
-                <div>
-                    <label class="text-slate-400 block mb-1">登録済みタグ一覧（順序の並び替え・削除）</label>
-                    <div id="settings-tag-list" class="space-y-1.5 max-h-52 overflow-y-auto p-1 bg-slate-900 border border-slate-700 rounded-xl">
-                        <!-- タグの並び替え・削除リストが動的に挿入されます -->
-                    </div>
-                </div>
+                <div id="settings-tag-list" class="space-y-1.5 max-h-40 overflow-y-auto p-1 bg-slate-900 border border-slate-700 rounded-xl"></div>
             </div>
         </div>
     </div>
@@ -206,19 +236,24 @@
     <!-- アプリケーション制御スクリプト -->
     <script>
         // --- 状態管理 ---
-        let tabs = JSON.parse(localStorage.getItem('kakeibo_tabs')) || [
-            { id: 'all', name: '総合' }
-        ];
+        let tabs = JSON.parse(localStorage.getItem('kakeibo_tabs')) || [{ id: 'all', name: '総合' }];
         let currentTabId = tabs[0].id;
 
         let tags = JSON.parse(localStorage.getItem('kakeibo_tags')) || [
-            { id: 'tag_1', name: '食費' },
-            { id: 'tag_2', name: '日用品' },
-            { id: 'tag_3', name: '固定費' },
-            { id: 'tag_4', name: '給与' },
+            { id: 'tag_1', name: '給与' },
+            { id: 'tag_2', name: '食費' },
+            { id: 'tag_3', name: '日用品' },
+            { id: 'tag_4', name: '固定費' },
             { id: 'tag_5', name: 'その他' }
         ];
         let selectedTagId = tags[0] ? tags[0].id : '';
+
+        // 給料日設定オブジェクト
+        let salaryConfig = JSON.parse(localStorage.getItem('kakeibo_salary_config')) || {
+            day: 25,           // 給料日 (1~31, 99:月末)
+            rule: 'prev',      // 'prev'(前営業日), 'next'(翌営業日), 'none'
+            amount: ''         // 金額 (空文字または数値)
+        };
 
         let transactions = JSON.parse(localStorage.getItem('kakeibo_transactions')) || [];
         let currentTxType = 'expense';
@@ -235,6 +270,64 @@
             lucide.createIcons();
         }
 
+        // --- 日本の簡易祝日リスト判定 (2025/2026年等に対応) ---
+        function isJapaneseHoliday(year, month, day) {
+            const dateStr = `${month}/${day}`;
+            // 固定祝日
+            const fixedHolidays = ["1/1", "1/2", "1/3", "2/11", "2/23", "4/29", "5/3", "5/4", "5/5", "8/11", "11/3", "11/23"];
+            if (fixedHolidays.includes(dateStr)) return true;
+            // ハッピーマンデー等簡易判定（成人の日, 海の日, 敬老の日, 体育の日）
+            const dayOfWeek = new Date(year, month - 1, day).getDay();
+            if (dayOfWeek === 1) { // 月曜日
+                if (month === 1 && day >= 8 && day <= 14) return true; // 成人の日
+                if (month === 7 && day >= 15 && day <= 21) return true; // 海の日
+                if (month === 9 && day >= 15 && day <= 21) return true; // 敬老の日
+                if (month === 10 && day >= 8 && day <= 14) return true; // スポーツの日
+            }
+            return false;
+        }
+
+        function isHolidayOrWeekend(year, month, day) {
+            const date = new Date(year, month - 1, day);
+            const dayOfWeek = date.getDay();
+            if (dayOfWeek === 0 || dayOfWeek === 6) return true; // 土日
+            return isJapaneseHoliday(year, month, day);
+        }
+
+        // 給料日の実際の支給日を計算
+        function calculatePayday(year, month) {
+            if (!salaryConfig || !salaryConfig.day || salaryConfig.day == 0) return null;
+
+            let targetDay = salaryConfig.day;
+            const lastDayOfMonth = new Date(year, month, 0).getDate();
+
+            if (targetDay === 99 || targetDay > lastDayOfMonth) {
+                targetDay = lastDayOfMonth;
+            }
+
+            if (salaryConfig.rule === 'none') {
+                return targetDay;
+            }
+
+            // 土日祝日の調整
+            let curr = new Date(year, month - 1, targetDay);
+            if (salaryConfig.rule === 'prev') {
+                while (isHolidayOrWeekend(curr.getFullYear(), curr.getMonth() + 1, curr.getDate())) {
+                    curr.setDate(curr.getDate() - 1);
+                }
+            } else if (salaryConfig.rule === 'next') {
+                while (isHolidayOrWeekend(curr.getFullYear(), curr.getMonth() + 1, curr.getDate())) {
+                    curr.setDate(curr.getDate() + 1);
+                }
+            }
+
+            // 月を跨いだ場合の補正
+            if (curr.getMonth() + 1 === month) {
+                return curr.getDate();
+            }
+            return targetDay;
+        }
+
         // --- タブ機能 ---
         function renderTabs() {
             const container = document.getElementById('tabs-container');
@@ -244,9 +337,7 @@
                 const isSelected = tab.id === currentTabId;
                 const btn = document.createElement('button');
                 btn.className = `px-3 py-1 text-xs font-semibold rounded-md transition whitespace-nowrap shrink-0 ${
-                    isSelected 
-                        ? 'bg-indigo-600 text-white shadow' 
-                        : 'bg-slate-700/50 text-slate-300 hover:text-white hover:bg-slate-700'
+                    isSelected ? 'bg-indigo-600 text-white shadow' : 'bg-slate-700/50 text-slate-300 hover:text-white hover:bg-slate-700'
                 }`;
                 btn.innerText = tab.name;
                 btn.onclick = () => {
@@ -291,15 +382,40 @@
             initApp();
         }
 
-        // --- タブ & 設定・タグ管理機能 ---
+        // --- 設定モーダル (給料日 & タグ) ---
         function openSettingsModal() {
+            // 給料日ドロップダウンの準備
+            const select = document.getElementById('salary-day-select');
+            select.innerHTML = '<option value="0">未設定</option>';
+            for (let i = 1; i <= 30; i++) {
+                select.innerHTML += `<option value="${i}">${i}日</option>`;
+            }
+            select.innerHTML += '<option value="99">月末</option>';
+
+            select.value = salaryConfig.day || 0;
+            document.getElementById('salary-holiday-rule').value = salaryConfig.rule || 'prev';
+            document.getElementById('salary-amount').value = salaryConfig.amount || '';
+
             renderSettingsTagList();
             document.getElementById('settings-modal').classList.remove('hidden');
             document.getElementById('settings-modal').classList.add('flex');
         }
+
         function closeSettingsModal() {
             document.getElementById('settings-modal').classList.remove('flex');
             document.getElementById('settings-modal').classList.add('hidden');
+        }
+
+        function saveSalarySettings() {
+            salaryConfig.day = Number(document.getElementById('salary-day-select').value);
+            salaryConfig.rule = document.getElementById('salary-holiday-rule').value;
+            const amt = document.getElementById('salary-amount').value;
+            salaryConfig.amount = amt !== '' ? Number(amt) : '';
+
+            localStorage.setItem('kakeibo_salary_config', JSON.stringify(salaryConfig));
+            alert('給料日設定を保存しました');
+            renderSummary();
+            renderCalendar();
         }
 
         function renderSettingsTagList() {
@@ -336,8 +452,7 @@
         function addNewTag() {
             const name = document.getElementById('new-tag-name').value.trim();
             if (!name) return;
-            const newTag = { id: 'tag_' + Date.now(), name: name };
-            tags.push(newTag);
+            tags.push({ id: 'tag_' + Date.now(), name: name });
             localStorage.setItem('kakeibo_tags', JSON.stringify(tags));
             document.getElementById('new-tag-name').value = '';
             renderSettingsTagList();
@@ -360,28 +475,21 @@
             renderSettingsTagList();
         }
 
-        // --- 入力時のタグ選択レンダリング ---
         function renderTagSelector() {
             const container = document.getElementById('tag-select-container');
             container.innerHTML = '';
-
             if (tags.length === 0) {
                 container.innerHTML = '<span class="text-slate-500 p-1">設定からタグを追加してください</span>';
                 return;
             }
-
-            if (!tags.some(t => t.id === selectedTagId)) {
-                selectedTagId = tags[0].id;
-            }
+            if (!tags.some(t => t.id === selectedTagId)) selectedTagId = tags[0].id;
 
             tags.forEach(tag => {
                 const isSelected = tag.id === selectedTagId;
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 btn.className = `px-2.5 py-1 text-xs font-medium rounded-lg transition ${
-                    isSelected 
-                        ? 'bg-indigo-600 text-white font-bold' 
-                        : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                    isSelected ? 'bg-indigo-600 text-white font-bold' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
                 }`;
                 btn.innerText = tag.name;
                 btn.onclick = () => {
@@ -394,8 +502,33 @@
 
         // --- 収支計算 ---
         function getFilteredTransactions() {
-            if (currentTabId === 'all') return transactions;
-            return transactions.filter(t => t.tabId === currentTabId);
+            let list = [...transactions];
+            if (currentTabId !== 'all') {
+                list = list.filter(t => t.tabId === currentTabId);
+            }
+
+            // 定額給与設定がある場合、動的に仮収入として集計に反映
+            if (salaryConfig.amount && Number(salaryConfig.amount) > 0) {
+                const payday = calculatePayday(currentYear, currentMonth);
+                if (payday) {
+                    const dateStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(payday).padStart(2, '0')}`;
+                    // 既に同日の給与データが手作業で追加されていない場合のみ追加
+                    const hasSalaryTx = list.some(t => t.date === dateStr && t.isSalaryAuto);
+                    if (!hasSalaryTx) {
+                        list.push({
+                            id: 'auto_salary',
+                            tabId: currentTabId,
+                            type: 'income',
+                            amount: Number(salaryConfig.amount),
+                            date: dateStr,
+                            tagName: '給与',
+                            memo: '自動給与設定',
+                            isSalaryAuto: true
+                        });
+                    }
+                }
+            }
+            return list;
         }
 
         function renderSummary() {
@@ -413,10 +546,12 @@
 
             let allIncome = 0;
             let allExpense = 0;
-            txs.forEach(t => {
+            transactions.forEach(t => {
                 if (t.type === 'income') allIncome += t.amount;
                 else allExpense += t.amount;
             });
+            if (salaryConfig.amount) allIncome += Number(salaryConfig.amount); // 仮給与加算
+
             const netTotal = allIncome - allExpense;
 
             document.getElementById('total-balance').innerText = `¥${netTotal.toLocaleString()}`;
@@ -432,6 +567,7 @@
             const txs = getFilteredTransactions();
 
             const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+            const payday = calculatePayday(currentYear, currentMonth);
 
             const firstDayIndex = new Date(currentYear, currentMonth - 1, 1).getDay();
             const lastDate = new Date(currentYear, currentMonth, 0).getDate();
@@ -447,6 +583,7 @@
                 const dayStr = String(i).padStart(2, '0');
                 const dateStr = `${currentYear}-${monthStr}-${dayStr}`;
                 const isToday = (dateStr === todayStr);
+                const isPayday = (i === payday);
 
                 const dayTxs = txs.filter(t => t.date === dateStr);
                 let dayIncome = 0;
@@ -457,9 +594,11 @@
                 });
 
                 const cell = document.createElement('div');
-                cell.className = `aspect-[1/1.1] p-1 flex flex-col justify-between items-center rounded-xl border transition cursor-pointer ${
+                cell.className = `aspect-[1/1.1] p-1 flex flex-col justify-between items-center rounded-xl border transition cursor-pointer relative ${
                     isToday 
                         ? 'bg-indigo-500/20 border-indigo-500 shadow-sm shadow-indigo-500/20' 
+                        : isPayday
+                        ? 'bg-amber-500/10 border-amber-500/50'
                         : 'bg-slate-700/30 border-slate-700/50 hover:border-indigo-500/50 hover:bg-indigo-500/10'
                 }`;
 
@@ -473,8 +612,8 @@
 
                 cell.innerHTML = `
                     <div class="w-full flex justify-between items-center px-0.5">
-                        <span class="text-xs font-medium ${isToday ? 'text-indigo-300 font-bold' : 'text-slate-300'}">${i}</span>
-                        ${isToday ? '<span class="text-[8px] bg-indigo-600 text-white px-1 rounded-full font-bold">今日</span>' : ''}
+                        <span class="text-xs font-medium ${isToday ? 'text-indigo-300 font-bold' : isPayday ? 'text-amber-300 font-bold' : 'text-slate-300'}">${i}</span>
+                        ${isPayday ? '<span class="text-[7px] bg-amber-500 text-slate-950 px-1 rounded font-extrabold">給料日</span>' : isToday ? '<span class="text-[7px] bg-indigo-600 text-white px-1 rounded-full font-bold">今日</span>' : ''}
                     </div>
                     <div class="w-full flex flex-col items-center gap-0.5 pb-0.5">
                         ${badgesHtml}
@@ -499,7 +638,7 @@
             renderSummary();
         }
 
-        // --- 追加モーダル操作 ---
+        // --- 追加・明細モーダル操作 ---
         function openAddModal(dateStr = '') {
             closeDayDetailModal();
             if (!dateStr) {
@@ -541,7 +680,6 @@
 
             const activeTag = tags.find(t => t.id === selectedTagId);
             const tagName = activeTag ? activeTag.name : '未分類';
-
             const targetTab = currentTabId === 'all' ? (tabs[1] ? tabs[1].id : tabs[0].id) : currentTabId;
 
             const newTx = {
@@ -562,7 +700,6 @@
             initApp();
         }
 
-        // --- 明細確認モーダル操作 ---
         function openDayDetail(dateStr, dayNum) {
             selectedDateForModal = dateStr;
             const [y, m, d] = dateStr.split('-');
@@ -590,9 +727,11 @@
                             <span class="font-bold ${isInc ? 'text-emerald-400' : 'text-rose-400'}">
                                 ${isInc ? '+' : '-'}¥${t.amount.toLocaleString()}
                             </span>
-                            <button onclick="deleteTransaction('${t.id}')" class="text-slate-500 hover:text-rose-400 p-1">
-                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                            </button>
+                            ${!t.isSalaryAuto ? `
+                                <button onclick="deleteTransaction('${t.id}')" class="text-slate-500 hover:text-rose-400 p-1">
+                                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                </button>
+                            ` : '<span class="text-[10px] text-indigo-400">自動</span>'}
                         </div>
                     `;
                     listContainer.appendChild(item);
