@@ -9,7 +9,7 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-slate-900 text-slate-100 antialiased min-h-screen pb-10">
+<body class="bg-slate-900 text-slate-100 antialiased min-h-screen pb-12">
 
     <!-- ヘッダー -->
     <header class="bg-slate-800/80 backdrop-blur border-b border-slate-700/60 sticky top-0 z-20">
@@ -22,23 +22,17 @@
             </div>
             <div class="flex items-center space-x-2">
                 <span class="text-[10px] font-medium px-2 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full">
-                    ログイン中
+                    データ保存中
                 </span>
-                <button class="p-1.5 text-slate-400 hover:text-white hover:bg-slate-700/50 rounded-lg transition">
-                    <i data-lucide="settings" class="w-4 h-4"></i>
+                <button onclick="openAddTabModal()" class="p-1.5 text-slate-400 hover:text-white hover:bg-slate-700/50 rounded-lg transition" title="タブ追加">
+                    <i data-lucide="folder-plus" class="w-4 h-4"></i>
                 </button>
             </div>
         </div>
 
-        <!-- タブ切り替え（動的追加対応） -->
+        <!-- タブ切り替えバー -->
         <div class="max-w-xl mx-auto px-4 flex items-center space-x-1 overflow-x-auto no-scrollbar border-t border-slate-700/40 py-2">
-            <div id="tabs-container" class="flex space-x-1 flex-nowrap">
-                <!-- JavaScriptでタブを動的生成 -->
-            </div>
-            <button onclick="openAddTabModal()" class="px-2.5 py-1 text-xs font-semibold rounded-md bg-slate-700 hover:bg-slate-600 text-indigo-300 transition whitespace-nowrap flex items-center space-x-1 shrink-0">
-                <i data-lucide="plus" class="w-3 h-3"></i>
-                <span>追加</span>
-            </button>
+            <div id="tabs-container" class="flex space-x-1 flex-nowrap"></div>
         </div>
     </header>
 
@@ -49,14 +43,14 @@
         <div class="bg-gradient-to-br from-slate-800 to-slate-800/90 rounded-2xl p-4 border border-slate-700/60 shadow-lg">
             <div class="flex justify-between items-start">
                 <div>
-                    <span id="current-tab-label" class="text-[11px] font-medium text-indigo-400">総収支</span>
-                    <div id="total-balance-display" class="text-2xl sm:text-3xl font-extrabold tracking-tight mt-0.5 text-white">
+                    <span id="current-tab-label" class="text-[11px] font-medium text-indigo-400">総合の総収支</span>
+                    <div id="total-balance" class="text-2xl sm:text-3xl font-extrabold tracking-tight mt-0.5 text-white">
                         ¥0
                     </div>
                 </div>
-                <button onclick="alert('収支の追加フォームを開きます')" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-3 py-1.5 rounded-xl shadow transition flex items-center space-x-1">
+                <button onclick="openAddModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-3 py-1.5 rounded-xl shadow transition flex items-center space-x-1">
                     <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-                    <span>追加</span>
+                    <span>収支追加</span>
                 </button>
             </div>
             
@@ -67,7 +61,7 @@
                     </div>
                     <div>
                         <p class="text-slate-400">今月収入</p>
-                        <p id="monthly-income-display" class="font-bold text-slate-200">¥0</p>
+                        <p id="monthly-income" class="font-bold text-slate-200">¥0</p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-2">
@@ -76,7 +70,7 @@
                     </div>
                     <div>
                         <p class="text-slate-400">今月支出</p>
-                        <p id="monthly-expense-display" class="font-bold text-slate-200">¥0</p>
+                        <p id="monthly-expense" class="font-bold text-slate-200">¥0</p>
                     </div>
                 </div>
             </div>
@@ -89,14 +83,6 @@
                     <i data-lucide="calendar" class="w-4 h-4 text-indigo-400"></i>
                     <h2 id="calendar-title" class="text-sm font-bold text-white">2026年 10月</h2>
                 </div>
-                <div class="flex items-center space-x-1">
-                    <button class="p-1 hover:bg-slate-700 rounded-lg text-slate-400 hover:text-white transition">
-                        <i data-lucide="chevron-left" class="w-4 h-4"></i>
-                    </button>
-                    <button class="p-1 hover:bg-slate-700 rounded-lg text-slate-400 hover:text-white transition">
-                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
-                    </button>
-                </div>
             </div>
 
             <!-- 曜日 -->
@@ -104,36 +90,104 @@
                 <span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span>
             </div>
             
-            <!-- カレンダー日付グリッド（今日を強調表示） -->
-            <div id="calendar-grid" class="grid grid-cols-7 gap-1">
-                <!-- JavaScriptでカレンダーを動的生成 -->
-            </div>
+            <!-- カレンダー日付グリッド -->
+            <div id="calendar-grid" class="grid grid-cols-7 gap-1"></div>
         </div>
 
     </main>
 
-    <!-- タブ追加モーダル（非表示状態） -->
+    <!-- Modal 1: 収支追加モーダル -->
+    <div id="add-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center z-50 px-4">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 max-w-sm w-full shadow-2xl space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-sm font-bold text-white">収支を追加</h3>
+                <button onclick="closeAddModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+            </div>
+            
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="text-slate-400 block mb-1">種類</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button type="button" id="type-expense-btn" onclick="setTxType('expense')" class="py-2 rounded-xl font-semibold bg-rose-600 text-white transition">支出</button>
+                        <button type="button" id="type-income-btn" onclick="setTxType('income')" class="py-2 rounded-xl font-semibold bg-slate-700 text-slate-300 transition">収入</button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-slate-400 block mb-1">金額 (円)</label>
+                    <input type="number" id="tx-amount" placeholder="例: 1500" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-indigo-500">
+                </div>
+
+                <div>
+                    <label class="text-slate-400 block mb-1">日付</label>
+                    <input type="date" id="tx-date" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-indigo-500">
+                </div>
+
+                <div>
+                    <label class="text-slate-400 block mb-1">メモ・内容</label>
+                    <input type="text" id="tx-memo" placeholder="例: ランチ代、給与など" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-indigo-500">
+                </div>
+            </div>
+
+            <button onclick="saveTransaction()" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl text-xs transition shadow">追加する</button>
+        </div>
+    </div>
+
+    <!-- Modal 2: 日別明細確認モーダル -->
+    <div id="day-detail-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center z-50 px-4">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 max-w-sm w-full shadow-2xl space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 id="day-detail-title" class="text-sm font-bold text-white">日付の明細</h3>
+                <button onclick="closeDayDetailModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+            </div>
+            
+            <div id="day-detail-list" class="space-y-2 max-h-60 overflow-y-auto text-xs">
+                <!-- 明細リストがここに挿入されます -->
+            </div>
+
+            <button onclick="openAddModalFromDetail()" class="w-full py-2 bg-slate-700 hover:bg-slate-600 text-indigo-300 font-semibold rounded-xl text-xs transition">
+                + この日に明細を追加
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal 3: タブ追加モーダル -->
     <div id="add-tab-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center z-50 px-4">
         <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 max-w-sm w-full shadow-2xl space-y-4">
-            <h3 class="text-sm font-bold text-white">新しいタブ（用途）を追加</h3>
-            <input type="text" id="new-tab-name" placeholder="例: 副業、お小遣い、旅行など" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-            <div class="flex space-x-2 justify-end">
-                <button onclick="closeAddTabModal()" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-700 hover:bg-slate-600 text-slate-300 transition">キャンセル</button>
-                <button onclick="addNewTab()" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition">追加する</button>
+            <div class="flex justify-between items-center">
+                <h3 class="text-sm font-bold text-white">新しいタブを追加</h3>
+                <button onclick="closeAddTabModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
             </div>
+            <input type="text" id="new-tab-name" placeholder="例: 副業、お小遣い、旅行など" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+            <button onclick="addNewTab()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl text-xs transition">追加する</button>
         </div>
     </div>
 
     <!-- アプリケーション制御スクリプト -->
     <script>
-        // 初期データ（データはすべて空からスタート）
+        // --- 状態管理・初期データ ---
         let tabs = JSON.parse(localStorage.getItem('kakeibo_tabs')) || [
             { id: 'all', name: '総合' },
             { id: 'personal', name: 'プライベート' }
         ];
         let currentTabId = tabs[0].id;
+        let transactions = JSON.parse(localStorage.getItem('kakeibo_transactions')) || [];
+        let currentTxType = 'expense'; // 'expense' or 'income'
+        let selectedDateForModal = '';
 
-        // タブを描画する関数
+        // 初期日付の設定（2026年10月19日を基準）
+        const TARGET_YEAR = 2026;
+        const TARGET_MONTH = 10; // 10月
+
+        // --- 初期化実行 ---
+        function initApp() {
+            renderTabs();
+            renderSummary();
+            renderCalendar();
+            lucide.createIcons();
+        }
+
+        // --- タブ機能 ---
         function renderTabs() {
             const container = document.getElementById('tabs-container');
             container.innerHTML = '';
@@ -143,70 +197,105 @@
                 const btn = document.createElement('button');
                 btn.className = `px-3 py-1 text-xs font-semibold rounded-md transition whitespace-nowrap ${
                     isSelected 
-                        ? 'bg-indigo-600 text-white' 
+                        ? 'bg-indigo-600 text-white shadow' 
                         : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
                 }`;
                 btn.innerText = tab.name;
-                btn.onclick = () => switchTab(tab.id);
+                btn.onclick = () => {
+                    currentTabId = tab.id;
+                    renderTabs();
+                    renderSummary();
+                    renderCalendar();
+                };
                 container.appendChild(btn);
             });
 
-            // 現在のタブ名をラベルに反映
             const activeTab = tabs.find(t => t.id === currentTabId);
             if (activeTab) {
                 document.getElementById('current-tab-label').innerText = `${activeTab.name}の総収支`;
             }
-            lucide.createIcons();
         }
 
-        function switchTab(tabId) {
-            currentTabId = tabId;
-            renderTabs();
-        }
-
-        // タブ追加モーダル制御
         function openAddTabModal() {
             document.getElementById('add-tab-modal').classList.remove('hidden');
             document.getElementById('add-tab-modal').classList.add('flex');
         }
-
         function closeAddTabModal() {
             document.getElementById('add-tab-modal').classList.remove('flex');
             document.getElementById('add-tab-modal').classList.add('hidden');
             document.getElementById('new-tab-name').value = '';
         }
-
         function addNewTab() {
-            const nameInput = document.getElementById('new-tab-name');
-            const name = nameInput.value.trim();
+            const name = document.getElementById('new-tab-name').value.trim();
             if (!name) return;
-
             const newId = 'tab_' + Date.now();
             tabs.push({ id: newId, name: name });
             localStorage.setItem('kakeibo_tabs', JSON.stringify(tabs));
-            
             currentTabId = newId;
             closeAddTabModal();
-            renderTabs();
+            initApp();
         }
 
-        // カレンダー生成（今日の日付：2026年10月19日を反映）
+        // --- 収支計算・表示 ---
+        function getFilteredTransactions() {
+            if (currentTabId === 'all') {
+                return transactions;
+            }
+            return transactions.filter(t => t.tabId === currentTabId);
+        }
+
+        function renderSummary() {
+            const txs = getFilteredTransactions();
+            let totalIncome = 0;
+            let totalExpense = 0;
+
+            txs.forEach(t => {
+                if (t.type === 'income') totalIncome += t.amount;
+                else totalExpense += t.amount;
+            });
+
+            const netTotal = totalIncome - totalExpense;
+
+            document.getElementById('total-balance').innerText = `¥${netTotal.toLocaleString()}`;
+            document.getElementById('monthly-income').innerText = `¥${totalIncome.toLocaleString()}`;
+            document.getElementById('monthly-expense').innerText = `¥${totalExpense.toLocaleString()}`;
+        }
+
+        // --- カレンダー機能 ---
         function renderCalendar() {
             const grid = document.getElementById('calendar-grid');
             grid.innerHTML = '';
+            const txs = getFilteredTransactions();
 
-            // 2026年10月の仮定（今日の日付を19日としてハイライト）
-            const todayDate = 19; 
+            const todayDate = 19; // 2026年10月19日
 
             for (let i = 1; i <= 31; i++) {
                 const isToday = (i === todayDate);
-                const cell = document.createElement('div');
+                const dayStr = `2026-10-${String(i).padStart(2, '0')}`;
                 
+                // この日の収支を集計
+                const dayTxs = txs.filter(t => t.date === dayStr);
+                let dayIncome = 0;
+                let dayExpense = 0;
+                dayTxs.forEach(t => {
+                    if (t.type === 'income') dayIncome += t.amount;
+                    else dayExpense += t.amount;
+                });
+
+                const cell = document.createElement('div');
                 cell.className = `aspect-[1/1.1] p-1 flex flex-col justify-between items-center rounded-xl border transition cursor-pointer ${
                     isToday 
                         ? 'bg-indigo-500/20 border-indigo-500 shadow-sm shadow-indigo-500/20' 
                         : 'bg-slate-700/30 border-slate-700/50 hover:border-indigo-500/50 hover:bg-indigo-500/10'
                 }`;
+
+                let badgesHtml = '';
+                if (dayIncome > 0) {
+                    badgesHtml += `<span class="text-[8px] bg-emerald-500/20 text-emerald-300 px-1 rounded w-full text-center truncate">+¥${dayIncome.toLocaleString()}</span>`;
+                }
+                if (dayExpense > 0) {
+                    badgesHtml += `<span class="text-[8px] bg-rose-500/20 text-rose-300 px-1 rounded w-full text-center truncate">-¥${dayExpense.toLocaleString()}</span>`;
+                }
 
                 cell.innerHTML = `
                     <div class="w-full flex justify-between items-center px-0.5">
@@ -214,19 +303,125 @@
                         ${isToday ? '<span class="text-[8px] bg-indigo-600 text-white px-1 rounded-full font-bold">今日</span>' : ''}
                     </div>
                     <div class="w-full flex flex-col items-center gap-0.5 pb-0.5">
-                        <!-- データなしの状態 -->
+                        ${badgesHtml}
                     </div>
                 `;
 
-                cell.onclick = () => alert(`2026年10月${i}日の明細・詳細`);
+                cell.onclick = () => openDayDetail(dayStr, i);
                 grid.appendChild(cell);
             }
         }
 
-        // 初期化実行
-        renderTabs();
-        renderCalendar();
-        lucide.createIcons();
+        // --- 追加モーダル操作 ---
+        function openAddModal(dateStr = '2026-10-19') {
+            closeDayDetailModal();
+            document.getElementById('tx-date').value = dateStr;
+            document.getElementById('tx-amount').value = '';
+            document.getElementById('tx-memo').value = '';
+            setTxType('expense');
+            document.getElementById('add-modal').classList.remove('hidden');
+            document.getElementById('add-modal').classList.add('flex');
+        }
+        function closeAddModal() {
+            document.getElementById('add-modal').classList.remove('flex');
+            document.getElementById('add-modal').classList.add('hidden');
+        }
+        function setTxType(type) {
+            currentTxType = type;
+            const expBtn = document.getElementById('type-expense-btn');
+            const incBtn = document.getElementById('type-income-btn');
+            if (type === 'expense') {
+                expBtn.className = "py-2 rounded-xl font-semibold bg-rose-600 text-white transition";
+                incBtn.className = "py-2 rounded-xl font-semibold bg-slate-700 text-slate-300 transition";
+            } else {
+                expBtn.className = "py-2 rounded-xl font-semibold bg-slate-700 text-slate-300 transition";
+                incBtn.className = "py-2 rounded-xl font-semibold bg-emerald-600 text-white transition";
+            }
+        }
+        function saveTransaction() {
+            const amount = Number(document.getElementById('tx-amount').value);
+            const date = document.getElementById('tx-date').value;
+            const memo = document.getElementById('tx-memo').value.trim() || '未分類';
+
+            if (!amount || amount <= 0 || !date) {
+                alert('有効な金額と日付を入力してください。');
+                return;
+            }
+
+            // 現在選択中のタブに保存（総合タブが選ばれている場合はデフォルトタブに紐付けるか、総合専用にする。今回は現在のタブに紐付け）
+            const targetTab = currentTabId === 'all' ? (tabs[1] ? tabs[1].id : 'default') : currentTabId;
+
+            const newTx = {
+                id: 'tx_' + Date.now(),
+                tabId: targetTab,
+                type: currentTxType,
+                amount: amount,
+                date: date,
+                memo: memo
+            };
+
+            transactions.push(newTx);
+            localStorage.setItem('kakeibo_transactions', JSON.stringify(transactions));
+
+            closeAddModal();
+            initApp();
+        }
+
+        // --- 日別明細モーダル操作 ---
+        function openDayDetail(dateStr, dayNum) {
+            selectedDateForModal = dateStr;
+            document.getElementById('day-detail-title').innerText = `2026年10月${dayNum}日の明細`;
+            
+            const txs = getFilteredTransactions().filter(t => t.date === dateStr);
+            const listContainer = document.getElementById('day-detail-list');
+            listContainer.innerHTML = '';
+
+            if (txs.length === 0) {
+                listContainer.innerHTML = '<p class="text-slate-400 text-center py-4">この日の明細はありません</p>';
+            } else {
+                txs.forEach(t => {
+                    const item = document.createElement('div');
+                    item.className = "flex justify-between items-center bg-slate-900 p-2.5 rounded-xl border border-slate-700/60";
+                    const isInc = t.type === 'income';
+                    item.innerHTML = `
+                        <div>
+                            <p class="font-bold text-white">${t.memo}</p>
+                            <span class="text-[10px] text-slate-400">${isInc ? '収入' : '支出'}</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <span class="font-bold ${isInc ? 'text-emerald-400' : 'text-rose-400'}">
+                                ${isInc ? '+' : '-'}¥${t.amount.toLocaleString()}
+                            </span>
+                            <button onclick="deleteTransaction('${t.id}')" class="text-slate-500 hover:text-rose-400 p-1">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    `;
+                    listContainer.appendChild(item);
+                });
+            }
+
+            document.getElementById('day-detail-modal').classList.remove('hidden');
+            document.getElementById('day-detail-modal').classList.add('flex');
+            lucide.createIcons();
+        }
+        function closeDayDetailModal() {
+            document.getElementById('day-detail-modal').classList.remove('flex');
+            document.getElementById('day-detail-modal').classList.add('hidden');
+        }
+        function openAddModalFromDetail() {
+            openAddModal(selectedDateForModal);
+        }
+        function deleteTransaction(id) {
+            if (!confirm('この明細を削除しますか？')) return;
+            transactions = transactions.filter(t => t.id !== id);
+            localStorage.setItem('kakeibo_transactions', JSON.stringify(transactions));
+            closeDayDetailModal();
+            initApp();
+        }
+
+        // 起動時実行
+        initApp();
     </script>
 </body>
 </html>
