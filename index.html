@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>My Kakeibo</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -97,10 +97,10 @@
                     <h2 id="calendar-title" class="text-sm font-extrabold"></h2>
                 </div>
                 <div class="flex items-center space-x-1">
-                    <button onclick="changeMonth(-1)" class="nav-btn p-1.5 rounded-xl transition">
+                    <button onclick="changeMonth(-1)" class="p-1.5 rounded-xl border border-transparent hover:border-slate-200 transition">
                         <i data-lucide="chevron-left" class="w-4 h-4"></i>
                     </button>
-                    <button onclick="changeMonth(1)" class="nav-btn p-1.5 rounded-xl transition">
+                    <button onclick="changeMonth(1)" class="p-1.5 rounded-xl border border-transparent hover:border-slate-200 transition">
                         <i data-lucide="chevron-right" class="w-4 h-4"></i>
                     </button>
                 </div>
@@ -116,12 +116,10 @@
     </main>
 
     <!-- Modal 1: 収支入力モーダル -->
-    <div id="add-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center z-50 px-4">
-        <div id="add-modal-content" class="rounded-3xl p-5 max-w-sm w-full shadow-2xl space-y-4 border">
+    <div id="add-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div id="add-modal-content" class="rounded-3xl p-5 max-w-sm w-full shadow-2xl space-y-4 border max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center">
-                <h3 class="text-sm font-extrabold flex items-center gap-1">
-                    <span>収支を入力</span>
-                </h3>
+                <h3 class="text-sm font-extrabold">収支を入力</h3>
                 <button onclick="closeAddModal()" class="text-slate-400 hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             
@@ -160,8 +158,8 @@
     </div>
 
     <!-- Modal 2: 日別明細確認モーダル -->
-    <div id="day-detail-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center z-50 px-4">
-        <div id="day-detail-modal-content" class="rounded-3xl p-5 max-w-sm w-full shadow-2xl space-y-4 border">
+    <div id="day-detail-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div id="day-detail-modal-content" class="rounded-3xl p-5 max-w-sm w-full shadow-2xl space-y-4 border max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center">
                 <h3 id="day-detail-title" class="text-sm font-extrabold">日付の明細</h3>
                 <button onclick="closeDayDetailModal()" class="text-slate-400 hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -176,7 +174,7 @@
     </div>
 
     <!-- Modal 3: タブ追加モーダル -->
-    <div id="add-tab-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center z-50 px-4">
+    <div id="add-tab-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div id="add-tab-modal-content" class="rounded-3xl p-5 max-w-sm w-full shadow-2xl space-y-4 border">
             <div class="flex justify-between items-center">
                 <h3 class="text-sm font-extrabold">新しいタブを追加</h3>
@@ -187,69 +185,73 @@
         </div>
     </div>
 
-    <!-- Modal 4: 設定モーダル (テーマ・給料日・タグ) -->
-    <div id="settings-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center z-50 px-4">
-        <div id="settings-modal-content" class="rounded-3xl p-5 max-w-sm w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto border">
-            <div class="flex justify-between items-center border-b pb-2">
+    <!-- Modal 4: 設定モーダル (画面見切れ・スクロール問題修正) -->
+    <div id="settings-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div id="settings-modal-content" class="rounded-3xl p-5 max-w-sm w-full shadow-2xl space-y-4 border max-h-[85vh] flex flex-col">
+            <!-- モーダル固定ヘッダー -->
+            <div class="flex justify-between items-center border-b pb-3 shrink-0">
                 <h3 class="text-sm font-extrabold">設定 ⚙️</h3>
                 <button onclick="closeSettingsModal()" class="text-slate-400 hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             
-            <!-- 1. デザインテーマ選択 -->
-            <div class="space-y-2 text-xs p-3.5 rounded-2xl border bg-opacity-30">
-                <h4 class="font-extrabold flex items-center space-x-1">
-                    <i data-lucide="palette" class="w-4 h-4"></i>
-                    <span>デザインテーマ</span>
-                </h4>
-                <div class="grid grid-cols-3 gap-2 pt-1">
-                    <button onclick="setTheme('cute')" id="theme-cute-btn" class="py-2 px-2 rounded-xl font-bold border text-center transition text-[11px]">かわいい系</button>
-                    <button onclick="setTheme('simple')" id="theme-simple-btn" class="py-2 px-2 rounded-xl font-bold border text-center transition text-[11px]">シンプル</button>
-                    <button onclick="setTheme('classic')" id="theme-classic-btn" class="py-2 px-2 rounded-xl font-bold border text-center transition text-[11px]">クラシック</button>
-                </div>
-            </div>
-
-            <!-- 2. 給料日設定 -->
-            <div class="space-y-3 text-xs p-3.5 rounded-2xl border bg-opacity-30">
-                <h4 class="font-extrabold flex items-center space-x-1">
-                    <i data-lucide="coins" class="w-4 h-4"></i>
-                    <span>給料日の設定</span>
-                </h4>
-
-                <div>
-                    <label class="text-slate-400 font-bold block mb-1">給料日の指定</label>
-                    <select id="salary-day-select" class="w-full border rounded-xl px-3 py-1.5 font-bold focus:outline-none">
-                        <option value="0">未設定</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="text-slate-400 font-bold block mb-1">土日祝日の場合</label>
-                    <select id="salary-holiday-rule" class="w-full border rounded-xl px-3 py-1.5 font-bold focus:outline-none">
-                        <option value="prev">前日（前営業日）にずらす</option>
-                        <option value="next">翌日（翌営業日）にずらす</option>
-                        <option value="none">そのまま（変更なし）</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="text-slate-400 font-bold block mb-1">金額設定 (任意)</label>
-                    <input type="number" id="salary-amount" placeholder="未入力の場合は当日手入力" class="w-full border rounded-xl px-3 py-1.5 font-bold focus:outline-none">
-                </div>
-
-                <button onclick="saveSalarySettings()" id="save-salary-btn" class="w-full py-2 text-white font-bold rounded-xl transition">給料日設定を保存</button>
-            </div>
-
-            <!-- 3. タグ設定（初期は空） -->
-            <div class="space-y-3 text-xs border-t pt-3">
-                <h4 class="font-extrabold">タグの編集・追加 🏷️</h4>
-                <div>
-                    <div class="flex space-x-2">
-                        <input type="text" id="new-tag-name" placeholder="例: 食費、カフェ、美容など" class="flex-1 border rounded-xl px-3 py-1.5 focus:outline-none">
-                        <button onclick="addNewTag()" id="add-tag-btn" class="px-3 py-1.5 text-white font-bold rounded-xl transition whitespace-nowrap">追加</button>
+            <!-- スクロール可能なボディ部分 -->
+            <div class="space-y-4 overflow-y-auto pr-1 flex-1">
+                <!-- 1. デザインテーマ選択 -->
+                <div class="space-y-2 text-xs p-3.5 rounded-2xl border bg-slate-50/50">
+                    <h4 class="font-extrabold flex items-center space-x-1">
+                        <i data-lucide="palette" class="w-4 h-4"></i>
+                        <span>デザインテーマ</span>
+                    </h4>
+                    <div class="grid grid-cols-3 gap-1.5 pt-1">
+                        <button onclick="setTheme('cute')" id="theme-cute-btn" class="py-2 px-1 rounded-xl font-bold border text-center transition text-[11px]">かわいい系</button>
+                        <button onclick="setTheme('simple')" id="theme-simple-btn" class="py-2 px-1 rounded-xl font-bold border text-center transition text-[11px]">シンプル</button>
+                        <button onclick="setTheme('classic')" id="theme-classic-btn" class="py-2 px-1 rounded-xl font-bold border text-center transition text-[11px]">クラシック</button>
                     </div>
                 </div>
 
-                <div id="settings-tag-list" class="space-y-1.5 max-h-40 overflow-y-auto p-1 border rounded-2xl"></div>
+                <!-- 2. 給料日設定 -->
+                <div class="space-y-3 text-xs p-3.5 rounded-2xl border bg-slate-50/50">
+                    <h4 class="font-extrabold flex items-center space-x-1">
+                        <i data-lucide="coins" class="w-4 h-4"></i>
+                        <span>給料日の設定</span>
+                    </h4>
+
+                    <div>
+                        <label class="text-slate-400 font-bold block mb-1">給料日の指定</label>
+                        <select id="salary-day-select" class="w-full border rounded-xl px-3 py-1.5 font-bold focus:outline-none">
+                            <option value="0">未設定</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-slate-400 font-bold block mb-1">土日祝日の場合</label>
+                        <select id="salary-holiday-rule" class="w-full border rounded-xl px-3 py-1.5 font-bold focus:outline-none">
+                            <option value="prev">前日（前営業日）にずらす</option>
+                            <option value="next">翌日（翌営業日）にずらす</option>
+                            <option value="none">そのまま（変更なし）</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-slate-400 font-bold block mb-1">金額設定 (任意)</label>
+                        <input type="number" id="salary-amount" placeholder="未入力の場合は当日手入力" class="w-full border rounded-xl px-3 py-1.5 font-bold focus:outline-none">
+                    </div>
+
+                    <button onclick="saveSalarySettings()" id="save-salary-btn" class="w-full py-2 text-white font-bold rounded-xl transition">給料日設定を保存</button>
+                </div>
+
+                <!-- 3. タグ設定 -->
+                <div class="space-y-3 text-xs border-t pt-3">
+                    <h4 class="font-extrabold">タグの編集・追加 🏷️</h4>
+                    <div>
+                        <div class="flex space-x-2">
+                            <input type="text" id="new-tag-name" placeholder="例: 食費、カフェなど" class="flex-1 border rounded-xl px-3 py-1.5 focus:outline-none">
+                            <button onclick="addNewTag()" id="add-tag-btn" class="px-3 py-1.5 text-white font-bold rounded-xl transition whitespace-nowrap">追加</button>
+                        </div>
+                    </div>
+
+                    <div id="settings-tag-list" class="space-y-1.5 max-h-36 overflow-y-auto p-1 border rounded-2xl"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -265,7 +267,6 @@
         ];
         let currentTabId = tabs[0].id;
 
-        // タグ初期データは完全に「空」
         let tags = JSON.parse(localStorage.getItem('kakeibo_tags')) || [];
         let selectedTagId = tags[0] ? tags[0].id : '';
 
@@ -306,7 +307,6 @@
             const body = document.getElementById('app-body');
             body.className = `antialiased min-h-screen pb-12 transition-colors duration-300 theme-${theme}`;
 
-            // テーマ定義
             if (theme === 'cute') {
                 body.classList.add('bg-pink-50/60', 'text-slate-700');
                 document.getElementById('app-header').className = "bg-white/80 backdrop-blur border-b border-pink-100 sticky top-0 z-20 shadow-sm";
@@ -325,9 +325,8 @@
                 document.getElementById('calendar-card').className = "bg-white rounded-3xl p-4 border border-pink-100 shadow-sm shadow-pink-100 transition-all duration-300";
                 document.getElementById('calendar-icon-bg').className = "p-1.5 bg-pink-100 text-rose-400 rounded-xl";
 
-                // モーダル類
                 document.querySelectorAll('#add-modal-content, #day-detail-modal-content, #add-tab-modal-content, #settings-modal-content').forEach(el => {
-                    el.className = "bg-white border border-pink-100 rounded-3xl p-5 max-w-sm w-full shadow-2xl space-y-4";
+                    el.className = "bg-white border border-pink-100 rounded-3xl p-5 max-w-sm w-full shadow-2xl space-y-4 max-h-[85vh] flex flex-col";
                 });
                 document.getElementById('save-tx-btn').className = "w-full py-3 bg-gradient-to-r from-rose-400 to-pink-400 hover:from-rose-500 hover:to-pink-500 text-white font-extrabold rounded-2xl text-xs transition shadow-md";
                 document.getElementById('detail-add-btn').className = "w-full py-2.5 bg-pink-100 hover:bg-pink-200 text-rose-500 font-bold rounded-2xl text-xs transition";
@@ -354,7 +353,7 @@
                 document.getElementById('calendar-icon-bg').className = "p-1.5 bg-slate-100 text-slate-700 rounded-lg";
 
                 document.querySelectorAll('#add-modal-content, #day-detail-modal-content, #add-tab-modal-content, #settings-modal-content').forEach(el => {
-                    el.className = "bg-white border border-slate-200 rounded-2xl p-5 max-w-sm w-full shadow-xl space-y-4";
+                    el.className = "bg-white border border-slate-200 rounded-2xl p-5 max-w-sm w-full shadow-xl space-y-4 max-h-[85vh] flex flex-col";
                 });
                 document.getElementById('save-tx-btn').className = "w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition shadow";
                 document.getElementById('detail-add-btn').className = "w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl text-xs transition";
@@ -381,7 +380,7 @@
                 document.getElementById('calendar-icon-bg').className = "p-1.5 bg-[#e8dccb] text-[#5c4433] rounded-lg";
 
                 document.querySelectorAll('#add-modal-content, #day-detail-modal-content, #add-tab-modal-content, #settings-modal-content').forEach(el => {
-                    el.className = "bg-[#fcfaf7] border border-[#d8ccbc] rounded-2xl p-5 max-w-sm w-full shadow-xl space-y-4";
+                    el.className = "bg-[#fcfaf7] border border-[#d8ccbc] rounded-2xl p-5 max-w-sm w-full shadow-xl space-y-4 max-h-[85vh] flex flex-col";
                 });
                 document.getElementById('save-tx-btn').className = "w-full py-2.5 bg-[#6b4e3d] hover:bg-[#583f30] text-amber-50 font-bold rounded-xl text-xs transition shadow";
                 document.getElementById('detail-add-btn').className = "w-full py-2.5 bg-[#e8dccb] hover:bg-[#dfcfba] text-[#4a3b32] font-bold rounded-xl text-xs transition";
@@ -390,13 +389,12 @@
                 document.getElementById('add-tag-btn').className = "px-3 py-1.5 bg-[#6b4e3d] hover:bg-[#583f30] text-amber-50 font-bold rounded-xl transition whitespace-nowrap";
             }
 
-            // テーマボタン選択状態
             ['cute', 'simple', 'classic'].forEach(t => {
                 const btn = document.getElementById(`theme-${t}-btn`);
                 if (t === theme) {
-                    btn.className = "py-2 px-2 rounded-xl font-bold border text-center transition text-[11px] bg-slate-800 text-white border-slate-800 shadow-sm";
+                    btn.className = "py-2 px-1 rounded-xl font-bold border text-center transition text-[11px] bg-slate-800 text-white border-slate-800 shadow-sm";
                 } else {
-                    btn.className = "py-2 px-2 rounded-xl font-bold border text-center transition text-[11px] bg-white text-slate-600 border-slate-200 hover:bg-slate-50";
+                    btn.className = "py-2 px-1 rounded-xl font-bold border text-center transition text-[11px] bg-white text-slate-600 border-slate-200 hover:bg-slate-50";
                 }
             });
             lucide.createIcons();
@@ -627,7 +625,7 @@
             });
         }
 
-        // --- 収支計算 ---
+        // --- 収支計算 (データ安全保持) ---
         function getFilteredTransactions() {
             let list = [];
 
@@ -683,7 +681,7 @@
             document.getElementById('monthly-expense').innerText = `¥${monthlyExpense.toLocaleString()}`;
         }
 
-        // --- カレンダー機能（日ごとの収支合計値を一目で表示） ---
+        // --- カレンダー機能（日ごとの差引収支を視覚化） ---
         function renderCalendar() {
             document.getElementById('calendar-title').innerText = `${currentYear}年 ${currentMonth}月`;
             const grid = document.getElementById('calendar-grid');
@@ -698,7 +696,7 @@
 
             for (let i = 0; i < firstDayIndex; i++) {
                 const emptyCell = document.createElement('div');
-                emptyCell.className = "aspect-[1/1.1] p-1 rounded-2xl opacity-20 border border-transparent";
+                emptyCell.className = "min-h-[50px] p-1 rounded-2xl opacity-20 border border-transparent";
                 grid.appendChild(emptyCell);
             }
 
@@ -709,7 +707,6 @@
                 const isToday = (dateStr === todayStr);
                 const isPayday = (i === payday);
 
-                // この日の全収支を計算して差引合計（ネッティング）を算出
                 const dayTxs = txs.filter(t => t.date === dateStr);
                 let dayNetTotal = 0;
                 let hasTransaction = dayTxs.length > 0;
@@ -720,7 +717,7 @@
                 });
 
                 const cell = document.createElement('div');
-                cell.className = `aspect-[1/1.1] p-1 flex flex-col justify-between items-center rounded-2xl border transition cursor-pointer relative ${
+                cell.className = `min-h-[52px] p-1 flex flex-col justify-between items-center rounded-2xl border transition cursor-pointer relative ${
                     isToday 
                         ? 'border-indigo-500 bg-indigo-50/50 shadow-sm' 
                         : isPayday
@@ -728,15 +725,14 @@
                         : 'border-slate-100 hover:border-indigo-300 hover:bg-slate-50/50'
                 }`;
 
-                // 日ごとの合計値バッジ（プラスなら緑、マイナスなら赤）
                 let badgeHtml = '';
                 if (hasTransaction) {
                     if (dayNetTotal > 0) {
-                        badgeHtml = `<span class="text-[8px] bg-emerald-100 text-emerald-700 font-extrabold px-1 rounded-md w-full text-center truncate">+¥${dayNetTotal.toLocaleString()}</span>`;
+                        badgeHtml = `<span class="text-[9px] bg-emerald-100 text-emerald-700 font-extrabold px-1 rounded-md w-full text-center truncate block">+¥${dayNetTotal.toLocaleString()}</span>`;
                     } else if (dayNetTotal < 0) {
-                        badgeHtml = `<span class="text-[8px] bg-rose-100 text-rose-600 font-extrabold px-1 rounded-md w-full text-center truncate">-¥${Math.abs(dayNetTotal).toLocaleString()}</span>`;
+                        badgeHtml = `<span class="text-[9px] bg-rose-100 text-rose-600 font-extrabold px-1 rounded-md w-full text-center truncate block">-¥${Math.abs(dayNetTotal).toLocaleString()}</span>`;
                     } else {
-                        badgeHtml = `<span class="text-[8px] bg-slate-100 text-slate-600 font-bold px-1 rounded-md w-full text-center truncate">¥0</span>`;
+                        badgeHtml = `<span class="text-[9px] bg-slate-100 text-slate-600 font-bold px-1 rounded-md w-full text-center truncate block">¥0</span>`;
                     }
                 }
 
@@ -745,7 +741,7 @@
                         <span class="text-xs font-bold ${isToday ? 'text-indigo-600' : isPayday ? 'text-amber-600' : 'text-slate-600'}">${i}</span>
                         ${isPayday ? '<span class="text-[7px] bg-amber-400 text-white px-1 rounded-full font-bold">給料日</span>' : isToday ? '<span class="text-[7px] bg-indigo-500 text-white px-1 rounded-full font-bold">今日</span>' : ''}
                     </div>
-                    <div class="w-full flex flex-col items-center gap-0.5 pb-0.5">
+                    <div class="w-full pb-0.5">
                         ${badgeHtml}
                     </div>
                 `;
