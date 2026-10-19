@@ -11,7 +11,7 @@
 </head>
 <body class="bg-slate-900 text-slate-100 antialiased min-h-screen pb-10">
 
-    <!-- ヘッダー (コンパクト) -->
+    <!-- ヘッダー -->
     <header class="bg-slate-800/80 backdrop-blur border-b border-slate-700/60 sticky top-0 z-20">
         <div class="max-w-xl mx-auto px-4 py-3 flex items-center justify-between">
             <div class="flex items-center space-x-2">
@@ -30,19 +30,14 @@
             </div>
         </div>
 
-        <!-- タブ切り替え（収支の種類ごと） -->
-        <div class="max-w-xl mx-auto px-4 flex space-x-1 overflow-x-auto no-scrollbar border-t border-slate-700/40 py-2">
-            <button onclick="switchTab('all')" id="tab-all" class="tab-btn px-3 py-1 text-xs font-semibold rounded-md bg-indigo-600 text-white transition whitespace-nowrap">
-                全体・総合
-            </button>
-            <button onclick="switchTab('personal')" id="tab-personal" class="tab-btn px-3 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white hover:bg-slate-700/50 transition whitespace-nowrap">
-                プライベート
-            </button>
-            <button onclick="switchTab('business')" id="tab-business" class="tab-btn px-3 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white hover:bg-slate-700/50 transition whitespace-nowrap">
-                ビジネス・副業
-            </button>
-            <button onclick="switchTab('family')" id="tab-family" class="tab-btn px-3 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white hover:bg-slate-700/50 transition whitespace-nowrap">
-                家計・共有
+        <!-- タブ切り替え（動的追加対応） -->
+        <div class="max-w-xl mx-auto px-4 flex items-center space-x-1 overflow-x-auto no-scrollbar border-t border-slate-700/40 py-2">
+            <div id="tabs-container" class="flex space-x-1 flex-nowrap">
+                <!-- JavaScriptでタブを動的生成 -->
+            </div>
+            <button onclick="openAddTabModal()" class="px-2.5 py-1 text-xs font-semibold rounded-md bg-slate-700 hover:bg-slate-600 text-indigo-300 transition whitespace-nowrap flex items-center space-x-1 shrink-0">
+                <i data-lucide="plus" class="w-3 h-3"></i>
+                <span>追加</span>
             </button>
         </div>
     </header>
@@ -50,16 +45,16 @@
     <!-- メインコンテンツ -->
     <main class="max-w-xl mx-auto px-4 mt-4 space-y-4">
 
-        <!-- 1. 収支表示カード (コンパクト & スマート) -->
+        <!-- 1. 収支表示カード -->
         <div class="bg-gradient-to-br from-slate-800 to-slate-800/90 rounded-2xl p-4 border border-slate-700/60 shadow-lg">
             <div class="flex justify-between items-start">
                 <div>
-                    <span id="current-tab-label" class="text-[11px] font-medium text-indigo-400">全体・総合の総収支</span>
-                    <div class="text-2xl sm:text-3xl font-extrabold tracking-tight mt-0.5 text-white">
-                        ¥245,800
+                    <span id="current-tab-label" class="text-[11px] font-medium text-indigo-400">総収支</span>
+                    <div id="total-balance-display" class="text-2xl sm:text-3xl font-extrabold tracking-tight mt-0.5 text-white">
+                        ¥0
                     </div>
                 </div>
-                <button class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-3 py-1.5 rounded-xl shadow transition flex items-center space-x-1">
+                <button onclick="alert('収支の追加フォームを開きます')" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-3 py-1.5 rounded-xl shadow transition flex items-center space-x-1">
                     <i data-lucide="plus" class="w-3.5 h-3.5"></i>
                     <span>追加</span>
                 </button>
@@ -72,7 +67,7 @@
                     </div>
                     <div>
                         <p class="text-slate-400">今月収入</p>
-                        <p class="font-bold text-slate-200">¥320,000</p>
+                        <p id="monthly-income-display" class="font-bold text-slate-200">¥0</p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-2">
@@ -81,19 +76,18 @@
                     </div>
                     <div>
                         <p class="text-slate-400">今月支出</p>
-                        <p class="font-bold text-slate-200">¥74,200</p>
+                        <p id="monthly-expense-display" class="font-bold text-slate-200">¥0</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 2. カレンダーセクション (主役として大きく配置) -->
+        <!-- 2. カレンダーセクション -->
         <div class="bg-slate-800 rounded-2xl p-4 border border-slate-700/60 shadow-sm">
-            <!-- カレンダーヘッダー -->
             <div class="flex items-center justify-between mb-3">
                 <div class="flex items-center space-x-2">
                     <i data-lucide="calendar" class="w-4 h-4 text-indigo-400"></i>
-                    <h2 class="text-sm font-bold text-white">2026年 10月</h2>
+                    <h2 id="calendar-title" class="text-sm font-bold text-white">2026年 10月</h2>
                 </div>
                 <div class="flex items-center space-x-1">
                     <button class="p-1 hover:bg-slate-700 rounded-lg text-slate-400 hover:text-white transition">
@@ -110,50 +104,129 @@
                 <span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span>
             </div>
             
-            <!-- 日付グリッド（タッチ可能・詳細確認の土台） -->
-            <div class="grid grid-cols-7 gap-1">
-                <script>
-                    for (let i = 1; i <= 31; i++) {
-                        let indicator = '';
-                        if (i % 3 === 0) indicator = '<span class="text-[8px] bg-rose-500/20 text-rose-300 px-1 rounded w-full text-center truncate">-¥1.2万</span>';
-                        if (i === 25) indicator = '<span class="text-[8px] bg-emerald-500/20 text-emerald-300 px-1 rounded w-full text-center truncate">+¥32万</span>';
-                        
-                        document.write(`
-                            <div onclick="alert('${i}日の明細・詳細を表示します')" class="aspect-[1/1.1] p-1 flex flex-col justify-between items-center rounded-xl bg-slate-700/30 border border-slate-700/50 hover:border-indigo-500 hover:bg-indigo-500/10 cursor-pointer transition">
-                                <span class="text-xs text-slate-300 font-medium">${i}</span>
-                                <div class="w-full flex flex-col items-center gap-0.5 pb-0.5">
-                                    ${indicator}
-                                </div>
-                            </div>
-                        `);
-                    }
-                </script>
+            <!-- カレンダー日付グリッド（今日を強調表示） -->
+            <div id="calendar-grid" class="grid grid-cols-7 gap-1">
+                <!-- JavaScriptでカレンダーを動的生成 -->
             </div>
         </div>
 
     </main>
 
-    <!-- スクリプト：タブ切り替えの簡易動作など -->
+    <!-- タブ追加モーダル（非表示状態） -->
+    <div id="add-tab-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center z-50 px-4">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 max-w-sm w-full shadow-2xl space-y-4">
+            <h3 class="text-sm font-bold text-white">新しいタブ（用途）を追加</h3>
+            <input type="text" id="new-tab-name" placeholder="例: 副業、お小遣い、旅行など" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+            <div class="flex space-x-2 justify-end">
+                <button onclick="closeAddTabModal()" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-700 hover:bg-slate-600 text-slate-300 transition">キャンセル</button>
+                <button onclick="addNewTab()" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition">追加する</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- アプリケーション制御スクリプト -->
     <script>
-        lucide.createIcons();
+        // 初期データ（データはすべて空からスタート）
+        let tabs = JSON.parse(localStorage.getItem('kakeibo_tabs')) || [
+            { id: 'all', name: '総合' },
+            { id: 'personal', name: 'プライベート' }
+        ];
+        let currentTabId = tabs[0].id;
+
+        // タブを描画する関数
+        function renderTabs() {
+            const container = document.getElementById('tabs-container');
+            container.innerHTML = '';
+            
+            tabs.forEach(tab => {
+                const isSelected = tab.id === currentTabId;
+                const btn = document.createElement('button');
+                btn.className = `px-3 py-1 text-xs font-semibold rounded-md transition whitespace-nowrap ${
+                    isSelected 
+                        ? 'bg-indigo-600 text-white' 
+                        : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                }`;
+                btn.innerText = tab.name;
+                btn.onclick = () => switchTab(tab.id);
+                container.appendChild(btn);
+            });
+
+            // 現在のタブ名をラベルに反映
+            const activeTab = tabs.find(t => t.id === currentTabId);
+            if (activeTab) {
+                document.getElementById('current-tab-label').innerText = `${activeTab.name}の総収支`;
+            }
+            lucide.createIcons();
+        }
 
         function switchTab(tabId) {
-            // タブの見た目切り替え
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.className = "tab-btn px-3 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white hover:bg-slate-700/50 transition whitespace-nowrap";
-            });
-            const activeBtn = document.getElementById('tab-' + tabId);
-            activeBtn.className = "tab-btn px-3 py-1 text-xs font-semibold rounded-md bg-indigo-600 text-white transition whitespace-nowrap";
-
-            // ラベル変更
-            const labels = {
-                'all': '全体・総合の総収支',
-                'personal': 'プライベートの総収支',
-                'business': 'ビジネス・副業の総収支',
-                'family': '家計・共有の総収支'
-            };
-            document.getElementById('current-tab-label').innerText = labels[tabId];
+            currentTabId = tabId;
+            renderTabs();
         }
+
+        // タブ追加モーダル制御
+        function openAddTabModal() {
+            document.getElementById('add-tab-modal').classList.remove('hidden');
+            document.getElementById('add-tab-modal').classList.add('flex');
+        }
+
+        function closeAddTabModal() {
+            document.getElementById('add-tab-modal').classList.remove('flex');
+            document.getElementById('add-tab-modal').classList.add('hidden');
+            document.getElementById('new-tab-name').value = '';
+        }
+
+        function addNewTab() {
+            const nameInput = document.getElementById('new-tab-name');
+            const name = nameInput.value.trim();
+            if (!name) return;
+
+            const newId = 'tab_' + Date.now();
+            tabs.push({ id: newId, name: name });
+            localStorage.setItem('kakeibo_tabs', JSON.stringify(tabs));
+            
+            currentTabId = newId;
+            closeAddTabModal();
+            renderTabs();
+        }
+
+        // カレンダー生成（今日の日付：2026年10月19日を反映）
+        function renderCalendar() {
+            const grid = document.getElementById('calendar-grid');
+            grid.innerHTML = '';
+
+            // 2026年10月の仮定（今日の日付を19日としてハイライト）
+            const todayDate = 19; 
+
+            for (let i = 1; i <= 31; i++) {
+                const isToday = (i === todayDate);
+                const cell = document.createElement('div');
+                
+                cell.className = `aspect-[1/1.1] p-1 flex flex-col justify-between items-center rounded-xl border transition cursor-pointer ${
+                    isToday 
+                        ? 'bg-indigo-500/20 border-indigo-500 shadow-sm shadow-indigo-500/20' 
+                        : 'bg-slate-700/30 border-slate-700/50 hover:border-indigo-500/50 hover:bg-indigo-500/10'
+                }`;
+
+                cell.innerHTML = `
+                    <div class="w-full flex justify-between items-center px-0.5">
+                        <span class="text-xs font-medium ${isToday ? 'text-indigo-300 font-bold' : 'text-slate-300'}">${i}</span>
+                        ${isToday ? '<span class="text-[8px] bg-indigo-600 text-white px-1 rounded-full font-bold">今日</span>' : ''}
+                    </div>
+                    <div class="w-full flex flex-col items-center gap-0.5 pb-0.5">
+                        <!-- データなしの状態 -->
+                    </div>
+                `;
+
+                cell.onclick = () => alert(`2026年10月${i}日の明細・詳細`);
+                grid.appendChild(cell);
+            }
+        }
+
+        // 初期化実行
+        renderTabs();
+        renderCalendar();
+        lucide.createIcons();
     </script>
 </body>
 </html>
