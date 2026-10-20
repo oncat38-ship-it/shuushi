@@ -56,11 +56,11 @@
     <!-- メインコンテンツ -->
     <main class="max-w-xl mx-auto px-4 mt-3 space-y-3">
 
-        <!-- 1. 収支表示カード（タブ名非表示＆コンパクト化、総合は資金自動合算） -->
+        <!-- 1. 収支表示カード（目標設定・日割り機能追加） -->
         <div id="summary-card" class="rounded-2xl p-4 text-white shadow-lg relative overflow-hidden transition-all duration-300">
             <div class="flex justify-between items-start relative z-10 gap-2">
                 <div>
-                    <!-- 期間・資金設定バッジ（タブ名を省いてすっきり） -->
+                    <!-- 期間・資金設定バッジ -->
                     <div class="flex items-center space-x-1.5 flex-wrap gap-y-1">
                         <button onclick="openPeriodModal()" class="text-[10px] bg-white/20 hover:bg-white/30 backdrop-blur px-2.5 py-1 rounded-full text-white font-bold transition flex items-center gap-1">
                             <i data-lucide="sliders-horizontal" class="w-3 h-3"></i> <span id="period-badge-text">期間設定</span>
@@ -76,17 +76,51 @@
                             <span id="total-balance" class="text-2xl sm:text-3xl font-black tracking-tight text-white drop-shadow-sm">¥0</span>
                             <span id="balance-diff-badge" class="text-xs font-extrabold px-2 py-0.5 rounded-full bg-white/20 backdrop-blur hidden">±¥0</span>
                         </div>
-                        <p id="sub-balance-desc" class="text-[10px] opacity-80 font-bold mt-0.5">当月収支</p>
+                        <div class="flex items-center space-x-2 flex-wrap text-[10px] opacity-90 font-bold mt-0.5">
+                            <p id="sub-balance-desc">当月収支</p>
+                            <!-- 目標金額の表示 -->
+                            <span id="target-display-badge" class="bg-black/20 text-white px-2 py-0.5 rounded-md hidden">目標: ¥0</span>
+                        </div>
                     </div>
                 </div>
 
-                <button onclick="openAddModal()" id="add-tx-btn" class="text-xs font-extrabold px-3 py-1.5 rounded-xl shadow hover:shadow-md transition flex items-center space-x-1 shrink-0 mt-1">
-                    <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
-                    <span>入力する</span>
-                </button>
+                <!-- 右側ボタンエリア（入力ボタン ＆ コンパクトな目標設定ボタン） -->
+                <div class="flex flex-col items-end space-y-1.5 shrink-0">
+                    <button onclick="openAddModal()" id="add-tx-btn" class="text-xs font-extrabold px-3 py-1.5 rounded-xl shadow hover:shadow-md transition flex items-center space-x-1">
+                        <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+                        <span>入力する</span>
+                    </button>
+                    <button onclick="toggleTargetBox()" id="target-toggle-btn" class="text-[10px] bg-white/20 hover:bg-white/30 text-white font-extrabold px-2.5 py-1 rounded-lg transition flex items-center gap-1">
+                        <i data-lucide="target" class="w-3 h-3"></i> 🎯 目標設定
+                    </button>
+                </div>
+            </div>
+
+            <!-- 目標設定パネル（トグル展開式・省スペース） -->
+            <div id="target-input-box" class="mt-2.5 pt-2.5 border-t border-white/20 hidden relative z-10 transition-all">
+                <div class="flex items-center justify-between text-xs gap-2 flex-wrap">
+                    <div class="flex items-center space-x-2">
+                        <select id="target-mode-select" onchange="onTargetModeChange()" class="bg-black/20 border border-white/30 rounded-lg px-2 py-1 text-[11px] font-bold text-white focus:outline-none">
+                            <option value="expense">支出メイン (残金目標)</option>
+                            <option value="income">収入メイン (達成目標)</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center space-x-1.5 flex-1 max-w-[200px]">
+                        <input type="number" id="target-amount-input" placeholder="目標額 (円)" class="w-full bg-black/20 border border-white/30 text-white placeholder-white/60 rounded-lg px-2.5 py-1 text-xs font-bold focus:outline-none">
+                        <button onclick="saveTargetSetting()" class="bg-white text-slate-800 font-extrabold px-2.5 py-1 rounded-lg text-[11px] shrink-0 hover:bg-white/90 transition shadow-sm">設定</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 日割り計算結果のスマートインジケーター -->
+            <div id="daily-allowance-container" class="mt-2.5 pt-2 border-t border-white/20 relative z-10 hidden">
+                <div class="flex items-center justify-between text-[11px] font-extrabold bg-black/15 backdrop-blur px-2.5 py-1.5 rounded-xl">
+                    <span class="flex items-center gap-1"><i data-lucide="calculator" class="w-3.5 h-3.5"></i> <span id="daily-allowance-label">残り日割り目安</span></span>
+                    <span id="daily-allowance-val" class="text-xs font-black text-amber-200">1日あたり あと ¥0</span>
+                </div>
             </div>
             
-            <div class="grid grid-cols-2 gap-2 mt-3 pt-2 border-t border-white/25 text-xs relative z-10">
+            <div class="grid grid-cols-2 gap-2 mt-2.5 pt-2 border-t border-white/25 text-xs relative z-10">
                 <div class="flex items-center space-x-2 bg-white/15 backdrop-blur p-2 rounded-xl">
                     <div id="income-icon-bg" class="bg-white p-1 rounded-lg shadow-sm">
                         <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
@@ -207,7 +241,7 @@
                     </div>
                 </div>
 
-                <!-- 3. 月一括登録（表形式・＋ボタン対応） -->
+                <!-- 3. 月一括登録 -->
                 <div id="form-bulk-section" class="space-y-3 hidden">
                     <div class="flex items-center justify-between bg-slate-100 p-2 rounded-2xl font-bold">
                         <div class="flex items-center space-x-2">
@@ -220,7 +254,6 @@
                         </div>
                     </div>
 
-                    <!-- 一括変更コントロールバー -->
                     <div class="bg-indigo-50 border border-indigo-200 p-2.5 rounded-2xl space-y-2">
                         <p class="font-extrabold text-indigo-900 flex items-center gap-1"><i data-lucide="sparkles" class="w-3.5 h-3.5"></i> 一括変更（全日程に適用）</p>
                         <div class="grid grid-cols-2 gap-2">
@@ -238,7 +271,6 @@
                         </div>
                     </div>
 
-                    <!-- 日別表形式リスト -->
                     <div class="border rounded-2xl overflow-hidden max-h-56 overflow-y-auto bg-white">
                         <table class="w-full text-left border-collapse">
                             <thead class="bg-slate-100 sticky top-0 text-[10px] text-slate-500 font-extrabold border-b z-10">
@@ -256,7 +288,6 @@
                 </div>
             </div>
 
-            <!-- 常時表示の保存ボタン -->
             <button onclick="saveEntry()" id="save-tx-btn" class="w-full py-2.5 text-white font-extrabold rounded-2xl text-xs transition shadow-md shrink-0">保存する</button>
         </div>
     </div>
@@ -314,17 +345,25 @@
         </div>
     </div>
 
-    <!-- Modal 4: 日別明細モーダル -->
+    <!-- Modal 4: 日別明細モーダル（日割り「対象外」チェック機能付き） -->
     <div id="day-detail-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div id="day-detail-modal-content" class="rounded-3xl p-5 max-w-sm w-full shadow-2xl space-y-4 border max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center">
+        <div id="day-detail-modal-content" class="rounded-3xl p-5 max-w-sm w-full shadow-2xl space-y-3 border max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center shrink-0">
                 <h3 id="day-detail-title" class="text-sm font-extrabold">日付の明細</h3>
                 <button onclick="closeDayDetailModal()" class="text-slate-400 hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
-            
-            <div id="day-detail-list" class="space-y-2 max-h-60 overflow-y-auto text-xs"></div>
 
-            <button onclick="openAddModalFromDetail()" id="detail-add-btn" class="w-full py-2.5 font-bold rounded-2xl text-xs transition">
+            <!-- 日割り計算対象外チェックボックス -->
+            <div class="bg-slate-100 p-2.5 rounded-2xl flex items-center justify-between text-xs font-bold text-slate-700 shrink-0">
+                <label for="exclude-daily-check" class="flex items-center space-x-2 cursor-pointer select-none">
+                    <input type="checkbox" id="exclude-daily-check" onchange="toggleExcludeDate()" class="w-4 h-4 accent-indigo-600 rounded cursor-pointer">
+                    <span>この日を「日割り計算対象外」にする</span>
+                </label>
+            </div>
+            
+            <div id="day-detail-list" class="space-y-2 overflow-y-auto text-xs flex-1 pr-1"></div>
+
+            <button onclick="openAddModalFromDetail()" id="detail-add-btn" class="w-full py-2.5 font-bold rounded-2xl text-xs transition shrink-0">
                 + この日に追加する
             </button>
         </div>
@@ -548,6 +587,8 @@
 
         let anniversaries = JSON.parse(localStorage.getItem('kakeibo_anniversaries')) || [];
         let tabInitialFunds = JSON.parse(localStorage.getItem('kakeibo_tab_initial_funds')) || {};
+        let targetConfigs = JSON.parse(localStorage.getItem('kakeibo_target_configs')) || {};
+        let excludedDates = JSON.parse(localStorage.getItem('kakeibo_excluded_dates')) || [];
 
         let periodConfig = JSON.parse(localStorage.getItem('kakeibo_period_config')) || {
             mode: 'month',
@@ -696,6 +737,64 @@
                 }
             });
             lucide.createIcons();
+        }
+
+        // --- 目標設定・日割りロジック ---
+        function getScopeKey() {
+            if (periodConfig.mode === 'custom' && periodConfig.startDate && periodConfig.endDate) {
+                return `${currentTabId}_custom_${periodConfig.startDate}_${periodConfig.endDate}`;
+            }
+            return `${currentTabId}_month_${currentYear}-${String(currentMonth).padStart(2, '0')}`;
+        }
+
+        function toggleTargetBox() {
+            const box = document.getElementById('target-input-box');
+            if (!box) return;
+            box.classList.toggle('hidden');
+            if (!box.classList.contains('hidden')) {
+                const key = getScopeKey();
+                const cfg = targetConfigs[key] || { mode: 'expense', amount: '' };
+                document.getElementById('target-mode-select').value = cfg.mode || 'expense';
+                document.getElementById('target-amount-input').value = cfg.amount !== undefined ? cfg.amount : '';
+            }
+        }
+
+        function onTargetModeChange() {
+            const mode = document.getElementById('target-mode-select').value;
+            const input = document.getElementById('target-amount-input');
+            if (mode === 'expense') {
+                input.placeholder = "残金目標 (例: 30000 または -5000)";
+            } else {
+                input.placeholder = "達成目標 (例: 200000)";
+            }
+        }
+
+        function saveTargetSetting() {
+            const mode = document.getElementById('target-mode-select').value;
+            const amtVal = document.getElementById('target-amount-input').value;
+            const key = getScopeKey();
+
+            if (amtVal !== '') {
+                targetConfigs[key] = { mode: mode, amount: Number(amtVal) };
+            } else {
+                delete targetConfigs[key];
+            }
+            localStorage.setItem('kakeibo_target_configs', JSON.stringify(targetConfigs));
+            toggleTargetBox();
+            renderSummary();
+        }
+
+        function toggleExcludeDate() {
+            if (!selectedDateForModal) return;
+            const idx = excludedDates.indexOf(selectedDateForModal);
+            if (idx >= 0) {
+                excludedDates.splice(idx, 1);
+            } else {
+                excludedDates.push(selectedDateForModal);
+            }
+            localStorage.setItem('kakeibo_excluded_dates', JSON.stringify(excludedDates));
+            renderSummary();
+            renderCalendar();
         }
 
         // --- 設定画面の2段階ページ切り替え ---
@@ -1023,7 +1122,6 @@
             addBtn.onclick = openAddTabModal;
             container.appendChild(addBtn);
 
-            // 総合タブの時は資金設定ボタンを「総合資金（合算）」表記にする
             const fundBadgeEl = document.getElementById('fund-badge-text');
             const fundSettingBtn = document.getElementById('fund-setting-btn');
             if (currentTabId === 'all') {
@@ -1192,7 +1290,6 @@
             });
         }
 
-        // --- 月一括登録用テーブル生成（複数追加・エンターキー移動対応） ---
         function renderBulkTable() {
             const labelEl = document.getElementById('bulk-month-label');
             if (labelEl) labelEl.innerText = `対象月: ${bulkYear}年${bulkMonth}月`;
@@ -1420,7 +1517,6 @@
             let startFund = 0;
 
             if (currentTabId === 'all') {
-                // 「総合」タブの場合は、他のすべての個別タブの資金設定を自動合算する
                 tabs.forEach(tab => {
                     if (tab.id !== 'all') {
                         const k = `${tab.id}_${monthKeyStr}`;
@@ -1430,7 +1526,6 @@
                     }
                 });
             } else {
-                // 個別タブの場合はそのタブの資金を取得
                 const fundKey = `${currentTabId}_${monthKeyStr}`;
                 startFund = tabInitialFunds[fundKey] !== undefined ? tabInitialFunds[fundKey] : 0;
             }
@@ -1445,22 +1540,16 @@
             const fundBadgeEl = document.getElementById('fund-badge-text');
             const diffBadgeEl = document.getElementById('balance-diff-badge');
             const subDescEl = document.getElementById('sub-balance-desc');
+            const targetBadgeEl = document.getElementById('target-display-badge');
 
             if (incEl) incEl.innerText = `¥${periodIncome.toLocaleString()}`;
             if (expEl) expEl.innerText = `¥${periodExpense.toLocaleString()}`;
 
             const formattedDiff = (netDiff >= 0 ? '+' : '') + `¥${netDiff.toLocaleString()}`;
 
-            // 資金が設定されているか判定
+            // 1. メイン数値の表示切り替え
             if (startFund > 0) {
-                // 資金あり：メインに「残金」、小バッジに「当月収支」
-                if (fundBadgeEl) {
-                    if (currentTabId === 'all') {
-                        fundBadgeEl.innerText = `総合資金: ¥${startFund.toLocaleString()}`;
-                    } else {
-                        fundBadgeEl.innerText = `資金: ¥${startFund.toLocaleString()}`;
-                    }
-                }
+                if (fundBadgeEl) fundBadgeEl.innerText = (currentTabId === 'all') ? `総合資金: ¥${startFund.toLocaleString()}` : `資金: ¥${startFund.toLocaleString()}`;
                 if (balEl) balEl.innerText = `¥${netBalance.toLocaleString()}`;
                 if (subDescEl) subDescEl.innerText = `資金ベース残金（当月収支: ${formattedDiff}）`;
 
@@ -1476,20 +1565,90 @@
                     }
                 }
             } else {
-                // 資金なし：メインに「当月収支のみ」、小バッジは非表示
-                if (fundBadgeEl) {
-                    if (currentTabId === 'all') {
-                        fundBadgeEl.innerText = `総合資金 (未設定)`;
-                    } else {
-                        fundBadgeEl.innerText = `資金設定`;
-                    }
-                }
+                if (fundBadgeEl) fundBadgeEl.innerText = (currentTabId === 'all') ? `総合資金 (未設定)` : `資金設定`;
                 if (balEl) balEl.innerText = formattedDiff;
                 if (subDescEl) subDescEl.innerText = `当月の収支（純増減）`;
 
-                if (diffBadgeEl) {
-                    diffBadgeEl.classList.add('hidden');
+                if (diffBadgeEl) diffBadgeEl.classList.add('hidden');
+            }
+
+            // 2. 目標設定 ＆ 日割り計算処理
+            const scopeKey = getScopeKey();
+            const targetCfg = targetConfigs[scopeKey];
+            const dailyContainer = document.getElementById('daily-allowance-container');
+            const dailyValEl = document.getElementById('daily-allowance-val');
+            const dailyLabelEl = document.getElementById('daily-allowance-label');
+
+            if (targetCfg && targetCfg.amount !== undefined && targetCfg.amount !== '') {
+                const isExpenseMain = (targetCfg.mode === 'expense');
+                const targetAmt = Number(targetCfg.amount);
+
+                if (targetBadgeEl) {
+                    targetBadgeEl.innerText = isExpenseMain ? `目標残金: ¥${targetAmt.toLocaleString()}` : `目標額: ¥${targetAmt.toLocaleString()}`;
+                    targetBadgeEl.classList.remove('hidden');
                 }
+
+                // 期間・日数計算（今日から期間終了日までの「日割り対象日数」）
+                let startDate, endDate;
+                const today = new Date();
+                today.setHours(0,0,0,0);
+
+                if (periodConfig.mode === 'custom' && periodConfig.startDate && periodConfig.endDate) {
+                    startDate = new Date(periodConfig.startDate);
+                    endDate = new Date(periodConfig.endDate);
+                } else {
+                    startDate = new Date(currentYear, currentMonth - 1, 1);
+                    endDate = new Date(currentYear, currentMonth, 0);
+                }
+
+                // 計算の起点日（期間内なら今日、過去なら終了日）
+                let calcStart = today > startDate ? today : startDate;
+                let validDaysCount = 0;
+
+                for (let d = new Date(calcStart); d <= endDate; d.setDate(d.getDate() + 1)) {
+                    const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                    if (!excludedDates.includes(dateStr)) {
+                        validDaysCount++;
+                    }
+                }
+
+                const currentVal = startFund > 0 ? netBalance : netDiff;
+                let dailyAllowance = 0;
+
+                if (isExpenseMain) {
+                    // 支出メイン：残り使える額 ÷ 日数
+                    const remainingMoney = currentVal - targetAmt;
+                    dailyAllowance = validDaysCount > 0 ? Math.floor(remainingMoney / validDaysCount) : 0;
+                    if (dailyLabelEl) dailyLabelEl.innerText = `残り${validDaysCount}日（1日あたり使える目安）`;
+                    if (dailyValEl) {
+                        if (dailyAllowance >= 0) {
+                            dailyValEl.innerText = `あと ¥${dailyAllowance.toLocaleString()} / 日`;
+                            dailyValEl.className = "text-xs font-black text-amber-200";
+                        } else {
+                            dailyValEl.innerText = `超過 ¥${Math.abs(dailyAllowance).toLocaleString()} / 日`;
+                            dailyValEl.className = "text-xs font-black text-rose-300";
+                        }
+                    }
+                } else {
+                    // 収入メイン：目標までの不足額 ÷ 日数
+                    const needMoney = targetAmt - currentVal;
+                    dailyAllowance = validDaysCount > 0 ? Math.ceil(needMoney / validDaysCount) : 0;
+                    if (dailyLabelEl) dailyLabelEl.innerText = `残り${validDaysCount}日（1日あたり必要な目安）`;
+                    if (dailyValEl) {
+                        if (dailyAllowance <= 0) {
+                            dailyValEl.innerText = `目標達成！🎉`;
+                            dailyValEl.className = "text-xs font-black text-emerald-300";
+                        } else {
+                            dailyValEl.innerText = `必要 ¥${dailyAllowance.toLocaleString()} / 日`;
+                            dailyValEl.className = "text-xs font-black text-amber-200";
+                        }
+                    }
+                }
+
+                if (dailyContainer) dailyContainer.classList.remove('hidden');
+            } else {
+                if (targetBadgeEl) targetBadgeEl.classList.add('hidden');
+                if (dailyContainer) dailyContainer.classList.add('hidden');
             }
         }
 
@@ -1519,6 +1678,7 @@
                 const dateStr = `${currentYear}-${monthStr}-${dayStr}`;
                 const isToday = (dateStr === todayStr);
                 const isPayday = (i === payday);
+                const isExcluded = excludedDates.includes(dateStr);
 
                 const matchedAnniversaries = anniversaries.filter(a => {
                     if (!a.date) return false;
@@ -1601,6 +1761,9 @@
                     paydayBadgeHtml = `<span class="${paySymbolStyle}" title="給料日">給</span>`;
                 }
 
+                // 日割り対象外の斜線アイコンバッジ
+                let excludedBadgeHtml = isExcluded ? `<span class="text-[8px] bg-slate-400 text-white px-1 py-0.2 rounded font-extrabold" title="日割り対象外">外</span>` : '';
+
                 let badgeHtml = '';
                 if (hasTransaction) {
                     const isDarkCell = isAnniversary || hasPlan;
@@ -1624,9 +1787,12 @@
                 let badgesInnerHtml = '';
                 if (indicatorHtml) badgesInnerHtml += indicatorHtml;
                 if (paydayBadgeHtml) badgesInnerHtml += paydayBadgeHtml;
+                if (excludedBadgeHtml) badgesInnerHtml += excludedBadgeHtml;
 
                 const cell = document.createElement('div');
                 cell.className = `min-h-[48px] p-0.5 sm:p-1 flex flex-col justify-between items-center rounded-xl border transition cursor-pointer relative ${
+                    isExcluded ? 'opacity-60 bg-slate-100/70 border-dashed border-slate-300' : ''
+                } ${
                     isToday && !isAnniversary && !hasPlan
                         ? 'border-indigo-400 bg-indigo-50/70 shadow-sm ring-1 ring-indigo-300' 
                         : isPayday && !isAnniversary && !hasPlan
@@ -1859,6 +2025,12 @@
             const [y, m, d] = dateStr.split('-');
             const titleEl = document.getElementById('day-detail-title');
             if (titleEl) titleEl.innerText = `${y}年${parseInt(m)}月${parseInt(d)}日の明細・予定`;
+
+            // 日割り対象外チェックの連動
+            const excludeCheck = document.getElementById('exclude-daily-check');
+            if (excludeCheck) {
+                excludeCheck.checked = excludedDates.includes(dateStr);
+            }
             
             const txs = getFilteredTransactions().filter(t => t.date === dateStr);
             const dayPlans = plans.filter(p => p.date === dateStr);
