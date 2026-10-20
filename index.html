@@ -15,6 +15,7 @@
         .theme-simple { font-family: 'Noto Sans JP', sans-serif; }
         .theme-classic { font-family: 'Noto Sans JP', serif; }
 
+        /* ★5 予定日用の目立つ自己主張アニメーション */
         @keyframes pulse-attention {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
@@ -28,68 +29,68 @@
 
     <!-- ヘッダー -->
     <header id="app-header" class="backdrop-blur border-b sticky top-0 z-20 shadow-sm transition-colors duration-300">
-        <div class="max-w-xl mx-auto px-4 py-2.5 flex items-center justify-between">
+        <div class="max-w-xl mx-auto px-4 py-3 flex items-center justify-between">
             <div class="flex items-center space-x-2">
-                <div id="header-icon-bg" class="p-1.5 rounded-xl shadow-md transition-colors duration-300">
-                    <i id="header-icon" data-lucide="wallet" class="w-4 h-4 text-white"></i>
+                <div id="header-icon-bg" class="p-2 rounded-2xl shadow-md transition-colors duration-300">
+                    <i id="header-icon" data-lucide="wallet" class="w-5 h-5 text-white"></i>
                 </div>
-                <h1 id="header-title" class="text-sm font-extrabold tracking-wide flex items-center gap-1">
+                <h1 id="header-title" class="text-base font-extrabold tracking-wide flex items-center gap-1">
                     My Kakeibo
                 </h1>
             </div>
             <div class="flex items-center space-x-2">
-                <span id="save-badge" class="text-[10px] font-bold px-2 py-0.5 border rounded-full flex items-center gap-1">
+                <span id="save-badge" class="text-[10px] font-bold px-2.5 py-1 border rounded-full flex items-center gap-1">
                     <i data-lucide="sparkles" class="w-3 h-3"></i> 保存中
                 </span>
-                <button onclick="openSettingsModal()" id="settings-btn" class="p-1.5 rounded-xl transition" title="設定">
-                    <i data-lucide="settings" class="w-4 h-4"></i>
+                <button onclick="openSettingsModal()" id="settings-btn" class="p-2 rounded-2xl transition" title="設定">
+                    <i data-lucide="settings" class="w-5 h-5"></i>
                 </button>
             </div>
         </div>
 
         <!-- タブ切り替えバー -->
-        <div id="tabs-bar" class="max-w-xl mx-auto px-3 border-t py-1.5">
-            <div id="tabs-container" class="flex items-center justify-center flex-wrap gap-1"></div>
+        <div id="tabs-bar" class="max-w-xl mx-auto px-4 border-t py-2">
+            <div id="tabs-container" class="flex items-center space-x-1.5 overflow-x-auto no-scrollbar"></div>
         </div>
     </header>
 
     <!-- メインコンテンツ -->
-    <main class="max-w-xl mx-auto px-4 mt-3 space-y-3">
+    <main class="max-w-xl mx-auto px-4 mt-4 space-y-4">
 
         <!-- 1. 収支表示カード -->
-        <div id="summary-card" class="rounded-2xl p-4 text-white shadow-lg relative overflow-hidden transition-all duration-300">
-            <div class="flex justify-between items-center relative z-10">
+        <div id="summary-card" class="rounded-3xl p-5 text-white shadow-xl relative overflow-hidden transition-all duration-300">
+            <div class="flex justify-between items-start relative z-10">
                 <div>
-                    <span id="current-tab-label" class="text-[10px] font-bold bg-white/20 backdrop-blur px-2 py-0.5 rounded-full text-white inline-flex items-center gap-1">
+                    <span id="current-tab-label" class="text-xs font-bold bg-white/20 backdrop-blur px-2.5 py-1 rounded-full text-white inline-flex items-center gap-1">
                         総合の総収支
                     </span>
-                    <div id="total-balance" class="text-2xl sm:text-3xl font-black tracking-tight mt-1 text-white drop-shadow-sm">
+                    <div id="total-balance" class="text-3xl sm:text-4xl font-black tracking-tight mt-2 text-white drop-shadow-sm">
                         ¥0
                     </div>
                 </div>
-                <button onclick="openAddModal()" id="add-tx-btn" class="text-xs font-extrabold px-3 py-1.5 rounded-xl shadow hover:shadow-md transition flex items-center space-x-1 shrink-0">
-                    <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+                <button onclick="openAddModal()" id="add-tx-btn" class="text-xs font-extrabold px-3.5 py-2 rounded-2xl shadow-md hover:shadow-lg transition flex items-center space-x-1 shrink-0">
+                    <i data-lucide="plus-circle" class="w-4 h-4"></i>
                     <span>入力する</span>
                 </button>
             </div>
             
-            <div class="grid grid-cols-2 gap-2 mt-3 pt-2 border-t border-white/25 text-xs relative z-10">
-                <div class="flex items-center space-x-2 bg-white/15 backdrop-blur p-2 rounded-xl">
-                    <div id="income-icon-bg" class="bg-white p-1 rounded-lg shadow-sm">
-                        <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+            <div class="grid grid-cols-2 gap-3 mt-5 pt-3 border-t border-white/30 text-xs relative z-10">
+                <div class="flex items-center space-x-2.5 bg-white/15 backdrop-blur p-2.5 rounded-2xl">
+                    <div id="income-icon-bg" class="bg-white p-1.5 rounded-xl shadow-sm">
+                        <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
                     </div>
                     <div>
-                        <p class="opacity-80 text-[9px] font-bold">今月の収入</p>
-                        <p id="monthly-income" class="font-black text-xs sm:text-sm text-white">¥0</p>
+                        <p class="opacity-80 text-[10px] font-bold">今月の収入</p>
+                        <p id="monthly-income" class="font-black text-sm text-white">¥0</p>
                     </div>
                 </div>
-                <div class="flex items-center space-x-2 bg-white/15 backdrop-blur p-2 rounded-xl">
-                    <div id="expense-icon-bg" class="bg-white p-1 rounded-lg shadow-sm">
-                        <i data-lucide="arrow-down-right" class="w-3.5 h-3.5"></i>
+                <div class="flex items-center space-x-2.5 bg-white/15 backdrop-blur p-2.5 rounded-2xl">
+                    <div id="expense-icon-bg" class="bg-white p-1.5 rounded-xl shadow-sm">
+                        <i data-lucide="arrow-down-right" class="w-4 h-4"></i>
                     </div>
                     <div>
-                        <p class="opacity-80 text-[9px] font-bold">今月の支出</p>
-                        <p id="monthly-expense" class="font-black text-xs sm:text-sm text-white">¥0</p>
+                        <p class="opacity-80 text-[10px] font-bold">今月の支出</p>
+                        <p id="monthly-expense" class="font-black text-sm text-white">¥0</p>
                     </div>
                 </div>
             </div>
@@ -97,7 +98,7 @@
 
         <!-- 2. カレンダーセクション -->
         <div id="calendar-card" class="rounded-3xl p-3 sm:p-4 border shadow-sm transition-all duration-300">
-            <div class="flex items-center justify-between mb-2 px-1">
+            <div class="flex items-center justify-between mb-3 px-1">
                 <div class="flex items-center space-x-2">
                     <div id="calendar-icon-bg" class="p-1.5 rounded-xl">
                         <i data-lucide="calendar" class="w-4 h-4"></i>
@@ -123,30 +124,21 @@
 
     </main>
 
-    <!-- Modal 1: 収支・予定日入力モーダル (コンパクト設計) -->
+    <!-- Modal 1: 収支・予定日入力モーダル -->
     <div id="add-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div id="add-modal-content" class="rounded-3xl p-5 max-w-sm w-full shadow-2xl space-y-3 border max-h-[90vh] overflow-y-auto">
+        <div id="add-modal-content" class="rounded-3xl p-5 max-w-sm w-full shadow-2xl space-y-4 border max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center">
                 <h3 id="add-modal-title" class="text-sm font-extrabold">登録する</h3>
                 <button onclick="closeAddModal()" class="text-slate-400 hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             
-            <!-- 日付コンパクトバナー (上部に常駐) -->
-            <div class="bg-slate-100 p-2 rounded-2xl flex items-center justify-between text-xs font-bold text-slate-700">
-                <div class="flex items-center space-x-1.5">
-                    <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
-                    <span>記帳日:</span>
-                </div>
-                <input type="date" id="tx-date" class="bg-transparent border-0 font-extrabold focus:outline-none cursor-pointer text-right">
-            </div>
-
-            <div class="space-y-2.5 text-xs">
+            <div class="space-y-3 text-xs">
                 <div class="grid grid-cols-2 gap-1.5 p-1 bg-slate-100 rounded-2xl font-bold">
                     <button type="button" id="mode-tx-btn" onclick="setEntryMode('tx')" class="py-1.5 rounded-xl transition">収支を記帳 💸</button>
                     <button type="button" id="mode-plan-btn" onclick="setEntryMode('plan')" class="py-1.5 rounded-xl transition">予定日を設定 📅</button>
                 </div>
 
-                <div id="form-tx-section" class="space-y-2.5">
+                <div id="form-tx-section" class="space-y-3">
                     <div>
                         <label class="text-slate-400 font-bold block mb-1">区分</label>
                         <div class="grid grid-cols-2 gap-2">
@@ -157,19 +149,19 @@
 
                     <div>
                         <label class="text-slate-400 font-bold block mb-1">ジャンル（タグ）</label>
-                        <div id="tag-select-container" class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto p-1.5 rounded-2xl border"></div>
+                        <div id="tag-select-container" class="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto p-1.5 rounded-2xl border"></div>
                     </div>
 
                     <div>
                         <label class="text-slate-400 font-bold block mb-1">金額 (円)</label>
-                        <input type="number" id="tx-amount" placeholder="例: 1500" class="w-full border rounded-2xl px-3 py-2 font-bold focus:outline-none">
+                        <input type="number" id="tx-amount" placeholder="例: 1500" class="w-full border rounded-2xl px-3.5 py-2 font-bold focus:outline-none">
                     </div>
                 </div>
 
-                <div id="form-plan-section" class="space-y-2.5 hidden">
+                <div id="form-plan-section" class="space-y-3 hidden">
                     <div>
                         <label class="text-slate-400 font-bold block mb-1">予定の内容</label>
-                        <input type="text" id="plan-title" placeholder="例: 旅行、美容院など" class="w-full border rounded-2xl px-3 py-2 font-bold focus:outline-none">
+                        <input type="text" id="plan-title" placeholder="例: 旅行、美容院、支払日など" class="w-full border rounded-2xl px-3.5 py-2 font-bold focus:outline-none">
                     </div>
 
                     <div>
@@ -185,12 +177,17 @@
                 </div>
 
                 <div>
+                    <label class="text-slate-400 font-bold block mb-1">日付</label>
+                    <input type="date" id="tx-date" class="w-full border rounded-2xl px-3.5 py-2 font-bold focus:outline-none">
+                </div>
+
+                <div>
                     <label class="text-slate-400 font-bold block mb-1">詳細・メモ（任意）</label>
                     <input type="text" id="tx-memo" placeholder="例: メモ書きなど" class="w-full border rounded-2xl px-3.5 py-2 focus:outline-none">
                 </div>
             </div>
 
-            <button onclick="saveEntry()" id="save-tx-btn" class="w-full py-2.5 text-white font-extrabold rounded-2xl text-xs transition shadow-md">保存する</button>
+            <button onclick="saveEntry()" id="save-tx-btn" class="w-full py-3 text-white font-extrabold rounded-2xl text-xs transition shadow-md">保存する</button>
         </div>
     </div>
 
@@ -222,10 +219,11 @@
         </div>
     </div>
 
-    <!-- Modal 4: 設定モーダル -->
+    <!-- Modal 4: 設定モーダル（2段階ページ移動形式） -->
     <div id="settings-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div id="settings-modal-content" class="rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 border max-h-[85vh] flex flex-col">
             
+            <!-- 設定画面ヘッダー -->
             <div class="flex justify-between items-center border-b pb-3 shrink-0">
                 <div class="flex items-center space-x-2">
                     <button id="settings-back-btn" onclick="showSettingsMenu()" class="hidden p-1 text-slate-400 hover:text-slate-700 transition">
@@ -246,14 +244,6 @@
                     <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
                 </button>
 
-                <button onclick="showSettingsDetail('tabs')" class="w-full p-3.5 bg-slate-50/80 hover:bg-slate-100 rounded-2xl border flex items-center justify-between font-bold text-slate-700 transition">
-                    <div class="flex items-center space-x-3">
-                        <div class="p-2 bg-emerald-100 text-emerald-600 rounded-xl"><i data-lucide="folder" class="w-4 h-4"></i></div>
-                        <span>タブの編集・削除</span>
-                    </div>
-                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
-                </button>
-
                 <button onclick="showSettingsDetail('salary')" class="w-full p-3.5 bg-slate-50/80 hover:bg-slate-100 rounded-2xl border flex items-center justify-between font-bold text-slate-700 transition">
                     <div class="flex items-center space-x-3">
                         <div class="p-2 bg-amber-100 text-amber-600 rounded-xl"><i data-lucide="coins" class="w-4 h-4"></i></div>
@@ -265,7 +255,7 @@
                 <button onclick="showSettingsDetail('tags')" class="w-full p-3.5 bg-slate-50/80 hover:bg-slate-100 rounded-2xl border flex items-center justify-between font-bold text-slate-700 transition">
                     <div class="flex items-center space-x-3">
                         <div class="p-2 bg-rose-100 text-rose-600 rounded-xl"><i data-lucide="tags" class="w-4 h-4"></i></div>
-                        <span>タグの追加・編集（支出/収入別）</span>
+                        <span>タグの追加・編集</span>
                     </div>
                     <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
                 </button>
@@ -292,25 +282,7 @@
                 </div>
             </div>
 
-            <!-- ページ2-B: タブ管理設定 -->
-            <div id="settings-page-tabs" class="space-y-4 text-xs overflow-y-auto flex-1 pr-1 hidden">
-                <div class="space-y-3">
-                    <div>
-                        <label class="text-slate-400 font-bold block mb-1">新しいタブを追加</label>
-                        <div class="flex space-x-2">
-                            <input type="text" id="settings-new-tab-name" placeholder="例: 仕事、旅行など" class="flex-1 border rounded-xl px-3 py-2 focus:outline-none">
-                            <button onclick="addNewTabFromSettings()" id="add-tab-setting-btn" class="px-4 py-2 text-white font-bold rounded-xl transition whitespace-nowrap">追加</button>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="text-slate-400 font-bold block mb-1">登録済みタブ一覧（総合は削除不可）</label>
-                        <div id="settings-tab-list" class="space-y-1.5 max-h-52 overflow-y-auto p-1 border rounded-2xl"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ページ2-C: 給料日設定 -->
+            <!-- ページ2-B: 給料日設定 -->
             <div id="settings-page-salary" class="space-y-4 text-xs overflow-y-auto flex-1 pr-1 hidden">
                 <div class="space-y-3">
                     <div>
@@ -338,23 +310,20 @@
                 </div>
             </div>
 
-            <!-- ページ2-D: タグ設定（支出・収入別） -->
+            <!-- ページ2-C: タグ設定 -->
             <div id="settings-page-tags" class="space-y-4 text-xs overflow-y-auto flex-1 pr-1 hidden">
                 <div class="space-y-3">
-                    <div class="grid grid-cols-2 gap-1 p-1 bg-slate-100 rounded-xl font-bold text-center">
-                        <button type="button" onclick="setSettingTagType('expense')" id="stype-exp-btn" class="py-1 rounded-lg transition">支出タグ</button>
-                        <button type="button" onclick="setSettingTagType('income')" id="stype-inc-btn" class="py-1 rounded-lg transition">収入タグ</button>
-                    </div>
-
                     <div>
+                        <label class="text-slate-400 font-bold block mb-1">新しいタグを追加</label>
                         <div class="flex space-x-2">
-                            <input type="text" id="new-tag-name" placeholder="例: 食費、給与など" class="flex-1 border rounded-xl px-3 py-2 focus:outline-none">
+                            <input type="text" id="new-tag-name" placeholder="例: 食費、カフェなど" class="flex-1 border rounded-xl px-3 py-2 focus:outline-none">
                             <button onclick="addNewTag()" id="add-tag-btn" class="px-4 py-2 text-white font-bold rounded-xl transition whitespace-nowrap">追加</button>
                         </div>
                     </div>
 
                     <div>
-                        <div id="settings-tag-list" class="space-y-1.5 max-h-44 overflow-y-auto p-1 border rounded-2xl"></div>
+                        <label class="text-slate-400 font-bold block mb-1">登録済みタグ一覧</label>
+                        <div id="settings-tag-list" class="space-y-1.5 max-h-52 overflow-y-auto p-1 border rounded-2xl"></div>
                     </div>
                 </div>
             </div>
@@ -370,27 +339,8 @@
             { id: 'personal', name: 'プライベート' }
         ];
         let currentTabId = tabs[0].id;
-        
-        // タグデータ（支出・収入別管理）
-        let tags = JSON.parse(localStorage.getItem('kakeibo_tags')) || {
-            expense: [
-                { id: 't_exp_1', name: '食費' },
-                { id: 't_exp_2', name: '日用品' },
-                { id: 't_exp_3', name: '交通費' }
-            ],
-            income: [
-                { id: 't_inc_1', name: '給与' },
-                { id: 't_inc_2', name: '副業' }
-            ]
-        };
-        // 古い配列型データで保存されている場合の互換性対応
-        if (Array.isArray(tags)) {
-            tags = { expense: tags, income: [{ id: 't_inc_1', name: '給与' }] };
-        }
-
-        let selectedTagId = '';
-        let settingTagType = 'expense'; // 設定画面でのタグ切り替え
-
+        let tags = JSON.parse(localStorage.getItem('kakeibo_tags')) || [];
+        let selectedTagId = tags[0] ? tags[0].id : '';
         let salaryConfig = JSON.parse(localStorage.getItem('kakeibo_salary_config')) || {
             day: 25,
             rule: 'prev',
@@ -433,87 +383,84 @@
             if (theme === 'cute') {
                 body.classList.add('bg-pink-50/60', 'text-slate-700');
                 document.getElementById('app-header').className = "bg-white/80 backdrop-blur border-b border-pink-100 sticky top-0 z-20 shadow-sm";
-                document.getElementById('header-icon-bg').className = "bg-gradient-to-tr from-pink-400 to-rose-400 text-white p-1.5 rounded-xl shadow-pink-200 shadow-md";
-                document.getElementById('header-title').className = "text-sm font-extrabold text-rose-500 tracking-wide flex items-center gap-1";
+                document.getElementById('header-icon-bg').className = "bg-gradient-to-tr from-pink-400 to-rose-400 text-white p-2 rounded-2xl shadow-pink-200 shadow-md";
+                document.getElementById('header-title').className = "text-base font-extrabold text-rose-500 tracking-wide flex items-center gap-1";
                 document.getElementById('header-title').innerHTML = 'My Kakeibo <span class="text-xs">🐾</span>';
-                document.getElementById('save-badge').className = "text-[10px] font-bold px-2 py-0.5 bg-pink-100/80 text-rose-500 border border-pink-200 rounded-full flex items-center gap-1";
-                document.getElementById('settings-btn').className = "p-1.5 text-rose-400 hover:text-rose-600 hover:bg-pink-100/50 rounded-xl transition";
-                document.getElementById('tabs-bar').className = "max-w-xl mx-auto px-3 border-t border-pink-100/60 py-1.5";
+                document.getElementById('save-badge').className = "text-[10px] font-bold px-2.5 py-1 bg-pink-100/80 text-rose-500 border border-pink-200 rounded-full flex items-center gap-1";
+                document.getElementById('settings-btn').className = "p-2 text-rose-400 hover:text-rose-600 hover:bg-pink-100/50 rounded-2xl transition";
+                document.getElementById('tabs-bar').className = "max-w-xl mx-auto px-4 border-t border-pink-100/60 py-2";
 
-                document.getElementById('summary-card').className = "bg-gradient-to-br from-rose-400 via-pink-400 to-amber-300 rounded-2xl p-4 text-white shadow-lg shadow-pink-200/60 relative overflow-hidden transition-all duration-300";
-                document.getElementById('add-tx-btn').className = "bg-white hover:bg-rose-50 text-rose-500 text-xs font-extrabold px-3 py-1.5 rounded-xl shadow transition flex items-center space-x-1 shrink-0";
-                document.getElementById('income-icon-bg').className = "bg-white text-emerald-500 p-1 rounded-lg shadow-sm";
-                document.getElementById('expense-icon-bg').className = "bg-white text-rose-500 p-1 rounded-lg shadow-sm";
+                document.getElementById('summary-card').className = "bg-gradient-to-br from-rose-400 via-pink-400 to-amber-300 rounded-3xl p-5 text-white shadow-xl shadow-pink-200/60 relative overflow-hidden transition-all duration-300";
+                document.getElementById('add-tx-btn').className = "bg-white hover:bg-rose-50 text-rose-500 text-xs font-extrabold px-3.5 py-2 rounded-2xl shadow-md transition flex items-center space-x-1 shrink-0";
+                document.getElementById('income-icon-bg').className = "bg-white text-emerald-500 p-1.5 rounded-xl shadow-sm";
+                document.getElementById('expense-icon-bg').className = "bg-white text-rose-500 p-1.5 rounded-xl shadow-sm";
 
                 document.getElementById('calendar-card').className = "bg-white rounded-3xl p-3 sm:p-4 border border-pink-100 shadow-sm shadow-pink-100 transition-all duration-300";
                 document.getElementById('calendar-icon-bg').className = "p-1.5 bg-pink-100 text-rose-400 rounded-xl";
 
                 document.querySelectorAll('#add-modal-content, #day-detail-modal-content, #add-tab-modal-content, #settings-modal-content').forEach(el => {
-                    el.className = "bg-white border border-pink-100 rounded-3xl p-5 sm:p-6 max-w-md w-full shadow-2xl space-y-3 max-h-[85vh] flex flex-col";
+                    el.className = "bg-white border border-pink-100 rounded-3xl p-5 sm:p-6 max-w-md w-full shadow-2xl space-y-4 max-h-[85vh] flex flex-col";
                 });
 
-                document.getElementById('save-tx-btn').className = "w-full py-2.5 bg-gradient-to-r from-rose-400 to-pink-400 hover:from-rose-500 hover:to-pink-500 text-white font-extrabold rounded-2xl text-xs transition shadow-md";
+                document.getElementById('save-tx-btn').className = "w-full py-3 bg-gradient-to-r from-rose-400 to-pink-400 hover:from-rose-500 hover:to-pink-500 text-white font-extrabold rounded-2xl text-xs transition shadow-md";
                 document.getElementById('detail-add-btn').className = "w-full py-2.5 bg-pink-100 hover:bg-pink-200 text-rose-500 font-bold rounded-2xl text-xs transition";
                 document.getElementById('save-tab-btn').className = "w-full py-2.5 bg-rose-400 hover:bg-rose-500 text-white font-bold rounded-2xl text-xs transition";
-                document.getElementById('add-tab-setting-btn').className = "px-4 py-2 bg-rose-400 hover:bg-rose-500 text-white font-bold rounded-xl transition whitespace-nowrap";
                 document.getElementById('save-salary-btn').className = "w-full py-2.5 bg-rose-400 hover:bg-rose-500 text-white font-bold rounded-xl transition";
                 document.getElementById('add-tag-btn').className = "px-4 py-2 bg-rose-400 hover:bg-rose-500 text-white font-bold rounded-xl transition whitespace-nowrap";
             } 
             else if (theme === 'simple') {
                 body.className = "antialiased min-h-screen pb-12 transition-colors duration-300 theme-simple bg-slate-50 text-slate-800";
                 document.getElementById('app-header').className = "bg-white border-b border-slate-200 sticky top-0 z-20 shadow-sm";
-                document.getElementById('header-icon-bg').className = "bg-slate-800 text-white p-1.5 rounded-lg";
-                document.getElementById('header-title').className = "text-sm font-bold text-slate-900 tracking-wide";
+                document.getElementById('header-icon-bg').className = "bg-slate-800 text-white p-2 rounded-xl";
+                document.getElementById('header-title').className = "text-base font-bold text-slate-900 tracking-wide";
                 document.getElementById('header-title').innerText = 'My Kakeibo';
-                document.getElementById('save-badge').className = "text-[10px] font-medium px-2 py-0.5 bg-slate-100 text-slate-600 border border-slate-200 rounded-full flex items-center gap-1";
-                document.getElementById('settings-btn').className = "p-1.5 text-slate-600 hover:bg-slate-100 rounded-lg transition";
-                document.getElementById('tabs-bar').className = "max-w-xl mx-auto px-3 border-t border-slate-200 py-1.5";
+                document.getElementById('save-badge').className = "text-[10px] font-medium px-2.5 py-1 bg-slate-100 text-slate-600 border border-slate-200 rounded-full flex items-center gap-1";
+                document.getElementById('settings-btn').className = "p-2 text-slate-600 hover:bg-slate-100 rounded-xl transition";
+                document.getElementById('tabs-bar').className = "max-w-xl mx-auto px-4 border-t border-slate-200 py-2";
 
-                document.getElementById('summary-card').className = "bg-slate-900 rounded-2xl p-4 text-white shadow-md relative overflow-hidden transition-all duration-300";
-                document.getElementById('add-tx-btn').className = "bg-white hover:bg-slate-100 text-slate-900 text-xs font-bold px-3 py-1.5 rounded-xl shadow transition flex items-center space-x-1 shrink-0";
-                document.getElementById('income-icon-bg').className = "bg-slate-800 text-emerald-400 p-1 rounded-md";
-                document.getElementById('expense-icon-bg').className = "bg-slate-800 text-rose-400 p-1 rounded-md";
+                document.getElementById('summary-card').className = "bg-slate-900 rounded-2xl p-5 text-white shadow-md relative overflow-hidden transition-all duration-300";
+                document.getElementById('add-tx-btn').className = "bg-white hover:bg-slate-100 text-slate-900 text-xs font-bold px-3.5 py-2 rounded-xl shadow transition flex items-center space-x-1 shrink-0";
+                document.getElementById('income-icon-bg').className = "bg-slate-800 text-emerald-400 p-1.5 rounded-lg";
+                document.getElementById('expense-icon-bg').className = "bg-slate-800 text-rose-400 p-1.5 rounded-lg";
 
                 document.getElementById('calendar-card').className = "bg-white rounded-2xl p-3 sm:p-4 border border-slate-200 shadow-sm transition-all duration-300";
                 document.getElementById('calendar-icon-bg').className = "p-1.5 bg-slate-100 text-slate-700 rounded-lg";
 
                 document.querySelectorAll('#add-modal-content, #day-detail-modal-content, #add-tab-modal-content, #settings-modal-content').forEach(el => {
-                    el.className = "bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 max-w-md w-full shadow-xl space-y-3 max-h-[85vh] flex flex-col";
+                    el.className = "bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 max-w-md w-full shadow-xl space-y-4 max-h-[85vh] flex flex-col";
                 });
 
                 document.getElementById('save-tx-btn').className = "w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition shadow";
                 document.getElementById('detail-add-btn').className = "w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl text-xs transition";
                 document.getElementById('save-tab-btn').className = "w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition";
-                document.getElementById('add-tab-setting-btn').className = "px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl transition whitespace-nowrap";
                 document.getElementById('save-salary-btn').className = "w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl transition";
                 document.getElementById('add-tag-btn').className = "px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl transition whitespace-nowrap";
             } 
             else if (theme === 'classic') {
                 body.className = "antialiased min-h-screen pb-12 transition-colors duration-300 theme-classic bg-[#f7f3ed] text-[#4a3b32]";
                 document.getElementById('app-header').className = "bg-[#efe8de] border-b border-[#d8ccbc] sticky top-0 z-20 shadow-sm";
-                document.getElementById('header-icon-bg').className = "bg-[#7c5c43] text-amber-50 p-1.5 rounded-lg";
-                document.getElementById('header-title').className = "text-sm font-bold text-[#4a3b32] tracking-wide";
+                document.getElementById('header-icon-bg').className = "bg-[#7c5c43] text-amber-50 p-2 rounded-xl";
+                document.getElementById('header-title').className = "text-base font-bold text-[#4a3b32] tracking-wide";
                 document.getElementById('header-title').innerText = 'My Kakeibo 📜';
-                document.getElementById('save-badge').className = "text-[10px] font-bold px-2 py-0.5 bg-[#e3d7c7] text-[#5c4433] border border-[#c8b8a4] rounded-full flex items-center gap-1";
-                document.getElementById('settings-btn').className = "p-1.5 text-[#7c5c43] hover:bg-[#e3d7c7] rounded-lg transition";
-                document.getElementById('tabs-bar').className = "max-w-xl mx-auto px-3 border-t border-[#d8ccbc] py-1.5";
+                document.getElementById('save-badge').className = "text-[10px] font-bold px-2.5 py-1 bg-[#e3d7c7] text-[#5c4433] border border-[#c8b8a4] rounded-full flex items-center gap-1";
+                document.getElementById('settings-btn').className = "p-2 text-[#7c5c43] hover:bg-[#e3d7c7] rounded-xl transition";
+                document.getElementById('tabs-bar').className = "max-w-xl mx-auto px-4 border-t border-[#d8ccbc] py-2";
 
-                document.getElementById('summary-card').className = "bg-gradient-to-br from-[#6b4e3d] to-[#4a3528] rounded-2xl p-4 text-amber-50 shadow-md relative overflow-hidden transition-all duration-300";
-                document.getElementById('add-tx-btn').className = "bg-[#e8dccb] hover:bg-[#dfcfba] text-[#4a3b32] text-xs font-bold px-3.5 py-1.5 rounded-xl shadow transition flex items-center space-x-1 shrink-0";
-                document.getElementById('income-icon-bg').className = "bg-[#4a3528] text-emerald-300 p-1 rounded-md";
-                document.getElementById('expense-icon-bg').className = "bg-[#4a3528] text-rose-300 p-1 rounded-md";
+                document.getElementById('summary-card').className = "bg-gradient-to-br from-[#6b4e3d] to-[#4a3528] rounded-2xl p-5 text-amber-50 shadow-md relative overflow-hidden transition-all duration-300";
+                document.getElementById('add-tx-btn').className = "bg-[#e8dccb] hover:bg-[#dfcfba] text-[#4a3b32] text-xs font-bold px-3.5 py-2 rounded-xl shadow transition flex items-center space-x-1 shrink-0";
+                document.getElementById('income-icon-bg').className = "bg-[#4a3528] text-emerald-300 p-1.5 rounded-lg";
+                document.getElementById('expense-icon-bg').className = "bg-[#4a3528] text-rose-300 p-1.5 rounded-lg";
 
                 document.getElementById('calendar-card').className = "bg-[#fcfaf7] rounded-2xl p-3 sm:p-4 border border-[#d8ccbc] shadow-sm transition-all duration-300";
                 document.getElementById('calendar-icon-bg').className = "p-1.5 bg-[#e8dccb] text-[#5c4433] rounded-lg";
 
                 document.querySelectorAll('#add-modal-content, #day-detail-modal-content, #add-tab-modal-content, #settings-modal-content').forEach(el => {
-                    el.className = "bg-[#fcfaf7] border border-[#d8ccbc] rounded-2xl p-5 sm:p-6 max-w-md w-full shadow-xl space-y-3 max-h-[85vh] flex flex-col";
+                    el.className = "bg-[#fcfaf7] border border-[#d8ccbc] rounded-2xl p-5 sm:p-6 max-w-md w-full shadow-xl space-y-4 max-h-[85vh] flex flex-col";
                 });
 
                 document.getElementById('save-tx-btn').className = "w-full py-2.5 bg-[#6b4e3d] hover:bg-[#583f30] text-amber-50 font-bold rounded-xl text-xs transition shadow";
                 document.getElementById('detail-add-btn').className = "w-full py-2.5 bg-[#e8dccb] hover:bg-[#dfcfba] text-[#4a3b32] font-bold rounded-xl text-xs transition";
                 document.getElementById('save-tab-btn').className = "w-full py-2.5 bg-[#6b4e3d] hover:bg-[#583f30] text-amber-50 font-bold rounded-xl text-xs transition";
-                document.getElementById('add-tab-setting-btn').className = "px-4 py-2 bg-[#6b4e3d] hover:bg-[#583f30] text-amber-50 font-bold rounded-xl transition whitespace-nowrap";
                 document.getElementById('save-salary-btn').className = "w-full py-2.5 bg-[#6b4e3d] hover:bg-[#583f30] text-amber-50 font-bold rounded-xl transition";
                 document.getElementById('add-tag-btn').className = "px-4 py-2 bg-[#6b4e3d] hover:bg-[#583f30] text-amber-50 font-bold rounded-xl transition whitespace-nowrap";
             }
@@ -529,13 +476,12 @@
             lucide.createIcons();
         }
 
-        // --- 設定画面の2段階ページ切り替え ---
+        // --- 設定画面の2段階ページ切り替え機能 ---
         function showSettingsMenu() {
             document.getElementById('settings-header-title').innerText = '設定 ⚙️';
             document.getElementById('settings-back-btn').classList.add('hidden');
             document.getElementById('settings-page-menu').classList.remove('hidden');
             document.getElementById('settings-page-theme').classList.add('hidden');
-            document.getElementById('settings-page-tabs').classList.add('hidden');
             document.getElementById('settings-page-salary').classList.add('hidden');
             document.getElementById('settings-page-tags').classList.add('hidden');
         }
@@ -547,276 +493,14 @@
             if (page === 'theme') {
                 document.getElementById('settings-header-title').innerText = 'テーマ設定 🎨';
                 document.getElementById('settings-page-theme').classList.remove('hidden');
-            } else if (page === 'tabs') {
-                document.getElementById('settings-header-title').innerText = 'タブの編集・削除 📁';
-                document.getElementById('settings-page-tabs').classList.remove('hidden');
-                renderSettingsTabList();
             } else if (page === 'salary') {
                 document.getElementById('settings-header-title').innerText = '給料日設定 💰';
                 document.getElementById('settings-page-salary').classList.remove('hidden');
             } else if (page === 'tags') {
                 document.getElementById('settings-header-title').innerText = 'タグの編集・追加 🏷️';
                 document.getElementById('settings-page-tags').classList.remove('hidden');
-                setSettingTagType('expense');
+                renderSettingsTagList();
             }
-        }
-
-        function setSettingTagType(type) {
-            settingTagType = type;
-            const expBtn = document.getElementById('stype-exp-btn');
-            const incBtn = document.getElementById('stype-inc-btn');
-            if (type === 'expense') {
-                expBtn.className = "py-1 rounded-lg transition bg-slate-800 text-white shadow-sm font-bold";
-                incBtn.className = "py-1 rounded-lg transition text-slate-500 hover:text-slate-800 font-bold";
-            } else {
-                expBtn.className = "py-1 rounded-lg transition text-slate-500 hover:text-slate-800 font-bold";
-                incBtn.className = "py-1 rounded-lg transition bg-slate-800 text-white shadow-sm font-bold";
-            }
-            renderSettingsTagList();
-        }
-
-        function renderSettingsTagList() {
-            const container = document.getElementById('settings-tag-list');
-            container.innerHTML = '';
-            const list = tags[settingTagType] || [];
-
-            if (list.length === 0) {
-                container.innerHTML = '<p class="text-slate-400 text-center py-2">タグがありません</p>';
-                return;
-            }
-
-            list.forEach((tag, index) => {
-                const item = document.createElement('div');
-                item.className = "flex justify-between items-center bg-white p-2.5 rounded-xl border border-slate-200 shadow-sm";
-                item.innerHTML = `
-                    <span class="font-bold text-slate-700">${tag.name}</span>
-                    <div class="flex items-center space-x-1">
-                        <button onclick="moveTag('${settingTagType}', ${index}, -1)" class="p-1 text-slate-400 hover:text-slate-700 ${index === 0 ? 'opacity-30 cursor-not-allowed' : ''}">
-                            <i data-lucide="arrow-up" class="w-3.5 h-3.5"></i>
-                        </button>
-                        <button onclick="moveTag('${settingTagType}', ${index}, 1)" class="p-1 text-slate-400 hover:text-slate-700 ${index === list.length - 1 ? 'opacity-30 cursor-not-allowed' : ''}">
-                            <i data-lucide="arrow-down" class="w-3.5 h-3.5"></i>
-                        </button>
-                        <button onclick="deleteTag('${settingTagType}', '${tag.id}')" class="p-1 text-slate-400 hover:text-rose-500 ml-1">
-                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                        </button>
-                    </div>
-                `;
-                container.appendChild(item);
-            });
-            lucide.createIcons();
-        }
-
-        function addNewTag() {
-            const name = document.getElementById('new-tag-name').value.trim();
-            if (!name) return;
-            if (!tags[settingTagType]) tags[settingTagType] = [];
-            tags[settingTagType].push({ id: 'tag_' + Date.now(), name: name });
-            localStorage.setItem('kakeibo_tags', JSON.stringify(tags));
-            document.getElementById('new-tag-name').value = '';
-            renderSettingsTagList();
-        }
-
-        function moveTag(type, index, direction) {
-            const list = tags[type];
-            const newIndex = index + direction;
-            if (newIndex < 0 || newIndex >= list.length) return;
-            const temp = list[index];
-            list[index] = list[newIndex];
-            list[newIndex] = temp;
-            localStorage.setItem('kakeibo_tags', JSON.stringify(tags));
-            renderSettingsTagList();
-        }
-
-        function deleteTag(type, id) {
-            if (!confirm('このタグを削除しますか？')) return;
-            tags[type] = tags[type].filter(t => t.id !== id);
-            localStorage.setItem('kakeibo_tags', JSON.stringify(tags));
-            renderSettingsTagList();
-        }
-
-        // --- タブ機能 ---
-        function renderTabs() {
-            const container = document.getElementById('tabs-container');
-            container.innerHTML = '';
-            
-            let sizeClass = "px-3 py-1 text-xs font-bold rounded-xl transition whitespace-nowrap";
-            if (tabs.length >= 5) {
-                sizeClass = "px-2 py-0.5 text-[10px] font-bold rounded-lg transition whitespace-nowrap";
-            } else if (tabs.length >= 4) {
-                sizeClass = "px-2.5 py-1 text-[11px] font-bold rounded-xl transition whitespace-nowrap";
-            }
-
-            tabs.forEach(tab => {
-                const isSelected = tab.id === currentTabId;
-                const btn = document.createElement('button');
-                
-                if (currentTheme === 'cute') {
-                    btn.className = `${sizeClass} ${
-                        isSelected ? 'bg-rose-400 text-white shadow-sm shadow-pink-200' : 'bg-white/80 text-rose-400 hover:bg-pink-100 border border-pink-200/60'
-                    }`;
-                } else if (currentTheme === 'simple') {
-                    btn.className = `${sizeClass} ${
-                        isSelected ? 'bg-slate-900 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200'
-                    }`;
-                } else {
-                    btn.className = `${sizeClass} ${
-                        isSelected ? 'bg-[#6b4e3d] text-amber-50 shadow-sm' : 'bg-[#e8dccb] text-[#5c4433] hover:bg-[#dfcfba] border border-[#c8b8a4]'
-                    }`;
-                }
-
-                btn.innerText = tab.name;
-                btn.onclick = () => {
-                    currentTabId = tab.id;
-                    renderTabs();
-                    renderSummary();
-                    renderCalendar();
-                };
-                container.appendChild(btn);
-            });
-
-            const addBtn = document.createElement('button');
-            addBtn.className = `${sizeClass} border transition flex items-center space-x-0.5 opacity-80 hover:opacity-100`;
-            addBtn.innerHTML = '<i data-lucide="plus" class="w-3 h-3"></i><span>追加</span>';
-            addBtn.onclick = openAddTabModal;
-            container.appendChild(addBtn);
-
-            const activeTab = tabs.find(t => t.id === currentTabId);
-            if (activeTab) {
-                document.getElementById('current-tab-label').innerText = `${activeTab.name}の収支`;
-            }
-            lucide.createIcons();
-        }
-
-        function renderSettingsTabList() {
-            const container = document.getElementById('settings-tab-list');
-            container.innerHTML = '';
-
-            tabs.forEach((tab, index) => {
-                const isAll = tab.id === 'all';
-                const item = document.createElement('div');
-                item.className = "flex justify-between items-center bg-white p-2.5 rounded-xl border border-slate-200 shadow-sm";
-                item.innerHTML = `
-                    <span class="font-bold text-slate-700">${tab.name} ${isAll ? '<span class="text-[10px] text-slate-400 font-normal">(デフォルト)</span>' : ''}</span>
-                    <div class="flex items-center space-x-1">
-                        ${!isAll ? `
-                            <button onclick="deleteTab('${tab.id}')" class="p-1 text-slate-400 hover:text-rose-500 transition">
-                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                            </button>
-                        ` : '<span class="text-[10px] text-slate-400">削除不可</span>'}
-                    </div>
-                `;
-                container.appendChild(item);
-            });
-            lucide.createIcons();
-        }
-
-        function addNewTabFromSettings() {
-            const name = document.getElementById('settings-new-tab-name').value.trim();
-            if (!name) return;
-            const newId = 'tab_' + Date.now();
-            tabs.push({ id: newId, name: name });
-            localStorage.setItem('kakeibo_tabs', JSON.stringify(tabs));
-            document.getElementById('settings-new-tab-name').value = '';
-            renderSettingsTabList();
-            renderTabs();
-        }
-
-        function deleteTab(id) {
-            if (id === 'all') {
-                alert('「総合」タブは削除できません。');
-                return;
-            }
-            if (!confirm('このタブを削除しますか？')) return;
-            tabs = tabs.filter(t => t.id !== id);
-            localStorage.setItem('kakeibo_tabs', JSON.stringify(tabs));
-            if (currentTabId === id) currentTabId = 'all';
-            renderSettingsTabList();
-            renderTabs();
-            renderSummary();
-            renderCalendar();
-        }
-
-        function openAddTabModal() {
-            document.getElementById('add-tab-modal').classList.remove('hidden');
-            document.getElementById('add-tab-modal').classList.add('flex');
-        }
-        function closeAddTabModal() {
-            document.getElementById('add-tab-modal').classList.remove('flex');
-            document.getElementById('add-tab-modal').classList.add('hidden');
-            document.getElementById('new-tab-name').value = '';
-        }
-        function addNewTab() {
-            const name = document.getElementById('new-tab-name').value.trim();
-            if (!name) return;
-            const newId = 'tab_' + Date.now();
-            tabs.push({ id: newId, name: name });
-            localStorage.setItem('kakeibo_tabs', JSON.stringify(tabs));
-            currentTabId = newId;
-            closeAddTabModal();
-            initApp();
-        }
-
-        function openSettingsModal() {
-            const select = document.getElementById('salary-day-select');
-            select.innerHTML = '<option value="0">未設定</option>';
-            for (let i = 1; i <= 30; i++) {
-                select.innerHTML += `<option value="${i}">${i}日</option>`;
-            }
-            select.innerHTML += '<option value="99">月末</option>';
-            select.value = salaryConfig.day || 0;
-            document.getElementById('salary-holiday-rule').value = salaryConfig.rule || 'prev';
-            document.getElementById('salary-amount').value = salaryConfig.amount || '';
-
-            showSettingsMenu();
-            document.getElementById('settings-modal').classList.remove('hidden');
-            document.getElementById('settings-modal').classList.add('flex');
-        }
-
-        function closeSettingsModal() {
-            document.getElementById('settings-modal').classList.remove('flex');
-            document.getElementById('settings-modal').classList.add('hidden');
-        }
-
-        function saveSalarySettings() {
-            salaryConfig.day = Number(document.getElementById('salary-day-select').value);
-            salaryConfig.rule = document.getElementById('salary-holiday-rule').value;
-            const amt = document.getElementById('salary-amount').value;
-            salaryConfig.amount = amt !== '' ? Number(amt) : '';
-            localStorage.setItem('kakeibo_salary_config', JSON.stringify(salaryConfig));
-            alert('給料日設定を保存しました');
-            renderSummary();
-            renderCalendar();
-        }
-
-        // --- タグ選択レンダリング（支出／収入で切り替え） ---
-        function renderTagSelector() {
-            const container = document.getElementById('tag-select-container');
-            container.innerHTML = '';
-            const list = tags[currentTxType] || [];
-
-            if (list.length === 0) {
-                container.innerHTML = '<span class="text-slate-400 p-1">設定からタグを追加できます</span>';
-                return;
-            }
-            if (!list.some(t => t.id === selectedTagId)) {
-                selectedTagId = list[0].id;
-            }
-
-            list.forEach(tag => {
-                const isSelected = tag.id === selectedTagId;
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = `px-2.5 py-1 text-xs font-bold rounded-xl transition ${
-                    isSelected ? 'bg-slate-800 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                }`;
-                btn.innerText = tag.name;
-                btn.onclick = () => {
-                    selectedTagId = tag.id;
-                    renderTagSelector();
-                };
-                container.appendChild(btn);
-            });
         }
 
         function isJapaneseHoliday(year, month, day) {
@@ -861,6 +545,186 @@
             return targetDay;
         }
 
+        function renderTabs() {
+            const container = document.getElementById('tabs-container');
+            container.innerHTML = '';
+            
+            tabs.forEach(tab => {
+                const isSelected = tab.id === currentTabId;
+                const btn = document.createElement('button');
+                
+                if (currentTheme === 'cute') {
+                    btn.className = `px-3.5 py-1.5 text-xs font-bold rounded-2xl transition whitespace-nowrap shrink-0 ${
+                        isSelected ? 'bg-rose-400 text-white shadow-md shadow-pink-200' : 'bg-white/80 text-rose-400 hover:bg-pink-100 border border-pink-200/60'
+                    }`;
+                } else if (currentTheme === 'simple') {
+                    btn.className = `px-3.5 py-1.5 text-xs font-bold rounded-xl transition whitespace-nowrap shrink-0 ${
+                        isSelected ? 'bg-slate-900 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200'
+                    }`;
+                } else {
+                    btn.className = `px-3.5 py-1.5 text-xs font-bold rounded-xl transition whitespace-nowrap shrink-0 ${
+                        isSelected ? 'bg-[#6b4e3d] text-amber-50 shadow-sm' : 'bg-[#e8dccb] text-[#5c4433] hover:bg-[#dfcfba] border border-[#c8b8a4]'
+                    }`;
+                }
+
+                btn.innerText = tab.name;
+                btn.onclick = () => {
+                    currentTabId = tab.id;
+                    renderTabs();
+                    renderSummary();
+                    renderCalendar();
+                };
+                container.appendChild(btn);
+            });
+
+            const addBtn = document.createElement('button');
+            addBtn.className = "px-3 py-1.5 text-xs font-bold rounded-2xl border transition whitespace-nowrap shrink-0 flex items-center space-x-1 opacity-80 hover:opacity-100";
+            addBtn.innerHTML = '<i data-lucide="plus" class="w-3.5 h-3.5"></i><span>追加</span>';
+            addBtn.onclick = openAddTabModal;
+            container.appendChild(addBtn);
+
+            const activeTab = tabs.find(t => t.id === currentTabId);
+            if (activeTab) {
+                document.getElementById('current-tab-label').innerText = `${activeTab.name}の収支`;
+            }
+            lucide.createIcons();
+        }
+
+        function openAddTabModal() {
+            document.getElementById('add-tab-modal').classList.remove('hidden');
+            document.getElementById('add-tab-modal').classList.add('flex');
+        }
+        function closeAddTabModal() {
+            document.getElementById('add-tab-modal').classList.remove('flex');
+            document.getElementById('add-tab-modal').classList.add('hidden');
+            document.getElementById('new-tab-name').value = '';
+        }
+        function addNewTab() {
+            const name = document.getElementById('new-tab-name').value.trim();
+            if (!name) return;
+            const newId = 'tab_' + Date.now();
+            tabs.push({ id: newId, name: name });
+            localStorage.setItem('kakeibo_tabs', JSON.stringify(tabs));
+            currentTabId = newId;
+            closeAddTabModal();
+            initApp();
+        }
+
+        function openSettingsModal() {
+            const select = document.getElementById('salary-day-select');
+            select.innerHTML = '<option value="0">未設定</option>';
+            for (let i = 1; i <= 30; i++) {
+                select.innerHTML += `<option value="${i}">${i}日</option>`;
+            }
+            select.innerHTML += '<option value="99">月末</option>';
+
+            select.value = salaryConfig.day || 0;
+            document.getElementById('salary-holiday-rule').value = salaryConfig.rule || 'prev';
+            document.getElementById('salary-amount').value = salaryConfig.amount || '';
+
+            showSettingsMenu();
+            document.getElementById('settings-modal').classList.remove('hidden');
+            document.getElementById('settings-modal').classList.add('flex');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settings-modal').classList.remove('flex');
+            document.getElementById('settings-modal').classList.add('hidden');
+        }
+
+        function saveSalarySettings() {
+            salaryConfig.day = Number(document.getElementById('salary-day-select').value);
+            salaryConfig.rule = document.getElementById('salary-holiday-rule').value;
+            const amt = document.getElementById('salary-amount').value;
+            salaryConfig.amount = amt !== '' ? Number(amt) : '';
+
+            localStorage.setItem('kakeibo_salary_config', JSON.stringify(salaryConfig));
+            alert('給料日設定を保存しました');
+            renderSummary();
+            renderCalendar();
+        }
+
+        function renderSettingsTagList() {
+            const container = document.getElementById('settings-tag-list');
+            container.innerHTML = '';
+            if (tags.length === 0) {
+                container.innerHTML = '<p class="text-slate-400 text-center py-2">登録されているタグはありません</p>';
+                return;
+            }
+
+            tags.forEach((tag, index) => {
+                const item = document.createElement('div');
+                item.className = "flex justify-between items-center bg-white p-2.5 rounded-xl border border-slate-200 shadow-sm";
+                item.innerHTML = `
+                    <span class="font-bold text-slate-700">${tag.name}</span>
+                    <div class="flex items-center space-x-1">
+                        <button onclick="moveTag(${index}, -1)" class="p-1 text-slate-400 hover:text-slate-700 ${index === 0 ? 'opacity-30 cursor-not-allowed' : ''}">
+                            <i data-lucide="arrow-up" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <button onclick="moveTag(${index}, 1)" class="p-1 text-slate-400 hover:text-slate-700 ${index === tags.length - 1 ? 'opacity-30 cursor-not-allowed' : ''}">
+                            <i data-lucide="arrow-down" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <button onclick="deleteTag('${tag.id}')" class="p-1 text-slate-400 hover:text-rose-500 ml-1">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+            lucide.createIcons();
+        }
+
+        function addNewTag() {
+            const name = document.getElementById('new-tag-name').value.trim();
+            if (!name) return;
+            tags.push({ id: 'tag_' + Date.now(), name: name });
+            localStorage.setItem('kakeibo_tags', JSON.stringify(tags));
+            document.getElementById('new-tag-name').value = '';
+            renderSettingsTagList();
+        }
+
+        function moveTag(index, direction) {
+            const newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= tags.length) return;
+            const temp = tags[index];
+            tags[index] = tags[newIndex];
+            tags[newIndex] = temp;
+            localStorage.setItem('kakeibo_tags', JSON.stringify(tags));
+            renderSettingsTagList();
+        }
+
+        function deleteTag(id) {
+            if (!confirm('このタグを削除しますか？')) return;
+            tags = tags.filter(t => t.id !== id);
+            localStorage.setItem('kakeibo_tags', JSON.stringify(tags));
+            renderSettingsTagList();
+        }
+
+        function renderTagSelector() {
+            const container = document.getElementById('tag-select-container');
+            container.innerHTML = '';
+            if (tags.length === 0) {
+                container.innerHTML = '<span class="text-slate-400 p-1">設定からタグを追加できます（なしでも登録可）</span>';
+                return;
+            }
+            if (!tags.some(t => t.id === selectedTagId)) selectedTagId = tags[0].id;
+
+            tags.forEach(tag => {
+                const isSelected = tag.id === selectedTagId;
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `px-2.5 py-1 text-xs font-bold rounded-xl transition ${
+                    isSelected ? 'bg-slate-800 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`;
+                btn.innerText = tag.name;
+                btn.onclick = () => {
+                    selectedTagId = tag.id;
+                    renderTagSelector();
+                };
+                container.appendChild(btn);
+            });
+        }
+
         function getFilteredTransactions() {
             let list = [];
             if (currentTabId === 'all') {
@@ -881,7 +745,7 @@
                             type: 'income',
                             amount: Number(salaryConfig.amount),
                             date: dateStr,
-                            tagName: '給与',
+                            tagName: '給料',
                             memo: '定額自動反映',
                             isSalaryAuto: true
                         });
@@ -909,11 +773,13 @@
             });
 
             const netTotal = totalIncome - totalExpense;
+
             document.getElementById('total-balance').innerText = `¥${netTotal.toLocaleString()}`;
             document.getElementById('monthly-income').innerText = `¥${monthlyIncome.toLocaleString()}`;
             document.getElementById('monthly-expense').innerText = `¥${monthlyExpense.toLocaleString()}`;
         }
 
+        // --- カレンダー機能 (重要度★1〜★5に応じた背景変化 ＆ ★5超強調) ---
         function renderCalendar() {
             document.getElementById('calendar-title').innerText = `${currentYear}年 ${currentMonth}月`;
             const grid = document.getElementById('calendar-grid');
@@ -939,6 +805,7 @@
                 const isToday = (dateStr === todayStr);
                 const isPayday = (i === payday);
 
+                // 収支データの集計
                 const dayTxs = txs.filter(t => t.date === dateStr);
                 let dayNetTotal = 0;
                 let hasTransaction = dayTxs.length > 0;
@@ -947,6 +814,7 @@
                     else dayNetTotal -= t.amount;
                 });
 
+                // 予定日データの確認
                 const dayPlans = plans.filter(p => p.date === dateStr);
                 let maxPriority = 0;
                 let planInitial = '';
@@ -959,8 +827,10 @@
                     });
                 }
 
+                // ★1〜★5 に応じたデザインスタイルの分岐
                 let planClass = '';
                 if (maxPriority === 5) {
+                    // ★5: 絶対見逃さない鮮烈なグラデーション背景 & 光る枠線 & パルス移動
                     planClass = 'bg-gradient-to-br from-rose-400 via-rose-500 to-amber-400 border-rose-600 text-white shadow-md shadow-rose-200 ring-2 ring-rose-400 priority-5-animation z-10';
                 } else if (maxPriority === 4) {
                     planClass = 'bg-rose-100/90 border-rose-300 font-bold';
@@ -981,14 +851,17 @@
                         : planClass || 'border-slate-100 hover:border-indigo-300 hover:bg-slate-50/50'
                 }`;
 
+                // 予定バッジ（頭文字表示）
                 let planBadgeHtml = '';
                 if (planInitial) {
                     const badgeBg = maxPriority === 5 ? 'bg-white text-rose-600 font-black shadow-sm' : 'bg-rose-500 text-white font-bold';
                     planBadgeHtml = `<span class="text-[7.5px] ${badgeBg} px-1 rounded-md">${planInitial}</span>`;
                 }
 
+                // 収支バッジ
                 let badgeHtml = '';
                 if (hasTransaction) {
+                    const txTextColor = maxPriority === 5 ? 'text-white font-black drop-shadow-sm' : '';
                     if (dayNetTotal > 0) {
                         badgeHtml = `<span class="text-[7.5px] sm:text-[9px] ${maxPriority === 5 ? 'bg-black/20 text-emerald-200' : 'bg-emerald-100 text-emerald-700'} font-extrabold px-0.5 rounded w-full text-center truncate block">+${dayNetTotal.toLocaleString()}</span>`;
                     } else if (dayNetTotal < 0) {
@@ -1031,6 +904,7 @@
             renderSummary();
         }
 
+        // --- モーダル制御 ---
         function openAddModal(dateStr = '') {
             closeDayDetailModal();
             if (!dateStr) {
@@ -1044,6 +918,7 @@
             setEntryMode('tx');
             setTxType('expense');
             setPlanPriority(3);
+            renderTagSelector();
             
             document.getElementById('add-modal').classList.remove('hidden');
             document.getElementById('add-modal').classList.add('flex');
@@ -1087,7 +962,6 @@
                 expBtn.className = "py-2 rounded-2xl font-bold bg-slate-100 text-slate-400 transition";
                 incBtn.className = "py-2 rounded-2xl font-bold bg-emerald-500 text-white shadow-sm transition";
             }
-            renderTagSelector();
         }
 
         function setPlanPriority(prio) {
@@ -1117,8 +991,7 @@
                     alert('有効な金額を入力してください。');
                     return;
                 }
-                const list = tags[currentTxType] || [];
-                const activeTag = list.find(t => t.id === selectedTagId);
+                const activeTag = tags.find(t => t.id === selectedTagId);
                 const tagName = activeTag ? activeTag.name : '未指定';
                 const targetTab = currentTabId === 'all' ? (tabs[1] ? tabs[1].id : 'general') : currentTabId;
 
