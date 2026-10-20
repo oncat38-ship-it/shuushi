@@ -56,25 +56,22 @@
     <!-- メインコンテンツ -->
     <main class="max-w-xl mx-auto px-4 mt-3 space-y-3">
 
-        <!-- 1. 収支表示カード（資金設定連動でスマート表示） -->
+        <!-- 1. 収支表示カード（タブ名非表示＆コンパクト化、総合は資金自動合算） -->
         <div id="summary-card" class="rounded-2xl p-4 text-white shadow-lg relative overflow-hidden transition-all duration-300">
             <div class="flex justify-between items-start relative z-10 gap-2">
                 <div>
-                    <!-- タブ名＆期間・資金設定バッジをコンパクトに配置 -->
+                    <!-- 期間・資金設定バッジ（タブ名を省いてすっきり） -->
                     <div class="flex items-center space-x-1.5 flex-wrap gap-y-1">
-                        <span id="current-tab-label" class="text-[10px] font-bold bg-white/20 backdrop-blur px-2 py-0.5 rounded-full text-white inline-flex items-center gap-1">
-                            総合
-                        </span>
-                        <button onclick="openPeriodModal()" class="text-[10px] bg-white/20 hover:bg-white/30 backdrop-blur px-2 py-0.5 rounded-full text-white font-bold transition flex items-center gap-1">
+                        <button onclick="openPeriodModal()" class="text-[10px] bg-white/20 hover:bg-white/30 backdrop-blur px-2.5 py-1 rounded-full text-white font-bold transition flex items-center gap-1">
                             <i data-lucide="sliders-horizontal" class="w-3 h-3"></i> <span id="period-badge-text">期間設定</span>
                         </button>
-                        <button onclick="openFundModal()" class="text-[10px] bg-white/25 hover:bg-white/35 backdrop-blur px-2 py-0.5 rounded-full text-white font-bold transition flex items-center gap-1">
+                        <button id="fund-setting-btn" onclick="openFundModal()" class="text-[10px] bg-white/25 hover:bg-white/35 backdrop-blur px-2.5 py-1 rounded-full text-white font-bold transition flex items-center gap-1">
                             <i data-lucide="landmark" class="w-3 h-3"></i> <span id="fund-badge-text">資金設定</span>
                         </button>
                     </div>
 
                     <!-- メイン数字（残金 or 収支）と横の小数字バッジ -->
-                    <div class="mt-2">
+                    <div class="mt-2.5">
                         <div class="flex items-baseline space-x-2 flex-wrap gap-y-0.5">
                             <span id="total-balance" class="text-2xl sm:text-3xl font-black tracking-tight text-white drop-shadow-sm">¥0</span>
                             <span id="balance-diff-badge" class="text-xs font-extrabold px-2 py-0.5 rounded-full bg-white/20 backdrop-blur hidden">±¥0</span>
@@ -747,8 +744,12 @@
 
         // --- タブ別・月別資金設定モーダル ---
         function openFundModal() {
+            if (currentTabId === 'all') {
+                alert('「総合」タブの資金は、他のすべてのタブの資金が自動合算されます。個別の資金を設定したい場合は、それぞれのタブに切り替えて設定してください。');
+                return;
+            }
             const activeTab = tabs.find(t => t.id === currentTabId);
-            const tabName = activeTab ? activeTab.name : '総合';
+            const tabName = activeTab ? activeTab.name : '';
             document.getElementById('fund-modal-info').innerText = `【${tabName}】の ${currentYear}年${currentMonth}月の開始資金を設定します。`;
 
             const fundKey = `${currentTabId}_${currentYear}-${String(currentMonth).padStart(2, '0')}`;
@@ -1022,11 +1023,16 @@
             addBtn.onclick = openAddTabModal;
             container.appendChild(addBtn);
 
-            const activeTab = tabs.find(t => t.id === currentTabId);
-            if (activeTab) {
-                const labelEl = document.getElementById('current-tab-label');
-                if (labelEl) labelEl.innerText = `${activeTab.name}`;
+            // 総合タブの時は資金設定ボタンを「総合資金（合算）」表記にする
+            const fundBadgeEl = document.getElementById('fund-badge-text');
+            const fundSettingBtn = document.getElementById('fund-setting-btn');
+            if (currentTabId === 'all') {
+                if (fundBadgeEl) fundBadgeEl.innerText = `総合資金 (合算)`;
+                if (fundSettingBtn) fundSettingBtn.title = "総合資金は各タブの合算です";
+            } else {
+                if (fundSettingBtn) fundSettingBtn.title = "資金設定";
             }
+
             lucide.createIcons();
         }
 
@@ -1412,14 +1418,19 @@
 
             const monthKeyStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}`;
             let startFund = 0;
+
             if (currentTabId === 'all') {
+                // 「総合」タブの場合は、他のすべての個別タブの資金設定を自動合算する
                 tabs.forEach(tab => {
                     if (tab.id !== 'all') {
                         const k = `${tab.id}_${monthKeyStr}`;
-                        if (tabInitialFunds[k] !== undefined) startFund += tabInitialFunds[k];
+                        if (tabInitialFunds[k] !== undefined) {
+                            startFund += tabInitialFunds[k];
+                        }
                     }
                 });
             } else {
+                // 個別タブの場合はそのタブの資金を取得
                 const fundKey = `${currentTabId}_${monthKeyStr}`;
                 startFund = tabInitialFunds[fundKey] !== undefined ? tabInitialFunds[fundKey] : 0;
             }
@@ -1443,7 +1454,13 @@
             // 資金が設定されているか判定
             if (startFund > 0) {
                 // 資金あり：メインに「残金」、小バッジに「当月収支」
-                if (fundBadgeEl) fundBadgeEl.innerText = `資金: ¥${startFund.toLocaleString()}`;
+                if (fundBadgeEl) {
+                    if (currentTabId === 'all') {
+                        fundBadgeEl.innerText = `総合資金: ¥${startFund.toLocaleString()}`;
+                    } else {
+                        fundBadgeEl.innerText = `資金: ¥${startFund.toLocaleString()}`;
+                    }
+                }
                 if (balEl) balEl.innerText = `¥${netBalance.toLocaleString()}`;
                 if (subDescEl) subDescEl.innerText = `資金ベース残金（当月収支: ${formattedDiff}）`;
 
@@ -1460,7 +1477,13 @@
                 }
             } else {
                 // 資金なし：メインに「当月収支のみ」、小バッジは非表示
-                if (fundBadgeEl) fundBadgeEl.innerText = `資金設定`;
+                if (fundBadgeEl) {
+                    if (currentTabId === 'all') {
+                        fundBadgeEl.innerText = `総合資金 (未設定)`;
+                    } else {
+                        fundBadgeEl.innerText = `資金設定`;
+                    }
+                }
                 if (balEl) balEl.innerText = formattedDiff;
                 if (subDescEl) subDescEl.innerText = `当月の収支（純増減）`;
 
