@@ -123,9 +123,9 @@
 
     </main>
 
-    <!-- Modal 1: 収支・予定日・一括入力モーダル -->
+    <!-- Modal 1: 収支・予定日・月一括入力モーダル -->
     <div id="add-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div id="add-modal-content" class="rounded-3xl p-5 max-w-sm w-full shadow-2xl space-y-3 border max-h-[90vh] overflow-y-auto">
+        <div id="add-modal-content" class="rounded-3xl p-5 max-w-lg w-full shadow-2xl space-y-3 border max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center">
                 <h3 id="add-modal-title" class="text-sm font-extrabold">登録する</h3>
                 <button onclick="closeAddModal()" class="text-slate-400 hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -136,7 +136,7 @@
                 <div class="grid grid-cols-3 gap-1 p-1 bg-slate-100 rounded-2xl font-bold text-center">
                     <button type="button" id="mode-tx-btn" onclick="setEntryMode('tx')" class="py-1.5 rounded-xl transition">単発入力 💸</button>
                     <button type="button" id="mode-plan-btn" onclick="setEntryMode('plan')" class="py-1.5 rounded-xl transition">予定日 📅</button>
-                    <button type="button" id="mode-bulk-btn" onclick="setEntryMode('bulk')" class="py-1.5 rounded-xl transition">一括登録 📝</button>
+                    <button type="button" id="mode-bulk-btn" onclick="setEntryMode('bulk')" class="py-1.5 rounded-xl transition">月一括登録 📝</button>
                 </div>
 
                 <!-- 1. 単発収支フォーム -->
@@ -194,18 +194,52 @@
                     </div>
                 </div>
 
-                <!-- 3. まとめ一括登録フォーム -->
-                <div id="form-bulk-section" class="space-y-2 hidden">
-                    <div class="bg-amber-50 border border-amber-200 p-2.5 rounded-2xl text-[11px] text-amber-800 space-y-1">
-                        <p class="font-bold flex items-center gap-1"><i data-lucide="info" class="w-3.5 h-3.5"></i> 入力例（1行に1件）:</p>
-                        <p class="font-mono text-[10px] bg-white/80 p-1.5 rounded border border-amber-200">
-                            2026-10-15 支出 食費 1200 ランチ<br>
-                            2026-10-16 収入 給与 250000 10月分<br>
-                            10/18 1500 コンコンビニ
-                        </p>
-                        <p class="text-[10px] opacity-80">※年や区分・タグを省略した場合、現在年・支出・デフォルトタグが適用されます。</p>
+                <!-- 3. 月一括登録（表形式） -->
+                <div id="form-bulk-section" class="space-y-3 hidden">
+                    <div class="flex items-center justify-between bg-slate-100 p-2 rounded-2xl font-bold">
+                        <div class="flex items-center space-x-2">
+                            <i data-lucide="calendar" class="w-4 h-4 text-slate-500"></i>
+                            <span id="bulk-month-label" class="text-slate-700">対象月: 2026年10月</span>
+                        </div>
+                        <div class="flex items-center space-x-1">
+                            <button type="button" onclick="changeBulkMonth(-1)" class="p-1 bg-white rounded-lg shadow-sm"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                            <button type="button" onclick="changeBulkMonth(1)" class="p-1 bg-white rounded-lg shadow-sm"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                        </div>
                     </div>
-                    <textarea id="bulk-text-input" rows="6" placeholder="ここにまとめてテキストを貼り付け・入力..." class="w-full border rounded-2xl p-3 font-mono text-xs focus:outline-none leading-relaxed"></textarea>
+
+                    <!-- 一括変更コントロールバー -->
+                    <div class="bg-indigo-50 border border-indigo-200 p-2.5 rounded-2xl space-y-2">
+                        <p class="font-extrabold text-indigo-900 flex items-center gap-1"><i data-lucide="sparkles" class="w-3.5 h-3.5"></i> 一括変更（全日程に適用）</p>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-[10px] text-indigo-700 font-bold block mb-0.5">一括区分</label>
+                                <select id="bulk-default-type" onchange="applyBulkType(this.value)" class="w-full border border-indigo-200 rounded-xl px-2 py-1 bg-white font-bold text-slate-700">
+                                    <option value="expense">支出 💸</option>
+                                    <option value="income">収入 💰</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-indigo-700 font-bold block mb-0.5">一括ジャンル（タグ）</label>
+                                <select id="bulk-default-tag" onchange="applyBulkTag(this.value)" class="w-full border border-indigo-200 rounded-xl px-2 py-1 bg-white font-bold text-slate-700"></select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 日別表形式リスト -->
+                    <div class="border rounded-2xl overflow-hidden max-h-64 overflow-y-auto bg-white">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="bg-slate-100 sticky top-0 text-[10px] text-slate-500 font-extrabold border-b">
+                                <tr>
+                                    <th class="p-2 w-16">日付</th>
+                                    <th class="p-2 w-16">区分</th>
+                                    <th class="p-2 w-24">タグ</th>
+                                    <th class="p-2 w-24">金額(円)</th>
+                                    <th class="p-2">メモ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bulk-table-body" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -349,11 +383,11 @@
                         </select>
 
                         <label class="text-slate-400 font-bold block mb-1">記念日の内容</label>
-                        <input type="text" id="new-anni-title" placeholder="例: 結婚記念日、契約日など" class="w-full border rounded-xl px-3 py-2 focus:outline-none mb-2">
+                        <input type="text" id="new-anni-title" placeholder="例: 結婚記念日、契約日など" class="w-full border rounded-xl px-3 py-2 font-bold focus:outline-none mb-2">
                         
                         <label class="text-slate-400 font-bold block mb-1">日付</label>
                         <div class="flex space-x-2">
-                            <input type="date" id="new-anni-date" class="flex-1 border rounded-xl px-3 py-2 focus:outline-none font-bold">
+                            <input type="date" id="new-anni-date" class="flex-1 border rounded-xl px-3 py-2 font-bold">
                             <button onclick="addNewAnniversary()" id="add-anni-btn" class="px-4 py-2 text-white font-bold rounded-xl transition whitespace-nowrap">追加</button>
                         </div>
                     </div>
@@ -458,6 +492,8 @@
         let currentEntryMode = 'tx';
         let currentTxType = 'expense';
         let selectedDateForModal = '';
+        let bulkYear = now.getFullYear();
+        let bulkMonth = now.getMonth() + 1;
 
         const now = new Date();
         let currentYear = now.getFullYear();
@@ -503,7 +539,7 @@
                 document.getElementById('calendar-icon-bg').className = "p-1.5 bg-pink-100 text-rose-400 rounded-xl";
 
                 document.querySelectorAll('#add-modal-content, #day-detail-modal-content, #add-tab-modal-content, #settings-modal-content').forEach(el => {
-                    el.className = "bg-white border border-pink-100 rounded-3xl p-5 sm:p-6 max-w-md w-full shadow-2xl space-y-3 max-h-[85vh] flex flex-col";
+                    el.className = "bg-white border border-pink-100 rounded-3xl p-5 sm:p-6 max-w-lg w-full shadow-2xl space-y-3 max-h-[85vh] flex flex-col";
                 });
 
                 document.getElementById('save-tx-btn').className = "w-full py-2.5 bg-gradient-to-r from-rose-400 to-pink-400 hover:from-rose-500 hover:to-pink-500 text-white font-extrabold rounded-2xl text-xs transition shadow-md";
@@ -533,7 +569,7 @@
                 document.getElementById('calendar-icon-bg').className = "p-1.5 bg-slate-100 text-slate-700 rounded-lg";
 
                 document.querySelectorAll('#add-modal-content, #day-detail-modal-content, #add-tab-modal-content, #settings-modal-content').forEach(el => {
-                    el.className = "bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 max-w-md w-full shadow-xl space-y-3 max-h-[85vh] flex flex-col";
+                    el.className = "bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 max-w-lg w-full shadow-xl space-y-3 max-h-[85vh] flex flex-col";
                 });
 
                 document.getElementById('save-tx-btn').className = "w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition shadow";
@@ -563,7 +599,7 @@
                 document.getElementById('calendar-icon-bg').className = "p-1.5 bg-[#e8dccb] text-[#5c4433] rounded-lg";
 
                 document.querySelectorAll('#add-modal-content, #day-detail-modal-content, #add-tab-modal-content, #settings-modal-content').forEach(el => {
-                    el.className = "bg-[#fcfaf7] border border-[#d8ccbc] rounded-2xl p-5 sm:p-6 max-w-md w-full shadow-xl space-y-3 max-h-[85vh] flex flex-col";
+                    el.className = "bg-[#fcfaf7] border border-[#d8ccbc] rounded-2xl p-5 sm:p-6 max-w-lg w-full shadow-xl space-y-3 max-h-[85vh] flex flex-col";
                 });
 
                 document.getElementById('save-tx-btn').className = "w-full py-2.5 bg-[#6b4e3d] hover:bg-[#583f30] text-amber-50 font-bold rounded-xl text-xs transition shadow";
@@ -982,6 +1018,98 @@
             });
         }
 
+        // --- 月一括登録用テーブル生成ロジック ---
+        function renderBulkTable() {
+            const labelEl = document.getElementById('bulk-month-label');
+            if (labelEl) labelEl.innerText = `対象月: ${bulkYear}年${bulkMonth}月`;
+
+            const tagSelect = document.getElementById('bulk-default-tag');
+            if (tagSelect) {
+                const defType = document.getElementById('bulk-default-type').value || 'expense';
+                const tagList = tags[defType] || [];
+                tagSelect.innerHTML = '';
+                tagList.forEach(t => {
+                    tagSelect.innerHTML += `<option value="${t.name}">${t.name}</option>`;
+                });
+            }
+
+            const tbody = document.getElementById('bulk-table-body');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            const lastDay = new Date(bulkYear, bulkMonth, 0).getDate();
+            const defType = document.getElementById('bulk-default-type').value || 'expense';
+            const defaultTagName = tagSelect && tagSelect.options.length > 0 ? tagSelect.options[0].value : '未指定';
+
+            for (let i = 1; i <= lastDay; i++) {
+                const dayStr = String(i).padStart(2, '0');
+                const monthStr = String(bulkMonth).padStart(2, '0');
+                const dateKey = `${bulkYear}-${monthStr}-${dayStr}`;
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+                tr.innerHTML = `
+                    <td class="p-2 font-bold text-slate-700 whitespace-nowrap">${bulkMonth}/${i}</td>
+                    <td class="p-2">
+                        <select data-date="${dateKey}" class="bulk-type border rounded-lg px-1.5 py-1 text-[11px] font-bold bg-white text-slate-700" onchange="onBulkTypeChange(this, '${dateKey}')">
+                            <option value="expense" ${defType === 'expense' ? 'selected' : ''}>支出</option>
+                            <option value="income" ${defType === 'income' ? 'selected' : ''}>収入</option>
+                        </select>
+                    </td>
+                    <td class="p-2">
+                        <select data-date="${dateKey}" class="bulk-tag border rounded-lg px-1.5 py-1 text-[11px] font-bold bg-white text-slate-700 w-full">
+                            ${generateTagOptions(defType, defaultTagName)}
+                        </select>
+                    </td>
+                    <td class="p-2">
+                        <input type="number" data-date="${dateKey}" placeholder="例: 1200" class="bulk-amount border rounded-lg px-2 py-1 text-[11px] font-bold w-full focus:outline-none">
+                    </td>
+                    <td class="p-2">
+                        <input type="text" data-date="${dateKey}" placeholder="メモ" class="bulk-memo border rounded-lg px-2 py-1 text-[11px] w-full focus:outline-none">
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            }
+        }
+
+        function generateTagOptions(type, selectedName) {
+            const list = tags[type] || [];
+            return list.map(t => `<option value="${t.name}" ${t.name === selectedName ? 'selected' : ''}>${t.name}</option>`).join('');
+        }
+
+        function changeBulkMonth(dir) {
+            bulkMonth += dir;
+            if (bulkMonth > 12) { bulkMonth = 1; bulkYear++; }
+            else if (bulkMonth < 1) { bulkMonth = 12; bulkYear--; }
+            renderBulkTable();
+        }
+
+        function applyBulkType(type) {
+            document.querySelectorAll('.bulk-type').forEach(el => el.value = type);
+            const tagSelect = document.getElementById('bulk-default-tag');
+            const tagList = tags[type] || [];
+            if (tagSelect) {
+                tagSelect.innerHTML = tagList.map(t => `<option value="${t.name}">${t.name}</option>`).join('');
+            }
+            const defaultTagName = tagList.length > 0 ? tagList[0].name : '';
+            document.querySelectorAll('.bulk-tag').forEach(el => {
+                el.innerHTML = generateTagOptions(type, defaultTagName);
+            });
+        }
+
+        function applyBulkTag(tagName) {
+            document.querySelectorAll('.bulk-tag').forEach(el => el.value = tagName);
+        }
+
+        function onBulkTypeChange(selectEl, dateKey) {
+            const type = selectEl.value;
+            const row = selectEl.closest('tr');
+            const tagSelect = row.querySelector('.bulk-tag');
+            const tagList = tags[type] || [];
+            const defaultName = tagList.length > 0 ? tagList[0].name : '';
+            tagSelect.innerHTML = generateTagOptions(type, defaultName);
+        }
+
         function isJapaneseHoliday(year, month, day) {
             const dateStr = `${month}/${day}`;
             const fixedHolidays = ["1/1", "1/2", "1/3", "2/11", "2/23", "4/29", "5/3", "5/4", "5/5", "8/11", "11/3", "11/23"];
@@ -1175,7 +1303,6 @@
                     indicatorHtml = `<span class="text-[8px] bg-white text-blue-700 px-1 py-0.2 rounded-md font-extrabold shadow-sm">${planInitial}</span>`;
                 }
 
-                // 給料日マーク（◯の中に給の字）
                 let paydayBadgeHtml = '';
                 if (isPayday && !isAnniversary) {
                     let paySymbolStyle = '';
@@ -1201,7 +1328,6 @@
                     }
                 }
 
-                // 「今日」のデザインを文字なしの「数字強調バッジ」に洗練
                 let dayNumberHtml = '';
                 if (isToday && !isAnniversary && !hasPlan) {
                     dayNumberHtml = `<span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-indigo-600 text-white text-[11px] font-black shadow-sm">${i}</span>`;
@@ -1258,13 +1384,15 @@
             if (!dateStr) {
                 dateStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
             }
+            bulkYear = currentYear;
+            bulkMonth = currentMonth;
+
             const dateInput = document.getElementById('tx-date');
             const planDateInput = document.getElementById('plan-date');
             const amtInput = document.getElementById('tx-amount');
             const memoInput = document.getElementById('tx-memo');
             const planMemoInput = document.getElementById('plan-memo');
             const titleInput = document.getElementById('plan-title');
-            const bulkInput = document.getElementById('bulk-text-input');
 
             if (dateInput) dateInput.value = dateStr;
             if (planDateInput) planDateInput.value = dateStr;
@@ -1272,10 +1400,10 @@
             if (memoInput) memoInput.value = '';
             if (planMemoInput) planMemoInput.value = '';
             if (titleInput) titleInput.value = '';
-            if (bulkInput) bulkInput.value = '';
             
             setEntryMode('tx');
             setTxType('expense');
+            renderBulkTable();
             
             const modal = document.getElementById('add-modal');
             if (modal) {
@@ -1328,7 +1456,8 @@
                 if (txSection) txSection.classList.add('hidden');
                 if (planSection) planSection.classList.add('hidden');
                 if (bulkSection) bulkSection.classList.remove('hidden');
-                if (modalTitle) modalTitle.innerText = 'まとめて一括登録 📝';
+                if (modalTitle) modalTitle.innerText = '月一括登録 📝';
+                renderBulkTable();
             }
         }
 
@@ -1402,64 +1531,25 @@
                 localStorage.setItem('kakeibo_plans', JSON.stringify(plans));
             }
             else if (currentEntryMode === 'bulk') {
-                const bulkInput = document.getElementById('bulk-text-input');
-                const rawText = bulkInput ? bulkInput.value.trim() : '';
-                if (!rawText) { alert('一括登録するデータを入力してください。'); return; }
-
-                const lines = rawText.split('\n');
+                const rows = document.querySelectorAll('#bulk-table-body tr');
                 let addedCount = 0;
 
-                lines.forEach((line, idx) => {
-                    const tokens = line.trim().split(/\s+/);
-                    if (tokens.length < 2) return;
+                rows.forEach((row, idx) => {
+                    const date = row.querySelector('.bulk-amount').getAttribute('data-date');
+                    const type = row.querySelector('.bulk-type').value;
+                    const tagName = row.querySelector('.bulk-tag').value;
+                    const amountVal = row.querySelector('.bulk-amount').value;
+                    const memo = row.querySelector('.bulk-memo').value.trim();
 
-                    let rawDate = tokens[0];
-                    let dateStr = '';
-
-                    if (/^\d{4}-\d{1,2}-\d{1,2}$/.test(rawDate)) {
-                        const [y, m, d] = rawDate.split('-');
-                        dateStr = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-                    } else if (/^\d{1,2}\/\d{1,2}$/.test(rawDate)) {
-                        const [m, d] = rawDate.split('/');
-                        dateStr = `${currentYear}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-                    } else {
-                        return; // 日付解析失敗はスキップ
-                    }
-
-                    let type = 'expense';
-                    let tagName = '未指定';
-                    let amount = 0;
-                    let memo = '';
-
-                    let nextIdx = 1;
-                    if (tokens[nextIdx] === '収入' || tokens[nextIdx] === '支出') {
-                        type = tokens[nextIdx] === '収入' ? 'income' : 'expense';
-                        nextIdx++;
-                    }
-
-                    if (isNaN(Number(tokens[nextIdx])) && tokens[nextIdx] !== undefined) {
-                        tagName = tokens[nextIdx];
-                        nextIdx++;
-                    }
-
-                    if (!isNaN(Number(tokens[nextIdx]))) {
-                        amount = Number(tokens[nextIdx]);
-                        nextIdx++;
-                    }
-
-                    if (tokens[nextIdx] !== undefined) {
-                        memo = tokens.slice(nextIdx).join(' ');
-                    }
-
-                    if (amount > 0) {
+                    if (amountVal && Number(amountVal) > 0) {
                         transactions.push({
                             id: 'tx_' + Date.now() + '_' + idx,
                             tabId: targetTab,
                             tagId: '',
                             tagName: tagName,
                             type: type,
-                            amount: amount,
-                            date: dateStr,
+                            amount: Number(amountVal),
+                            date: date,
                             memo: memo
                         });
                         addedCount++;
@@ -1467,11 +1557,11 @@
                 });
 
                 if (addedCount === 0) {
-                    alert('有効なデータが読み取れませんでした。フォーマットを確認してください。');
+                    alert('金額が入力されている日が見つかりませんでした。');
                     return;
                 }
                 localStorage.setItem('kakeibo_transactions', JSON.stringify(transactions));
-                alert(`${addedCount}件の収支を一括登録しました！`);
+                alert(`${addedCount}日分の収支を一括登録しました！`);
             }
 
             closeAddModal();
