@@ -47,7 +47,7 @@
             </div>
         </div>
 
-        <!-- タブ切り替えバー（数に応じて自動縮小して1画面に収める） -->
+        <!-- タブ切り替えバー -->
         <div id="tabs-bar" class="max-w-xl mx-auto px-3 border-t py-1.5">
             <div id="tabs-container" class="flex items-center justify-center flex-wrap gap-1"></div>
         </div>
@@ -56,7 +56,7 @@
     <!-- メインコンテンツ -->
     <main class="max-w-xl mx-auto px-4 mt-3 space-y-3">
 
-        <!-- 1. 収支表示カード（コンパクト化） -->
+        <!-- 1. 収支表示カード -->
         <div id="summary-card" class="rounded-2xl p-4 text-white shadow-lg relative overflow-hidden transition-all duration-300">
             <div class="flex justify-between items-center relative z-10">
                 <div>
@@ -123,21 +123,30 @@
 
     </main>
 
-    <!-- Modal 1: 収支・予定日入力モーダル -->
+    <!-- Modal 1: 収支・予定日入力モーダル (コンパクト設計) -->
     <div id="add-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div id="add-modal-content" class="rounded-3xl p-5 max-w-sm w-full shadow-2xl space-y-4 border max-h-[90vh] overflow-y-auto">
+        <div id="add-modal-content" class="rounded-3xl p-5 max-w-sm w-full shadow-2xl space-y-3 border max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center">
                 <h3 id="add-modal-title" class="text-sm font-extrabold">登録する</h3>
                 <button onclick="closeAddModal()" class="text-slate-400 hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             
-            <div class="space-y-3 text-xs">
+            <!-- 日付コンパクトバナー (上部に常駐) -->
+            <div class="bg-slate-100 p-2 rounded-2xl flex items-center justify-between text-xs font-bold text-slate-700">
+                <div class="flex items-center space-x-1.5">
+                    <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
+                    <span>記帳日:</span>
+                </div>
+                <input type="date" id="tx-date" class="bg-transparent border-0 font-extrabold focus:outline-none cursor-pointer text-right">
+            </div>
+
+            <div class="space-y-2.5 text-xs">
                 <div class="grid grid-cols-2 gap-1.5 p-1 bg-slate-100 rounded-2xl font-bold">
                     <button type="button" id="mode-tx-btn" onclick="setEntryMode('tx')" class="py-1.5 rounded-xl transition">収支を記帳 💸</button>
                     <button type="button" id="mode-plan-btn" onclick="setEntryMode('plan')" class="py-1.5 rounded-xl transition">予定日を設定 📅</button>
                 </div>
 
-                <div id="form-tx-section" class="space-y-3">
+                <div id="form-tx-section" class="space-y-2.5">
                     <div>
                         <label class="text-slate-400 font-bold block mb-1">区分</label>
                         <div class="grid grid-cols-2 gap-2">
@@ -148,19 +157,19 @@
 
                     <div>
                         <label class="text-slate-400 font-bold block mb-1">ジャンル（タグ）</label>
-                        <div id="tag-select-container" class="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto p-1.5 rounded-2xl border"></div>
+                        <div id="tag-select-container" class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto p-1.5 rounded-2xl border"></div>
                     </div>
 
                     <div>
                         <label class="text-slate-400 font-bold block mb-1">金額 (円)</label>
-                        <input type="number" id="tx-amount" placeholder="例: 1500" class="w-full border rounded-2xl px-3.5 py-2 font-bold focus:outline-none">
+                        <input type="number" id="tx-amount" placeholder="例: 1500" class="w-full border rounded-2xl px-3 py-2 font-bold focus:outline-none">
                     </div>
                 </div>
 
-                <div id="form-plan-section" class="space-y-3 hidden">
+                <div id="form-plan-section" class="space-y-2.5 hidden">
                     <div>
                         <label class="text-slate-400 font-bold block mb-1">予定の内容</label>
-                        <input type="text" id="plan-title" placeholder="例: 旅行、美容院など" class="w-full border rounded-2xl px-3.5 py-2 font-bold focus:outline-none">
+                        <input type="text" id="plan-title" placeholder="例: 旅行、美容院など" class="w-full border rounded-2xl px-3 py-2 font-bold focus:outline-none">
                     </div>
 
                     <div>
@@ -176,17 +185,12 @@
                 </div>
 
                 <div>
-                    <label class="text-slate-400 font-bold block mb-1">日付</label>
-                    <input type="date" id="tx-date" class="w-full border rounded-2xl px-3.5 py-2 font-bold focus:outline-none">
-                </div>
-
-                <div>
                     <label class="text-slate-400 font-bold block mb-1">詳細・メモ（任意）</label>
                     <input type="text" id="tx-memo" placeholder="例: メモ書きなど" class="w-full border rounded-2xl px-3.5 py-2 focus:outline-none">
                 </div>
             </div>
 
-            <button onclick="saveEntry()" id="save-tx-btn" class="w-full py-3 text-white font-extrabold rounded-2xl text-xs transition shadow-md">保存する</button>
+            <button onclick="saveEntry()" id="save-tx-btn" class="w-full py-2.5 text-white font-extrabold rounded-2xl text-xs transition shadow-md">保存する</button>
         </div>
     </div>
 
@@ -218,7 +222,7 @@
         </div>
     </div>
 
-    <!-- Modal 4: 設定モーダル（2段階ページ移動形式） -->
+    <!-- Modal 4: 設定モーダル -->
     <div id="settings-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div id="settings-modal-content" class="rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 border max-h-[85vh] flex flex-col">
             
@@ -261,7 +265,7 @@
                 <button onclick="showSettingsDetail('tags')" class="w-full p-3.5 bg-slate-50/80 hover:bg-slate-100 rounded-2xl border flex items-center justify-between font-bold text-slate-700 transition">
                     <div class="flex items-center space-x-3">
                         <div class="p-2 bg-rose-100 text-rose-600 rounded-xl"><i data-lucide="tags" class="w-4 h-4"></i></div>
-                        <span>タグの追加・編集</span>
+                        <span>タグの追加・編集（支出/収入別）</span>
                     </div>
                     <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
                 </button>
@@ -334,20 +338,23 @@
                 </div>
             </div>
 
-            <!-- ページ2-D: タグ設定 -->
+            <!-- ページ2-D: タグ設定（支出・収入別） -->
             <div id="settings-page-tags" class="space-y-4 text-xs overflow-y-auto flex-1 pr-1 hidden">
                 <div class="space-y-3">
+                    <div class="grid grid-cols-2 gap-1 p-1 bg-slate-100 rounded-xl font-bold text-center">
+                        <button type="button" onclick="setSettingTagType('expense')" id="stype-exp-btn" class="py-1 rounded-lg transition">支出タグ</button>
+                        <button type="button" onclick="setSettingTagType('income')" id="stype-inc-btn" class="py-1 rounded-lg transition">収入タグ</button>
+                    </div>
+
                     <div>
-                        <label class="text-slate-400 font-bold block mb-1">新しいタグを追加</label>
                         <div class="flex space-x-2">
-                            <input type="text" id="new-tag-name" placeholder="例: 食費、カフェなど" class="flex-1 border rounded-xl px-3 py-2 focus:outline-none">
+                            <input type="text" id="new-tag-name" placeholder="例: 食費、給与など" class="flex-1 border rounded-xl px-3 py-2 focus:outline-none">
                             <button onclick="addNewTag()" id="add-tag-btn" class="px-4 py-2 text-white font-bold rounded-xl transition whitespace-nowrap">追加</button>
                         </div>
                     </div>
 
                     <div>
-                        <label class="text-slate-400 font-bold block mb-1">登録済みタグ一覧</label>
-                        <div id="settings-tag-list" class="space-y-1.5 max-h-52 overflow-y-auto p-1 border rounded-2xl"></div>
+                        <div id="settings-tag-list" class="space-y-1.5 max-h-44 overflow-y-auto p-1 border rounded-2xl"></div>
                     </div>
                 </div>
             </div>
@@ -363,8 +370,27 @@
             { id: 'personal', name: 'プライベート' }
         ];
         let currentTabId = tabs[0].id;
-        let tags = JSON.parse(localStorage.getItem('kakeibo_tags')) || [];
-        let selectedTagId = tags[0] ? tags[0].id : '';
+        
+        // タグデータ（支出・収入別管理）
+        let tags = JSON.parse(localStorage.getItem('kakeibo_tags')) || {
+            expense: [
+                { id: 't_exp_1', name: '食費' },
+                { id: 't_exp_2', name: '日用品' },
+                { id: 't_exp_3', name: '交通費' }
+            ],
+            income: [
+                { id: 't_inc_1', name: '給与' },
+                { id: 't_inc_2', name: '副業' }
+            ]
+        };
+        // 古い配列型データで保存されている場合の互換性対応
+        if (Array.isArray(tags)) {
+            tags = { expense: tags, income: [{ id: 't_inc_1', name: '給与' }] };
+        }
+
+        let selectedTagId = '';
+        let settingTagType = 'expense'; // 設定画面でのタグ切り替え
+
         let salaryConfig = JSON.parse(localStorage.getItem('kakeibo_salary_config')) || {
             day: 25,
             rule: 'prev',
@@ -423,10 +449,10 @@
                 document.getElementById('calendar-icon-bg').className = "p-1.5 bg-pink-100 text-rose-400 rounded-xl";
 
                 document.querySelectorAll('#add-modal-content, #day-detail-modal-content, #add-tab-modal-content, #settings-modal-content').forEach(el => {
-                    el.className = "bg-white border border-pink-100 rounded-3xl p-5 sm:p-6 max-w-md w-full shadow-2xl space-y-4 max-h-[85vh] flex flex-col";
+                    el.className = "bg-white border border-pink-100 rounded-3xl p-5 sm:p-6 max-w-md w-full shadow-2xl space-y-3 max-h-[85vh] flex flex-col";
                 });
 
-                document.getElementById('save-tx-btn').className = "w-full py-3 bg-gradient-to-r from-rose-400 to-pink-400 hover:from-rose-500 hover:to-pink-500 text-white font-extrabold rounded-2xl text-xs transition shadow-md";
+                document.getElementById('save-tx-btn').className = "w-full py-2.5 bg-gradient-to-r from-rose-400 to-pink-400 hover:from-rose-500 hover:to-pink-500 text-white font-extrabold rounded-2xl text-xs transition shadow-md";
                 document.getElementById('detail-add-btn').className = "w-full py-2.5 bg-pink-100 hover:bg-pink-200 text-rose-500 font-bold rounded-2xl text-xs transition";
                 document.getElementById('save-tab-btn').className = "w-full py-2.5 bg-rose-400 hover:bg-rose-500 text-white font-bold rounded-2xl text-xs transition";
                 document.getElementById('add-tab-setting-btn').className = "px-4 py-2 bg-rose-400 hover:bg-rose-500 text-white font-bold rounded-xl transition whitespace-nowrap";
@@ -452,7 +478,7 @@
                 document.getElementById('calendar-icon-bg').className = "p-1.5 bg-slate-100 text-slate-700 rounded-lg";
 
                 document.querySelectorAll('#add-modal-content, #day-detail-modal-content, #add-tab-modal-content, #settings-modal-content').forEach(el => {
-                    el.className = "bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 max-w-md w-full shadow-xl space-y-4 max-h-[85vh] flex flex-col";
+                    el.className = "bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 max-w-md w-full shadow-xl space-y-3 max-h-[85vh] flex flex-col";
                 });
 
                 document.getElementById('save-tx-btn').className = "w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition shadow";
@@ -481,7 +507,7 @@
                 document.getElementById('calendar-icon-bg').className = "p-1.5 bg-[#e8dccb] text-[#5c4433] rounded-lg";
 
                 document.querySelectorAll('#add-modal-content, #day-detail-modal-content, #add-tab-modal-content, #settings-modal-content').forEach(el => {
-                    el.className = "bg-[#fcfaf7] border border-[#d8ccbc] rounded-2xl p-5 sm:p-6 max-w-md w-full shadow-xl space-y-4 max-h-[85vh] flex flex-col";
+                    el.className = "bg-[#fcfaf7] border border-[#d8ccbc] rounded-2xl p-5 sm:p-6 max-w-md w-full shadow-xl space-y-3 max-h-[85vh] flex flex-col";
                 });
 
                 document.getElementById('save-tx-btn').className = "w-full py-2.5 bg-[#6b4e3d] hover:bg-[#583f30] text-amber-50 font-bold rounded-xl text-xs transition shadow";
@@ -503,7 +529,7 @@
             lucide.createIcons();
         }
 
-        // --- 設定画面の2段階ページ切り替え機能 ---
+        // --- 設定画面の2段階ページ切り替え ---
         function showSettingsMenu() {
             document.getElementById('settings-header-title').innerText = '設定 ⚙️';
             document.getElementById('settings-back-btn').classList.add('hidden');
@@ -531,16 +557,89 @@
             } else if (page === 'tags') {
                 document.getElementById('settings-header-title').innerText = 'タグの編集・追加 🏷️';
                 document.getElementById('settings-page-tags').classList.remove('hidden');
-                renderSettingsTagList();
+                setSettingTagType('expense');
             }
         }
 
-        // --- タブ機能（数に応じて自動縮小・1画面収容 ＆ 削除機能） ---
+        function setSettingTagType(type) {
+            settingTagType = type;
+            const expBtn = document.getElementById('stype-exp-btn');
+            const incBtn = document.getElementById('stype-inc-btn');
+            if (type === 'expense') {
+                expBtn.className = "py-1 rounded-lg transition bg-slate-800 text-white shadow-sm font-bold";
+                incBtn.className = "py-1 rounded-lg transition text-slate-500 hover:text-slate-800 font-bold";
+            } else {
+                expBtn.className = "py-1 rounded-lg transition text-slate-500 hover:text-slate-800 font-bold";
+                incBtn.className = "py-1 rounded-lg transition bg-slate-800 text-white shadow-sm font-bold";
+            }
+            renderSettingsTagList();
+        }
+
+        function renderSettingsTagList() {
+            const container = document.getElementById('settings-tag-list');
+            container.innerHTML = '';
+            const list = tags[settingTagType] || [];
+
+            if (list.length === 0) {
+                container.innerHTML = '<p class="text-slate-400 text-center py-2">タグがありません</p>';
+                return;
+            }
+
+            list.forEach((tag, index) => {
+                const item = document.createElement('div');
+                item.className = "flex justify-between items-center bg-white p-2.5 rounded-xl border border-slate-200 shadow-sm";
+                item.innerHTML = `
+                    <span class="font-bold text-slate-700">${tag.name}</span>
+                    <div class="flex items-center space-x-1">
+                        <button onclick="moveTag('${settingTagType}', ${index}, -1)" class="p-1 text-slate-400 hover:text-slate-700 ${index === 0 ? 'opacity-30 cursor-not-allowed' : ''}">
+                            <i data-lucide="arrow-up" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <button onclick="moveTag('${settingTagType}', ${index}, 1)" class="p-1 text-slate-400 hover:text-slate-700 ${index === list.length - 1 ? 'opacity-30 cursor-not-allowed' : ''}">
+                            <i data-lucide="arrow-down" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <button onclick="deleteTag('${settingTagType}', '${tag.id}')" class="p-1 text-slate-400 hover:text-rose-500 ml-1">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+            lucide.createIcons();
+        }
+
+        function addNewTag() {
+            const name = document.getElementById('new-tag-name').value.trim();
+            if (!name) return;
+            if (!tags[settingTagType]) tags[settingTagType] = [];
+            tags[settingTagType].push({ id: 'tag_' + Date.now(), name: name });
+            localStorage.setItem('kakeibo_tags', JSON.stringify(tags));
+            document.getElementById('new-tag-name').value = '';
+            renderSettingsTagList();
+        }
+
+        function moveTag(type, index, direction) {
+            const list = tags[type];
+            const newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= list.length) return;
+            const temp = list[index];
+            list[index] = list[newIndex];
+            list[newIndex] = temp;
+            localStorage.setItem('kakeibo_tags', JSON.stringify(tags));
+            renderSettingsTagList();
+        }
+
+        function deleteTag(type, id) {
+            if (!confirm('このタグを削除しますか？')) return;
+            tags[type] = tags[type].filter(t => t.id !== id);
+            localStorage.setItem('kakeibo_tags', JSON.stringify(tags));
+            renderSettingsTagList();
+        }
+
+        // --- タブ機能 ---
         function renderTabs() {
             const container = document.getElementById('tabs-container');
             container.innerHTML = '';
             
-            // タブの数に応じてサイズ感を動的に変化させるクラスを決定
             let sizeClass = "px-3 py-1 text-xs font-bold rounded-xl transition whitespace-nowrap";
             if (tabs.length >= 5) {
                 sizeClass = "px-2 py-0.5 text-[10px] font-bold rounded-lg transition whitespace-nowrap";
@@ -576,7 +675,6 @@
                 container.appendChild(btn);
             });
 
-            // 新規タブ追加ボタン（バー内）
             const addBtn = document.createElement('button');
             addBtn.className = `${sizeClass} border transition flex items-center space-x-0.5 opacity-80 hover:opacity-100`;
             addBtn.innerHTML = '<i data-lucide="plus" class="w-3 h-3"></i><span>追加</span>';
@@ -629,14 +727,10 @@
                 alert('「総合」タブは削除できません。');
                 return;
             }
-            if (!confirm('このタブを削除しますか？（紐づく収支データ等も非表示になります）')) return;
-            
+            if (!confirm('このタブを削除しますか？')) return;
             tabs = tabs.filter(t => t.id !== id);
             localStorage.setItem('kakeibo_tabs', JSON.stringify(tabs));
-            
-            if (currentTabId === id) {
-                currentTabId = 'all';
-            }
+            if (currentTabId === id) currentTabId = 'all';
             renderSettingsTabList();
             renderTabs();
             renderSummary();
@@ -670,7 +764,6 @@
                 select.innerHTML += `<option value="${i}">${i}日</option>`;
             }
             select.innerHTML += '<option value="99">月末</option>';
-
             select.value = salaryConfig.day || 0;
             document.getElementById('salary-holiday-rule').value = salaryConfig.rule || 'prev';
             document.getElementById('salary-amount').value = salaryConfig.amount || '';
@@ -690,79 +783,27 @@
             salaryConfig.rule = document.getElementById('salary-holiday-rule').value;
             const amt = document.getElementById('salary-amount').value;
             salaryConfig.amount = amt !== '' ? Number(amt) : '';
-
             localStorage.setItem('kakeibo_salary_config', JSON.stringify(salaryConfig));
             alert('給料日設定を保存しました');
             renderSummary();
             renderCalendar();
         }
 
-        function renderSettingsTagList() {
-            const container = document.getElementById('settings-tag-list');
-            container.innerHTML = '';
-            if (tags.length === 0) {
-                container.innerHTML = '<p class="text-slate-400 text-center py-2">登録されているタグはありません</p>';
-                return;
-            }
-
-            tags.forEach((tag, index) => {
-                const item = document.createElement('div');
-                item.className = "flex justify-between items-center bg-white p-2.5 rounded-xl border border-slate-200 shadow-sm";
-                item.innerHTML = `
-                    <span class="font-bold text-slate-700">${tag.name}</span>
-                    <div class="flex items-center space-x-1">
-                        <button onclick="moveTag(${index}, -1)" class="p-1 text-slate-400 hover:text-slate-700 ${index === 0 ? 'opacity-30 cursor-not-allowed' : ''}">
-                            <i data-lucide="arrow-up" class="w-3.5 h-3.5"></i>
-                        </button>
-                        <button onclick="moveTag(${index}, 1)" class="p-1 text-slate-400 hover:text-slate-700 ${index === tags.length - 1 ? 'opacity-30 cursor-not-allowed' : ''}">
-                            <i data-lucide="arrow-down" class="w-3.5 h-3.5"></i>
-                        </button>
-                        <button onclick="deleteTag('${tag.id}')" class="p-1 text-slate-400 hover:text-rose-500 ml-1">
-                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                        </button>
-                    </div>
-                `;
-                container.appendChild(item);
-            });
-            lucide.createIcons();
-        }
-
-        function addNewTag() {
-            const name = document.getElementById('new-tag-name').value.trim();
-            if (!name) return;
-            tags.push({ id: 'tag_' + Date.now(), name: name });
-            localStorage.setItem('kakeibo_tags', JSON.stringify(tags));
-            document.getElementById('new-tag-name').value = '';
-            renderSettingsTagList();
-        }
-
-        function moveTag(index, direction) {
-            const newIndex = index + direction;
-            if (newIndex < 0 || newIndex >= tags.length) return;
-            const temp = tags[index];
-            tags[index] = tags[newIndex];
-            tags[newIndex] = temp;
-            localStorage.setItem('kakeibo_tags', JSON.stringify(tags));
-            renderSettingsTagList();
-        }
-
-        function deleteTag(id) {
-            if (!confirm('このタグを削除しますか？')) return;
-            tags = tags.filter(t => t.id !== id);
-            localStorage.setItem('kakeibo_tags', JSON.stringify(tags));
-            renderSettingsTagList();
-        }
-
+        // --- タグ選択レンダリング（支出／収入で切り替え） ---
         function renderTagSelector() {
             const container = document.getElementById('tag-select-container');
             container.innerHTML = '';
-            if (tags.length === 0) {
-                container.innerHTML = '<span class="text-slate-400 p-1">設定からタグを追加できます（なしでも登録可）</span>';
+            const list = tags[currentTxType] || [];
+
+            if (list.length === 0) {
+                container.innerHTML = '<span class="text-slate-400 p-1">設定からタグを追加できます</span>';
                 return;
             }
-            if (!tags.some(t => t.id === selectedTagId)) selectedTagId = tags[0].id;
+            if (!list.some(t => t.id === selectedTagId)) {
+                selectedTagId = list[0].id;
+            }
 
-            tags.forEach(tag => {
+            list.forEach(tag => {
                 const isSelected = tag.id === selectedTagId;
                 const btn = document.createElement('button');
                 btn.type = 'button';
@@ -840,7 +881,7 @@
                             type: 'income',
                             amount: Number(salaryConfig.amount),
                             date: dateStr,
-                            tagName: '給料',
+                            tagName: '給与',
                             memo: '定額自動反映',
                             isSalaryAuto: true
                         });
@@ -868,7 +909,6 @@
             });
 
             const netTotal = totalIncome - totalExpense;
-
             document.getElementById('total-balance').innerText = `¥${netTotal.toLocaleString()}`;
             document.getElementById('monthly-income').innerText = `¥${monthlyIncome.toLocaleString()}`;
             document.getElementById('monthly-expense').innerText = `¥${monthlyExpense.toLocaleString()}`;
@@ -1004,7 +1044,6 @@
             setEntryMode('tx');
             setTxType('expense');
             setPlanPriority(3);
-            renderTagSelector();
             
             document.getElementById('add-modal').classList.remove('hidden');
             document.getElementById('add-modal').classList.add('flex');
@@ -1048,6 +1087,7 @@
                 expBtn.className = "py-2 rounded-2xl font-bold bg-slate-100 text-slate-400 transition";
                 incBtn.className = "py-2 rounded-2xl font-bold bg-emerald-500 text-white shadow-sm transition";
             }
+            renderTagSelector();
         }
 
         function setPlanPriority(prio) {
@@ -1077,7 +1117,8 @@
                     alert('有効な金額を入力してください。');
                     return;
                 }
-                const activeTag = tags.find(t => t.id === selectedTagId);
+                const list = tags[currentTxType] || [];
+                const activeTag = list.find(t => t.id === selectedTagId);
                 const tagName = activeTag ? activeTag.name : '未指定';
                 const targetTab = currentTabId === 'all' ? (tabs[1] ? tabs[1].id : 'general') : currentTabId;
 
