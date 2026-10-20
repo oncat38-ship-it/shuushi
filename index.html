@@ -1108,53 +1108,54 @@
                     if (currentTheme === 'cute') {
                         if (cat === 'love') {
                             cellClass = 'bg-gradient-to-br from-pink-200 to-rose-300 border-rose-400 text-rose-900 shadow-sm ring-2 ring-pink-300 anniversary-badge-animation z-10';
-                            indicatorHtml = '<span class="text-[8px] bg-white/90 text-rose-600 px-1 rounded-md font-extrabold shadow-sm">♥ 記念日</span>';
+                            indicatorHtml = '<span class="text-[9px] bg-white/90 text-rose-600 px-1 py-0.2 rounded-md font-extrabold shadow-sm">♥</span>';
                         } else if (cat === 'money') {
                             cellClass = 'bg-gradient-to-br from-amber-100 to-yellow-200 border-amber-400 text-amber-900 shadow-sm ring-2 ring-yellow-300 anniversary-badge-animation z-10';
-                            indicatorHtml = '<span class="text-[8px] bg-white/90 text-amber-600 px-1 rounded-md font-extrabold shadow-sm">★ 記念日</span>';
+                            indicatorHtml = '<span class="text-[9px] bg-white/90 text-amber-600 px-1 py-0.2 rounded-md font-extrabold shadow-sm">★</span>';
                         } else {
                             cellClass = 'bg-gradient-to-br from-purple-100 to-indigo-200 border-purple-400 text-purple-900 shadow-sm ring-2 ring-purple-300 anniversary-badge-animation z-10';
-                            indicatorHtml = '<span class="text-[8px] bg-white/90 text-purple-600 px-1 rounded-md font-extrabold shadow-sm">！ 記念日</span>';
+                            indicatorHtml = '<span class="text-[9px] bg-white/90 text-purple-600 px-1 py-0.2 rounded-md font-extrabold shadow-sm">！</span>';
                         }
                     } else if (currentTheme === 'simple') {
                         if (cat === 'love') {
                             cellClass = 'bg-rose-50 border-rose-500 text-rose-900 font-bold shadow-sm ring-1 ring-rose-300 z-10';
-                            indicatorHtml = '<span class="text-[8px] bg-rose-500 text-white px-1 rounded-md font-bold">♥ 記念日</span>';
+                            indicatorHtml = '<span class="text-[9px] bg-rose-500 text-white px-1 py-0.2 rounded-md font-bold">♥</span>';
                         } else if (cat === 'money') {
                             cellClass = 'bg-emerald-50 border-emerald-500 text-emerald-900 font-bold shadow-sm ring-1 ring-emerald-300 z-10';
-                            indicatorHtml = '<span class="text-[8px] bg-emerald-600 text-white px-1 rounded-md font-bold">！ 記念日</span>';
+                            indicatorHtml = '<span class="text-[9px] bg-emerald-600 text-white px-1 py-0.2 rounded-md font-bold">！</span>';
                         } else {
                             cellClass = 'bg-blue-50 border-blue-600 text-blue-900 font-bold shadow-sm ring-1 ring-blue-300 z-10';
-                            indicatorHtml = '<span class="text-[8px] bg-blue-700 text-white px-1 rounded-md font-bold">◎ 記念日</span>';
+                            indicatorHtml = '<span class="text-[9px] bg-blue-700 text-white px-1 py-0.2 rounded-md font-bold">◎</span>';
                         }
                     } else {
                         if (cat === 'love') {
                             cellClass = 'bg-[#f4ebd0] border-[#b89768] text-[#5c4433] font-bold shadow-sm ring-1 ring-[#d4b58e] z-10';
-                            indicatorHtml = '<span class="text-[8px] bg-[#7c5c43] text-amber-50 px-1 rounded-md font-bold">！ 記念日</span>';
+                            indicatorHtml = '<span class="text-[9px] bg-[#7c5c43] text-amber-50 px-1 py-0.2 rounded-md font-bold">！</span>';
                         } else if (cat === 'money') {
                             cellClass = 'bg-[#f7f1e3] border-[#c4b387] text-[#5c4433] font-bold shadow-sm ring-1 ring-[#dec99b] z-10';
-                            indicatorHtml = '<span class="text-[8px] bg-[#8c7355] text-amber-50 px-1 rounded-md font-bold">＄ 記念日</span>';
+                            indicatorHtml = '<span class="text-[9px] bg-[#8c7355] text-amber-50 px-1 py-0.2 rounded-md font-bold">＄</span>';
                         } else {
                             cellClass = 'bg-[#eee4d4] border-[#a89070] text-[#4a3b32] font-bold shadow-sm ring-1 ring-[#c2ab89] z-10';
-                            indicatorHtml = '<span class="text-[8px] bg-[#5c4433] text-amber-50 px-1 rounded-md font-bold">重 記念日</span>';
+                            indicatorHtml = '<span class="text-[9px] bg-[#5c4433] text-amber-50 px-1 py-0.2 rounded-md font-bold">重</span>';
                         }
                     }
                 } else if (hasPlan) {
                     cellClass = 'bg-blue-600 border-blue-700 text-white shadow-md ring-1 ring-blue-400 z-10';
-                    indicatorHtml = `<span class="text-[7.5px] bg-white text-blue-700 px-1 rounded-md font-extrabold shadow-sm">${planInitial}</span>`;
+                    indicatorHtml = `<span class="text-[8px] bg-white text-blue-700 px-1 py-0.2 rounded-md font-extrabold shadow-sm">${planInitial}</span>`;
                 }
 
+                // 給料日マーク（◯の中に給の字）
                 let paydayBadgeHtml = '';
                 if (isPayday && !isAnniversary) {
                     let paySymbolStyle = '';
                     if (currentTheme === 'cute') {
-                        paySymbolStyle = 'bg-pink-400 text-white font-black rounded-full px-1 text-[7px] shadow-sm';
+                        paySymbolStyle = 'bg-pink-400 text-white font-black rounded-full w-4 h-4 inline-flex items-center justify-center text-[9px] shadow-sm';
                     } else if (currentTheme === 'simple') {
-                        paySymbolStyle = 'bg-amber-500 text-white font-bold rounded px-1 text-[7px]';
+                        paySymbolStyle = 'bg-amber-500 text-white font-bold rounded-full w-4 h-4 inline-flex items-center justify-center text-[9px]';
                     } else {
-                        paySymbolStyle = 'bg-[#7c5c43] text-amber-50 font-serif font-bold rounded px-1 text-[7px] border border-[#5c4433]';
+                        paySymbolStyle = 'bg-[#7c5c43] text-amber-50 font-serif font-bold rounded-full w-4 h-4 inline-flex items-center justify-center text-[9px] border border-[#5c4433]';
                     }
-                    paydayBadgeHtml = `<span class="${paySymbolStyle}">¥ 給料</span>`;
+                    paydayBadgeHtml = `<span class="${paySymbolStyle}" title="給料日">給</span>`;
                 }
 
                 let badgeHtml = '';
@@ -1171,7 +1172,6 @@
 
                 const dayNumColor = (isAnniversary || hasPlan) ? 'text-white font-black' : isToday ? 'text-indigo-600' : isPayday ? 'text-amber-600' : 'text-slate-600';
 
-                // 日付セルの右上の補助バッジ群
                 let badgesInnerHtml = '';
                 if (indicatorHtml) badgesInnerHtml += indicatorHtml;
                 if (paydayBadgeHtml) badgesInnerHtml += paydayBadgeHtml;
