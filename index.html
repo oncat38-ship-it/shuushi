@@ -56,16 +56,20 @@
     <!-- メインコンテンツ -->
     <main class="max-w-xl mx-auto px-4 mt-3 space-y-3">
 
-        <!-- 1. 収支表示カード -->
+        <!-- 1. 収支表示カード（開始資金設定ボタン付き） -->
         <div id="summary-card" class="rounded-2xl p-4 text-white shadow-lg relative overflow-hidden transition-all duration-300">
             <div class="flex justify-between items-center relative z-10">
                 <div>
-                    <div class="flex items-center space-x-2">
+                    <div class="flex items-center space-x-2 flex-wrap gap-y-1">
                         <span id="current-tab-label" class="text-[10px] font-bold bg-white/20 backdrop-blur px-2 py-0.5 rounded-full text-white inline-flex items-center gap-1">
                             総合の収支
                         </span>
                         <button onclick="openPeriodModal()" class="text-[10px] bg-white/20 hover:bg-white/30 backdrop-blur px-2 py-0.5 rounded-full text-white font-bold transition flex items-center gap-1">
                             <i data-lucide="sliders-horizontal" class="w-3 h-3"></i> <span id="period-badge-text">期間設定</span>
+                        </button>
+                        <!-- 各タブごとの開始資金設定ボタン -->
+                        <button onclick="openFundModal()" class="text-[10px] bg-white/25 hover:bg-white/35 backdrop-blur px-2 py-0.5 rounded-full text-white font-bold transition flex items-center gap-1">
+                            <i data-lucide="landmark" class="w-3 h-3"></i> <span>開始資金設定</span>
                         </button>
                     </div>
                     <div id="total-balance" class="text-2xl sm:text-3xl font-black tracking-tight mt-1 text-white drop-shadow-sm">
@@ -130,13 +134,13 @@
 
     <!-- Modal 1: 収支・予定日・月一括入力モーダル -->
     <div id="add-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div id="add-modal-content" class="rounded-3xl p-5 max-w-lg w-full shadow-2xl space-y-3 border max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center">
+        <div id="add-modal-content" class="rounded-3xl p-5 max-w-lg w-full shadow-2xl space-y-3 border max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center shrink-0">
                 <h3 id="add-modal-title" class="text-sm font-extrabold">登録する</h3>
                 <button onclick="closeAddModal()" class="text-slate-400 hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             
-            <div class="space-y-2.5 text-xs">
+            <div class="space-y-2.5 text-xs overflow-y-auto flex-1 pr-1">
                 <!-- モード切り替えタブ -->
                 <div class="grid grid-cols-3 gap-1 p-1 bg-slate-100 rounded-2xl font-bold text-center">
                     <button type="button" id="mode-tx-btn" onclick="setEntryMode('tx')" class="py-1.5 rounded-xl transition">単発入力 💸</button>
@@ -231,7 +235,7 @@
                     </div>
 
                     <!-- 日別表形式リスト -->
-                    <div class="border rounded-2xl overflow-hidden max-h-64 overflow-y-auto bg-white">
+                    <div class="border rounded-2xl overflow-hidden max-h-56 overflow-y-auto bg-white">
                         <table class="w-full text-left border-collapse">
                             <thead class="bg-slate-100 sticky top-0 text-[10px] text-slate-500 font-extrabold border-b z-10">
                                 <tr>
@@ -248,7 +252,8 @@
                 </div>
             </div>
 
-            <button onclick="saveEntry()" id="save-tx-btn" class="w-full py-2.5 text-white font-extrabold rounded-2xl text-xs transition shadow-md">保存する</button>
+            <!-- 常時表示の保存ボタン -->
+            <button onclick="saveEntry()" id="save-tx-btn" class="w-full py-2.5 text-white font-extrabold rounded-2xl text-xs transition shadow-md shrink-0">保存する</button>
         </div>
     </div>
 
@@ -285,7 +290,27 @@
         </div>
     </div>
 
-    <!-- Modal 3: 日別明細モーダル -->
+    <!-- Modal 3: タブ別・月別資金設定モーダル -->
+    <div id="fund-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white border rounded-3xl p-5 max-w-sm w-full shadow-2xl space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-sm font-extrabold">開始資金の設定 💰</h3>
+                <button onclick="closeFundModal()" class="text-slate-400 hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            
+            <div class="space-y-3 text-xs">
+                <p id="fund-modal-info" class="text-slate-500 font-bold"></p>
+                <div>
+                    <label class="text-slate-400 font-bold block mb-1">今月の開始資金 (円)</label>
+                    <input type="number" id="tab-monthly-fund-input" placeholder="例: 100000" class="w-full border rounded-xl px-3 py-2 font-bold focus:outline-none">
+                </div>
+            </div>
+
+            <button onclick="saveTabMonthlyFund()" class="w-full py-2.5 bg-slate-900 text-white font-bold rounded-xl text-xs transition">この資金を保存する</button>
+        </div>
+    </div>
+
+    <!-- Modal 4: 日別明細モーダル -->
     <div id="day-detail-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div id="day-detail-modal-content" class="rounded-3xl p-5 max-w-sm w-full shadow-2xl space-y-4 border max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center">
@@ -301,7 +326,7 @@
         </div>
     </div>
 
-    <!-- Modal 4: タブ追加モーダル -->
+    <!-- Modal 5: タブ追加モーダル -->
     <div id="add-tab-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div id="add-tab-modal-content" class="rounded-3xl p-5 max-w-sm w-full shadow-2xl space-y-4 border">
             <div class="flex justify-between items-center">
@@ -313,7 +338,7 @@
         </div>
     </div>
 
-    <!-- Modal 5: 設定モーダル -->
+    <!-- Modal 6: 設定モーダル -->
     <div id="settings-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div id="settings-modal-content" class="rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 border max-h-[85vh] flex flex-col">
             
@@ -341,14 +366,6 @@
                     <div class="flex items-center space-x-3">
                         <div class="p-2 bg-emerald-100 text-emerald-600 rounded-xl"><i data-lucide="folder" class="w-4 h-4"></i></div>
                         <span>タブの編集・削除</span>
-                    </div>
-                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
-                </button>
-
-                <button onclick="showSettingsDetail('initial_funds')" class="w-full p-3.5 bg-slate-50/80 hover:bg-slate-100 rounded-2xl border flex items-center justify-between font-bold text-slate-700 transition">
-                    <div class="flex items-center space-x-3">
-                        <div class="p-2 bg-amber-100 text-amber-600 rounded-xl"><i data-lucide="landmark" class="w-4 h-4"></i></div>
-                        <span>月単位の開始資金（基準値）設定</span>
                     </div>
                     <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
                 </button>
@@ -417,19 +434,7 @@
                 </div>
             </div>
 
-            <!-- ページ2-C: 月単位の開始資金設定 -->
-            <div id="settings-page-initial_funds" class="space-y-4 text-xs overflow-y-auto flex-1 pr-1 hidden">
-                <div class="space-y-3">
-                    <p class="text-slate-400 font-bold">選択中の月（<span id="fund-target-month-label"></span>）の基準となる開始資金を設定します。</p>
-                    <div>
-                        <label class="text-slate-400 font-bold block mb-1">今月の開始資金 (円)</label>
-                        <input type="number" id="monthly-fund-input" placeholder="例: 100000" class="w-full border rounded-xl px-3 py-2 font-bold focus:outline-none">
-                    </div>
-                    <button onclick="saveMonthlyFund()" id="save-fund-btn" class="w-full py-2.5 text-white font-bold rounded-xl transition">この月の資金を保存</button>
-                </div>
-            </div>
-
-            <!-- ページ2-D: 記念日設定 -->
+            <!-- ページ2-C: 記念日設定 -->
             <div id="settings-page-anniversaries" class="space-y-4 text-xs overflow-y-auto flex-1 pr-1 hidden">
                 <div class="space-y-3">
                     <div>
@@ -457,7 +462,7 @@
                 </div>
             </div>
 
-            <!-- ページ2-E: 給料日設定 -->
+            <!-- ページ2-D: 給料日設定 -->
             <div id="settings-page-salary" class="space-y-4 text-xs overflow-y-auto flex-1 pr-1 hidden">
                 <div class="space-y-3">
                     <div>
@@ -485,7 +490,7 @@
                 </div>
             </div>
 
-            <!-- ページ2-F: タグ設定（支出・収入別） -->
+            <!-- ページ2-E: タグ設定（支出・収入別） -->
             <div id="settings-page-tags" class="space-y-4 text-xs overflow-y-auto flex-1 pr-1 hidden">
                 <div class="space-y-3">
                     <div class="grid grid-cols-2 gap-1 p-1 bg-slate-100 rounded-xl font-bold text-center">
@@ -538,10 +543,11 @@
         }
 
         let anniversaries = JSON.parse(localStorage.getItem('kakeibo_anniversaries')) || [];
-        let initialFunds = JSON.parse(localStorage.getItem('kakeibo_initial_funds')) || {}; // key: "2026-10", value: number
+        // キー構造: tabId_YYYY-MM (例: "personal_2026-10")
+        let tabInitialFunds = JSON.parse(localStorage.getItem('kakeibo_tab_initial_funds')) || {};
 
         let periodConfig = JSON.parse(localStorage.getItem('kakeibo_period_config')) || {
-            mode: 'month', // 'month' or 'custom'
+            mode: 'month',
             startDate: '',
             endDate: ''
         };
@@ -607,7 +613,7 @@
                     el.className = "bg-white border border-pink-100 rounded-3xl p-5 sm:p-6 max-w-lg w-full shadow-2xl space-y-3 max-h-[85vh] flex flex-col";
                 });
 
-                document.getElementById('save-tx-btn').className = "w-full py-2.5 bg-gradient-to-r from-rose-400 to-pink-400 hover:from-rose-500 hover:to-pink-500 text-white font-extrabold rounded-2xl text-xs transition shadow-md";
+                document.getElementById('save-tx-btn').className = "w-full py-2.5 bg-gradient-to-r from-rose-400 to-pink-400 hover:from-rose-500 hover:to-pink-500 text-white font-extrabold rounded-2xl text-xs transition shadow-md shrink-0";
                 document.getElementById('detail-add-btn').className = "w-full py-2.5 bg-pink-100 hover:bg-pink-200 text-rose-500 font-bold rounded-2xl text-xs transition";
                 document.getElementById('save-tab-btn').className = "w-full py-2.5 bg-rose-400 hover:bg-rose-500 text-white font-bold rounded-2xl text-xs transition";
                 document.getElementById('add-tab-setting-btn').className = "px-4 py-2 bg-rose-400 hover:bg-rose-500 text-white font-bold rounded-xl transition whitespace-nowrap";
@@ -637,7 +643,7 @@
                     el.className = "bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 max-w-lg w-full shadow-xl space-y-3 max-h-[85vh] flex flex-col";
                 });
 
-                document.getElementById('save-tx-btn').className = "w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition shadow";
+                document.getElementById('save-tx-btn').className = "w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition shadow shrink-0";
                 document.getElementById('detail-add-btn').className = "w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl text-xs transition";
                 document.getElementById('save-tab-btn').className = "w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition";
                 document.getElementById('add-tab-setting-btn').className = "px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl transition whitespace-nowrap";
@@ -667,7 +673,7 @@
                     el.className = "bg-[#fcfaf7] border border-[#d8ccbc] rounded-2xl p-5 sm:p-6 max-w-lg w-full shadow-xl space-y-3 max-h-[85vh] flex flex-col";
                 });
 
-                document.getElementById('save-tx-btn').className = "w-full py-2.5 bg-[#6b4e3d] hover:bg-[#583f30] text-amber-50 font-bold rounded-xl text-xs transition shadow";
+                document.getElementById('save-tx-btn').className = "w-full py-2.5 bg-[#6b4e3d] hover:bg-[#583f30] text-amber-50 font-bold rounded-xl text-xs transition shadow shrink-0";
                 document.getElementById('detail-add-btn').className = "w-full py-2.5 bg-[#e8dccb] hover:bg-[#dfcfba] text-[#4a3b32] font-bold rounded-xl text-xs transition";
                 document.getElementById('save-tab-btn').className = "w-full py-2.5 bg-[#6b4e3d] hover:bg-[#583f30] text-amber-50 font-bold rounded-xl text-xs transition";
                 document.getElementById('add-tab-setting-btn').className = "px-4 py-2 bg-[#6b4e3d] hover:bg-[#583f30] text-amber-50 font-bold rounded-xl transition whitespace-nowrap";
@@ -696,7 +702,6 @@
             document.getElementById('settings-page-menu').classList.remove('hidden');
             document.getElementById('settings-page-theme').classList.add('hidden');
             document.getElementById('settings-page-tabs').classList.add('hidden');
-            document.getElementById('settings-page-initial_funds').classList.add('hidden');
             document.getElementById('settings-page-anniversaries').classList.add('hidden');
             document.getElementById('settings-page-salary').classList.add('hidden');
             document.getElementById('settings-page-tags').classList.add('hidden');
@@ -708,7 +713,6 @@
             document.getElementById('settings-page-menu').classList.add('hidden');
             document.getElementById('settings-page-theme').classList.add('hidden');
             document.getElementById('settings-page-tabs').classList.add('hidden');
-            document.getElementById('settings-page-initial_funds').classList.add('hidden');
             document.getElementById('settings-page-anniversaries').classList.add('hidden');
             document.getElementById('settings-page-salary').classList.add('hidden');
             document.getElementById('settings-page-tags').classList.add('hidden');
@@ -720,12 +724,6 @@
                 document.getElementById('settings-header-title').innerText = 'タブの編集・削除 📁';
                 document.getElementById('settings-page-tabs').classList.remove('hidden');
                 renderSettingsTabList();
-            } else if (page === 'initial_funds') {
-                document.getElementById('settings-header-title').innerText = '月単位の開始資金 💰';
-                document.getElementById('settings-page-initial_funds').classList.remove('hidden');
-                const monthKey = `${currentYear}-${String(currentMonth).padStart(2, '0')}`;
-                document.getElementById('fund-target-month-label').innerText = `${currentYear}年${currentMonth}月`;
-                document.getElementById('monthly-fund-input').value = initialFunds[monthKey] !== undefined ? initialFunds[monthKey] : '';
             } else if (page === 'anniversaries') {
                 document.getElementById('settings-header-title').innerText = '記念日の設定 ♥';
                 document.getElementById('settings-page-anniversaries').classList.remove('hidden');
@@ -741,17 +739,40 @@
             lucide.createIcons();
         }
 
-        function saveMonthlyFund() {
-            const val = document.getElementById('monthly-fund-input').value;
-            const monthKey = `${currentYear}-${String(currentMonth).padStart(2, '0')}`;
+        // --- タブ別・月別資金設定モーダル ---
+        function openFundModal() {
+            const activeTab = tabs.find(t => t.id === currentTabId);
+            const tabName = activeTab ? activeTab.name : '総合';
+            document.getElementById('fund-modal-info').innerText = `【${tabName}】の ${currentYear}年${currentMonth}月の開始資金を設定します。`;
+
+            const fundKey = `${currentTabId}_${currentYear}-${String(currentMonth).padStart(2, '0')}`;
+            const input = document.getElementById('tab-monthly-fund-input');
+            input.value = tabInitialFunds[fundKey] !== undefined ? tabInitialFunds[fundKey] : '';
+
+            const modal = document.getElementById('fund-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            lucide.createIcons();
+        }
+
+        function closeFundModal() {
+            const modal = document.getElementById('fund-modal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+        }
+
+        function saveTabMonthlyFund() {
+            const val = document.getElementById('tab-monthly-fund-input').value;
+            const fundKey = `${currentTabId}_${currentYear}-${String(currentMonth).padStart(2, '0')}`;
             if (val !== '') {
-                initialFunds[monthKey] = Number(val);
+                tabInitialFunds[fundKey] = Number(val);
             } else {
-                delete initialFunds[monthKey];
+                delete tabInitialFunds[fundKey];
             }
-            localStorage.setItem('kakeibo_initial_funds', JSON.stringify(initialFunds));
-            alert(`${currentYear}年${currentMonth}月の開始資金を保存しました！`);
+            localStorage.setItem('kakeibo_tab_initial_funds', JSON.stringify(tabInitialFunds));
+            closeFundModal();
             renderSummary();
+            alert('開始資金を保存しました！');
         }
 
         // --- 期間設定モーダル ---
@@ -1383,8 +1404,21 @@
                 });
             }
 
-            const monthKey = `${currentYear}-${String(currentMonth).padStart(2, '0')}`;
-            const startFund = initialFunds[monthKey] !== undefined ? initialFunds[monthKey] : 0;
+            const monthKeyStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}`;
+            let startFund = 0;
+            if (currentTabId === 'all') {
+                // 総合タブの場合、全タブの当月の開始資金を合算
+                tabs.forEach(tab => {
+                    if (tab.id !== 'all') {
+                        const k = `${tab.id}_${monthKeyStr}`;
+                        if (tabInitialFunds[k] !== undefined) startFund += tabInitialFunds[k];
+                    }
+                });
+            } else {
+                const fundKey = `${currentTabId}_${monthKeyStr}`;
+                startFund = tabInitialFunds[fundKey] !== undefined ? tabInitialFunds[fundKey] : 0;
+            }
+
             const netBalance = startFund + periodIncome - periodExpense;
 
             const balEl = document.getElementById('total-balance');
