@@ -56,27 +56,34 @@
     <!-- メインコンテンツ -->
     <main class="max-w-xl mx-auto px-4 mt-3 space-y-3">
 
-        <!-- 1. 収支表示カード（開始資金設定ボタン付き） -->
+        <!-- 1. 収支表示カード（スマート＆コンパクト） -->
         <div id="summary-card" class="rounded-2xl p-4 text-white shadow-lg relative overflow-hidden transition-all duration-300">
-            <div class="flex justify-between items-center relative z-10">
+            <div class="flex justify-between items-start relative z-10 gap-2">
                 <div>
-                    <div class="flex items-center space-x-2 flex-wrap gap-y-1">
+                    <!-- タブ名＆期間・資金設定バッジをコンパクトに配置 -->
+                    <div class="flex items-center space-x-1.5 flex-wrap gap-y-1">
                         <span id="current-tab-label" class="text-[10px] font-bold bg-white/20 backdrop-blur px-2 py-0.5 rounded-full text-white inline-flex items-center gap-1">
-                            総合の収支
+                            総合
                         </span>
                         <button onclick="openPeriodModal()" class="text-[10px] bg-white/20 hover:bg-white/30 backdrop-blur px-2 py-0.5 rounded-full text-white font-bold transition flex items-center gap-1">
                             <i data-lucide="sliders-horizontal" class="w-3 h-3"></i> <span id="period-badge-text">期間設定</span>
                         </button>
-                        <!-- 各タブごとの開始資金設定ボタン -->
                         <button onclick="openFundModal()" class="text-[10px] bg-white/25 hover:bg-white/35 backdrop-blur px-2 py-0.5 rounded-full text-white font-bold transition flex items-center gap-1">
-                            <i data-lucide="landmark" class="w-3 h-3"></i> <span>開始資金設定</span>
+                            <i data-lucide="landmark" class="w-3 h-3"></i> <span id="fund-badge-text">資金: ¥0</span>
                         </button>
                     </div>
-                    <div id="total-balance" class="text-2xl sm:text-3xl font-black tracking-tight mt-1 text-white drop-shadow-sm">
-                        ¥0
+
+                    <!-- メイン残高（資金からの±増減を表示） -->
+                    <div class="mt-2">
+                        <div class="flex items-baseline space-x-2">
+                            <span id="total-balance" class="text-2xl sm:text-3xl font-black tracking-tight text-white drop-shadow-sm">¥0</span>
+                            <span id="balance-diff-badge" class="text-xs font-extrabold px-2 py-0.5 rounded-full bg-white/20 backdrop-blur">±¥0</span>
+                        </div>
+                        <p class="text-[10px] opacity-80 font-bold mt-0.5">資金ベース残高（増減: <span id="net-diff-text">¥0</span>）</p>
                     </div>
                 </div>
-                <button onclick="openAddModal()" id="add-tx-btn" class="text-xs font-extrabold px-3 py-1.5 rounded-xl shadow hover:shadow-md transition flex items-center space-x-1 shrink-0">
+
+                <button onclick="openAddModal()" id="add-tx-btn" class="text-xs font-extrabold px-3 py-1.5 rounded-xl shadow hover:shadow-md transition flex items-center space-x-1 shrink-0 mt-1">
                     <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
                     <span>入力する</span>
                 </button>
@@ -543,7 +550,6 @@
         }
 
         let anniversaries = JSON.parse(localStorage.getItem('kakeibo_anniversaries')) || [];
-        // キー構造: tabId_YYYY-MM (例: "personal_2026-10")
         let tabInitialFunds = JSON.parse(localStorage.getItem('kakeibo_tab_initial_funds')) || {};
 
         let periodConfig = JSON.parse(localStorage.getItem('kakeibo_period_config')) || {
@@ -1019,7 +1025,7 @@
             const activeTab = tabs.find(t => t.id === currentTabId);
             if (activeTab) {
                 const labelEl = document.getElementById('current-tab-label');
-                if (labelEl) labelEl.innerText = `${activeTab.name}の収支`;
+                if (labelEl) labelEl.innerText = `${activeTab.name}`;
             }
             lucide.createIcons();
         }
@@ -1394,7 +1400,7 @@
                     }
                 });
             } else {
-                if (badgeTextEl) badgeTextEl.innerText = '期間設定 (月単位)';
+                if (badgeTextEl) badgeTextEl.innerText = '月単位';
                 txs.forEach(t => {
                     const [y, m] = t.date.split('-').map(Number);
                     if (y === currentYear && m === currentMonth) {
@@ -1407,7 +1413,6 @@
             const monthKeyStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}`;
             let startFund = 0;
             if (currentTabId === 'all') {
-                // 総合タブの場合、全タブの当月の開始資金を合算
                 tabs.forEach(tab => {
                     if (tab.id !== 'all') {
                         const k = `${tab.id}_${monthKeyStr}`;
@@ -1419,14 +1424,34 @@
                 startFund = tabInitialFunds[fundKey] !== undefined ? tabInitialFunds[fundKey] : 0;
             }
 
-            const netBalance = startFund + periodIncome - periodExpense;
+            const netDiff = periodIncome - periodExpense;
+            const netBalance = startFund + netDiff;
 
+            // UI反映
             const balEl = document.getElementById('total-balance');
             const incEl = document.getElementById('monthly-income');
             const expEl = document.getElementById('monthly-expense');
+            const fundBadgeEl = document.getElementById('fund-badge-text');
+            const diffBadgeEl = document.getElementById('balance-diff-badge');
+            const netDiffTextEl = document.getElementById('net-diff-text');
+
             if (balEl) balEl.innerText = `¥${netBalance.toLocaleString()}`;
             if (incEl) incEl.innerText = `¥${periodIncome.toLocaleString()}`;
             if (expEl) expEl.innerText = `¥${periodExpense.toLocaleString()}`;
+            if (fundBadgeEl) fundBadgeEl.innerText = `資金: ¥${startFund.toLocaleString()}`;
+
+            const formattedDiff = (netDiff >= 0 ? '+' : '') + `¥${netDiff.toLocaleString()}`;
+            if (netDiffTextEl) netDiffTextEl.innerText = formattedDiff;
+            if (diffBadgeEl) {
+                diffBadgeEl.innerText = formattedDiff;
+                if (netDiff > 0) {
+                    diffBadgeEl.className = "text-xs font-extrabold px-2 py-0.5 rounded-full bg-emerald-500/80 text-white backdrop-blur";
+                } else if (netDiff < 0) {
+                    diffBadgeEl.className = "text-xs font-extrabold px-2 py-0.5 rounded-full bg-rose-500/80 text-white backdrop-blur";
+                } else {
+                    diffBadgeEl.className = "text-xs font-extrabold px-2 py-0.5 rounded-full bg-white/20 text-white backdrop-blur";
+                }
+            }
         }
 
         function renderCalendar() {
