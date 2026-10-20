@@ -199,7 +199,7 @@
                     <div class="flex items-center justify-between bg-slate-100 p-2 rounded-2xl font-bold">
                         <div class="flex items-center space-x-2">
                             <i data-lucide="calendar" class="w-4 h-4 text-slate-500"></i>
-                            <span id="bulk-month-label" class="text-slate-700">対象月: 2026年10月</span>
+                            <span id="bulk-month-label" class="text-slate-700">対象月: ----年--月</span>
                         </div>
                         <div class="flex items-center space-x-1">
                             <button type="button" onclick="changeBulkMonth(-1)" class="p-1 bg-white rounded-lg shadow-sm"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
@@ -453,6 +453,10 @@
 
     <!-- アプリケーション制御スクリプト -->
     <script>
+        const now = new Date();
+        let currentYear = now.getFullYear();
+        let currentMonth = now.getMonth() + 1;
+
         let currentTheme = localStorage.getItem('kakeibo_theme') || 'cute';
         let tabs = JSON.parse(localStorage.getItem('kakeibo_tabs')) || [
             { id: 'all', name: '総合' },
@@ -492,12 +496,8 @@
         let currentEntryMode = 'tx';
         let currentTxType = 'expense';
         let selectedDateForModal = '';
-        let bulkYear = now.getFullYear();
-        let bulkMonth = now.getMonth() + 1;
-
-        const now = new Date();
-        let currentYear = now.getFullYear();
-        let currentMonth = now.getMonth() + 1;
+        let bulkYear = currentYear;
+        let bulkMonth = currentMonth;
 
         function initApp() {
             applyTheme(currentTheme);
