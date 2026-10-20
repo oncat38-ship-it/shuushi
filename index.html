@@ -123,7 +123,7 @@
 
     </main>
 
-    <!-- Modal 1: 収支・予定日入力モーダル -->
+    <!-- Modal 1: 収支・予定日・一括入力モーダル -->
     <div id="add-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div id="add-modal-content" class="rounded-3xl p-5 max-w-sm w-full shadow-2xl space-y-3 border max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center">
@@ -131,21 +131,24 @@
                 <button onclick="closeAddModal()" class="text-slate-400 hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             
-            <div class="bg-slate-100 p-2 rounded-2xl flex items-center justify-between text-xs font-bold text-slate-700">
-                <div class="flex items-center space-x-1.5">
-                    <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
-                    <span>記帳日:</span>
-                </div>
-                <input type="date" id="tx-date" class="bg-transparent border-0 font-extrabold focus:outline-none cursor-pointer text-right">
-            </div>
-
             <div class="space-y-2.5 text-xs">
-                <div class="grid grid-cols-2 gap-1.5 p-1 bg-slate-100 rounded-2xl font-bold">
-                    <button type="button" id="mode-tx-btn" onclick="setEntryMode('tx')" class="py-1.5 rounded-xl transition">収支を記帳 💸</button>
-                    <button type="button" id="mode-plan-btn" onclick="setEntryMode('plan')" class="py-1.5 rounded-xl transition">予定日を設定 📅</button>
+                <!-- モード切り替えタブ -->
+                <div class="grid grid-cols-3 gap-1 p-1 bg-slate-100 rounded-2xl font-bold text-center">
+                    <button type="button" id="mode-tx-btn" onclick="setEntryMode('tx')" class="py-1.5 rounded-xl transition">単発入力 💸</button>
+                    <button type="button" id="mode-plan-btn" onclick="setEntryMode('plan')" class="py-1.5 rounded-xl transition">予定日 📅</button>
+                    <button type="button" id="mode-bulk-btn" onclick="setEntryMode('bulk')" class="py-1.5 rounded-xl transition">一括登録 📝</button>
                 </div>
 
+                <!-- 1. 単発収支フォーム -->
                 <div id="form-tx-section" class="space-y-2.5">
+                    <div class="bg-slate-100 p-2 rounded-2xl flex items-center justify-between text-xs font-bold text-slate-700">
+                        <div class="flex items-center space-x-1.5">
+                            <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
+                            <span>記帳日:</span>
+                        </div>
+                        <input type="date" id="tx-date" class="bg-transparent border-0 font-extrabold focus:outline-none cursor-pointer text-right">
+                    </div>
+
                     <div>
                         <label class="text-slate-400 font-bold block mb-1">区分</label>
                         <div class="grid grid-cols-2 gap-2">
@@ -163,18 +166,46 @@
                         <label class="text-slate-400 font-bold block mb-1">金額 (円)</label>
                         <input type="number" id="tx-amount" placeholder="例: 1500" class="w-full border rounded-2xl px-3 py-2 font-bold focus:outline-none">
                     </div>
+
+                    <div>
+                        <label class="text-slate-400 font-bold block mb-1">詳細・メモ（任意）</label>
+                        <input type="text" id="tx-memo" placeholder="例: メモ書きなど" class="w-full border rounded-2xl px-3.5 py-2 focus:outline-none">
+                    </div>
                 </div>
 
+                <!-- 2. 予定日フォーム -->
                 <div id="form-plan-section" class="space-y-2.5 hidden">
+                    <div class="bg-slate-100 p-2 rounded-2xl flex items-center justify-between text-xs font-bold text-slate-700">
+                        <div class="flex items-center space-x-1.5">
+                            <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
+                            <span>予定日:</span>
+                        </div>
+                        <input type="date" id="plan-date" class="bg-transparent border-0 font-extrabold focus:outline-none cursor-pointer text-right">
+                    </div>
+
                     <div>
                         <label class="text-slate-400 font-bold block mb-1">予定の内容</label>
                         <input type="text" id="plan-title" placeholder="例: 旅行、美容院など" class="w-full border rounded-2xl px-3 py-2 font-bold focus:outline-none">
                     </div>
+
+                    <div>
+                        <label class="text-slate-400 font-bold block mb-1">詳細・メモ（任意）</label>
+                        <input type="text" id="plan-memo" placeholder="例: 時間や場所など" class="w-full border rounded-2xl px-3.5 py-2 focus:outline-none">
+                    </div>
                 </div>
 
-                <div>
-                    <label class="text-slate-400 font-bold block mb-1">詳細・メモ（任意）</label>
-                    <input type="text" id="tx-memo" placeholder="例: メモ書きなど" class="w-full border rounded-2xl px-3.5 py-2 focus:outline-none">
+                <!-- 3. まとめ一括登録フォーム -->
+                <div id="form-bulk-section" class="space-y-2 hidden">
+                    <div class="bg-amber-50 border border-amber-200 p-2.5 rounded-2xl text-[11px] text-amber-800 space-y-1">
+                        <p class="font-bold flex items-center gap-1"><i data-lucide="info" class="w-3.5 h-3.5"></i> 入力例（1行に1件）:</p>
+                        <p class="font-mono text-[10px] bg-white/80 p-1.5 rounded border border-amber-200">
+                            2026-10-15 支出 食費 1200 ランチ<br>
+                            2026-10-16 収入 給与 250000 10月分<br>
+                            10/18 1500 コンコンビニ
+                        </p>
+                        <p class="text-[10px] opacity-80">※年や区分・タグを省略した場合、現在年・支出・デフォルトタグが適用されます。</p>
+                    </div>
+                    <textarea id="bulk-text-input" rows="6" placeholder="ここにまとめてテキストを貼り付け・入力..." class="w-full border rounded-2xl p-3 font-mono text-xs focus:outline-none leading-relaxed"></textarea>
                 </div>
             </div>
 
@@ -1170,19 +1201,23 @@
                     }
                 }
 
-                const dayNumColor = (isAnniversary || hasPlan) ? 'text-white font-black' : isToday ? 'text-indigo-600' : isPayday ? 'text-amber-600' : 'text-slate-600';
+                // 「今日」のデザインを文字なしの「数字強調バッジ」に洗練
+                let dayNumberHtml = '';
+                if (isToday && !isAnniversary && !hasPlan) {
+                    dayNumberHtml = `<span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-indigo-600 text-white text-[11px] font-black shadow-sm">${i}</span>`;
+                } else {
+                    const dayNumColor = (isAnniversary || hasPlan) ? 'text-white font-black' : isPayday ? 'text-amber-600' : 'text-slate-600';
+                    dayNumberHtml = `<span class="text-[11px] sm:text-xs font-bold ${dayNumColor}">${i}</span>`;
+                }
 
                 let badgesInnerHtml = '';
                 if (indicatorHtml) badgesInnerHtml += indicatorHtml;
                 if (paydayBadgeHtml) badgesInnerHtml += paydayBadgeHtml;
-                if (!isAnniversary && !hasPlan && !isPayday && isToday) {
-                    badgesInnerHtml += '<span class="text-[6px] bg-indigo-500 text-white px-1 rounded-full font-bold">今日</span>';
-                }
 
                 const cell = document.createElement('div');
                 cell.className = `min-h-[48px] p-0.5 sm:p-1 flex flex-col justify-between items-center rounded-xl border transition cursor-pointer relative ${
-                    isToday 
-                        ? 'border-indigo-500 bg-indigo-50/60 shadow-sm' 
+                    isToday && !isAnniversary && !hasPlan
+                        ? 'border-indigo-400 bg-indigo-50/70 shadow-sm ring-1 ring-indigo-300' 
                         : isPayday && !isAnniversary && !hasPlan
                         ? 'border-amber-400 bg-amber-50/50'
                         : cellClass || 'border-slate-100 hover:border-indigo-300 hover:bg-slate-50/50'
@@ -1190,7 +1225,7 @@
 
                 cell.innerHTML = `
                     <div class="w-full flex justify-between items-center px-0.5">
-                        <span class="text-[11px] sm:text-xs font-bold ${dayNumColor}">${i}</span>
+                        ${dayNumberHtml}
                         <div class="flex items-center space-x-0.5">
                             ${badgesInnerHtml}
                         </div>
@@ -1224,14 +1259,20 @@
                 dateStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
             }
             const dateInput = document.getElementById('tx-date');
+            const planDateInput = document.getElementById('plan-date');
             const amtInput = document.getElementById('tx-amount');
             const memoInput = document.getElementById('tx-memo');
+            const planMemoInput = document.getElementById('plan-memo');
             const titleInput = document.getElementById('plan-title');
+            const bulkInput = document.getElementById('bulk-text-input');
 
             if (dateInput) dateInput.value = dateStr;
+            if (planDateInput) planDateInput.value = dateStr;
             if (amtInput) amtInput.value = '';
             if (memoInput) memoInput.value = '';
+            if (planMemoInput) planMemoInput.value = '';
             if (titleInput) titleInput.value = '';
+            if (bulkInput) bulkInput.value = '';
             
             setEntryMode('tx');
             setTxType('expense');
@@ -1255,22 +1296,39 @@
             currentEntryMode = mode;
             const txBtn = document.getElementById('mode-tx-btn');
             const planBtn = document.getElementById('mode-plan-btn');
+            const bulkBtn = document.getElementById('mode-bulk-btn');
             const txSection = document.getElementById('form-tx-section');
             const planSection = document.getElementById('form-plan-section');
+            const bulkSection = document.getElementById('form-bulk-section');
             const modalTitle = document.getElementById('add-modal-title');
 
+            const inactiveBtnClass = "py-1.5 rounded-xl transition text-slate-400 hover:text-slate-700 font-bold";
+            const activeBtnClass = "py-1.5 rounded-xl transition bg-white text-slate-800 shadow-sm font-bold";
+
             if (mode === 'tx') {
-                if (txBtn) txBtn.className = "py-1.5 rounded-xl transition bg-white text-slate-800 shadow-sm font-bold";
-                if (planBtn) planBtn.className = "py-1.5 rounded-xl transition text-slate-400 hover:text-slate-700 font-bold";
+                if (txBtn) txBtn.className = activeBtnClass;
+                if (planBtn) planBtn.className = inactiveBtnClass;
+                if (bulkBtn) bulkBtn.className = inactiveBtnClass;
                 if (txSection) txSection.classList.remove('hidden');
                 if (planSection) planSection.classList.add('hidden');
+                if (bulkSection) bulkSection.classList.add('hidden');
                 if (modalTitle) modalTitle.innerText = '収支を入力 💸';
-            } else {
-                if (txBtn) txBtn.className = "py-1.5 rounded-xl transition text-slate-400 hover:text-slate-700 font-bold";
-                if (planBtn) planBtn.className = "py-1.5 rounded-xl transition bg-white text-slate-800 shadow-sm font-bold";
+            } else if (mode === 'plan') {
+                if (txBtn) txBtn.className = inactiveBtnClass;
+                if (planBtn) planBtn.className = activeBtnClass;
+                if (bulkBtn) bulkBtn.className = inactiveBtnClass;
                 if (txSection) txSection.classList.add('hidden');
                 if (planSection) planSection.classList.remove('hidden');
+                if (bulkSection) bulkSection.classList.add('hidden');
                 if (modalTitle) modalTitle.innerText = '予定日を設定 📅';
+            } else if (mode === 'bulk') {
+                if (txBtn) txBtn.className = inactiveBtnClass;
+                if (planBtn) planBtn.className = inactiveBtnClass;
+                if (bulkBtn) bulkBtn.className = activeBtnClass;
+                if (txSection) txSection.classList.add('hidden');
+                if (planSection) planSection.classList.add('hidden');
+                if (bulkSection) bulkSection.classList.remove('hidden');
+                if (modalTitle) modalTitle.innerText = 'まとめて一括登録 📝';
             }
         }
 
@@ -1291,28 +1349,23 @@
         }
 
         function saveEntry() {
-            const dateInput = document.getElementById('tx-date');
-            const memoInput = document.getElementById('tx-memo');
-            if (!dateInput) return;
-            const date = dateInput.value;
-            const memo = memoInput ? memoInput.value.trim() : '';
-
-            if (!date) {
-                alert('日付を選択してください。');
-                return;
-            }
+            const targetTab = currentTabId === 'all' ? (tabs[1] ? tabs[1].id : 'general') : currentTabId;
 
             if (currentEntryMode === 'tx') {
+                const dateInput = document.getElementById('tx-date');
+                const memoInput = document.getElementById('tx-memo');
                 const amtInput = document.getElementById('tx-amount');
+                
+                const date = dateInput ? dateInput.value : '';
+                const memo = memoInput ? memoInput.value.trim() : '';
                 const amount = amtInput ? Number(amtInput.value) : 0;
-                if (!amount || amount <= 0) {
-                    alert('有効な金額を入力してください。');
-                    return;
-                }
+
+                if (!date) { alert('日付を選択してください。'); return; }
+                if (!amount || amount <= 0) { alert('有効な金額を入力してください。'); return; }
+
                 const list = tags[currentTxType] || [];
                 const activeTag = list.find(t => t.id === selectedTagId);
                 const tagName = activeTag ? activeTag.name : '未指定';
-                const targetTab = currentTabId === 'all' ? (tabs[1] ? tabs[1].id : 'general') : currentTabId;
 
                 const newTx = {
                     id: 'tx_' + Date.now(),
@@ -1326,13 +1379,19 @@
                 };
                 transactions.push(newTx);
                 localStorage.setItem('kakeibo_transactions', JSON.stringify(transactions));
-            } else {
+            } 
+            else if (currentEntryMode === 'plan') {
+                const dateInput = document.getElementById('plan-date');
                 const titleInput = document.getElementById('plan-title');
+                const memoInput = document.getElementById('plan-memo');
+
+                const date = dateInput ? dateInput.value : '';
                 const title = titleInput ? titleInput.value.trim() : '';
-                if (!title) {
-                    alert('予定の内容を入力してください。');
-                    return;
-                }
+                const memo = memoInput ? memoInput.value.trim() : '';
+
+                if (!date) { alert('日付を選択してください。'); return; }
+                if (!title) { alert('予定の内容を入力してください。'); return; }
+
                 const newPlan = {
                     id: 'plan_' + Date.now(),
                     title: title,
@@ -1341,6 +1400,78 @@
                 };
                 plans.push(newPlan);
                 localStorage.setItem('kakeibo_plans', JSON.stringify(plans));
+            }
+            else if (currentEntryMode === 'bulk') {
+                const bulkInput = document.getElementById('bulk-text-input');
+                const rawText = bulkInput ? bulkInput.value.trim() : '';
+                if (!rawText) { alert('一括登録するデータを入力してください。'); return; }
+
+                const lines = rawText.split('\n');
+                let addedCount = 0;
+
+                lines.forEach((line, idx) => {
+                    const tokens = line.trim().split(/\s+/);
+                    if (tokens.length < 2) return;
+
+                    let rawDate = tokens[0];
+                    let dateStr = '';
+
+                    if (/^\d{4}-\d{1,2}-\d{1,2}$/.test(rawDate)) {
+                        const [y, m, d] = rawDate.split('-');
+                        dateStr = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                    } else if (/^\d{1,2}\/\d{1,2}$/.test(rawDate)) {
+                        const [m, d] = rawDate.split('/');
+                        dateStr = `${currentYear}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                    } else {
+                        return; // 日付解析失敗はスキップ
+                    }
+
+                    let type = 'expense';
+                    let tagName = '未指定';
+                    let amount = 0;
+                    let memo = '';
+
+                    let nextIdx = 1;
+                    if (tokens[nextIdx] === '収入' || tokens[nextIdx] === '支出') {
+                        type = tokens[nextIdx] === '収入' ? 'income' : 'expense';
+                        nextIdx++;
+                    }
+
+                    if (isNaN(Number(tokens[nextIdx])) && tokens[nextIdx] !== undefined) {
+                        tagName = tokens[nextIdx];
+                        nextIdx++;
+                    }
+
+                    if (!isNaN(Number(tokens[nextIdx]))) {
+                        amount = Number(tokens[nextIdx]);
+                        nextIdx++;
+                    }
+
+                    if (tokens[nextIdx] !== undefined) {
+                        memo = tokens.slice(nextIdx).join(' ');
+                    }
+
+                    if (amount > 0) {
+                        transactions.push({
+                            id: 'tx_' + Date.now() + '_' + idx,
+                            tabId: targetTab,
+                            tagId: '',
+                            tagName: tagName,
+                            type: type,
+                            amount: amount,
+                            date: dateStr,
+                            memo: memo
+                        });
+                        addedCount++;
+                    }
+                });
+
+                if (addedCount === 0) {
+                    alert('有効なデータが読み取れませんでした。フォーマットを確認してください。');
+                    return;
+                }
+                localStorage.setItem('kakeibo_transactions', JSON.stringify(transactions));
+                alert(`${addedCount}件の収支を一括登録しました！`);
             }
 
             closeAddModal();
