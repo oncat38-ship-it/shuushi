@@ -19,15 +19,8 @@
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
         }
-        .priority-5-animation {
-            animation: pulse-attention 2s infinite ease-in-out;
-        }
-        @keyframes anniversary-glow {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.08); opacity: 0.9; }
-        }
         .anniversary-badge-animation {
-            animation: anniversary-glow 2.5s infinite ease-in-out;
+            animation: pulse-attention 2.5s infinite ease-in-out;
         }
     </style>
 </head>
@@ -177,17 +170,6 @@
                         <label class="text-slate-400 font-bold block mb-1">予定の内容</label>
                         <input type="text" id="plan-title" placeholder="例: 旅行、美容院など" class="w-full border rounded-2xl px-3 py-2 font-bold focus:outline-none">
                     </div>
-
-                    <div>
-                        <label class="text-slate-400 font-bold block mb-1">重要度 (★1〜★5)</label>
-                        <div class="grid grid-cols-5 gap-1">
-                            <button type="button" onclick="setPlanPriority(1)" id="prio-1-btn" class="py-2 rounded-xl font-bold border transition text-center">★1</button>
-                            <button type="button" onclick="setPlanPriority(2)" id="prio-2-btn" class="py-2 rounded-xl font-bold border transition text-center">★2</button>
-                            <button type="button" onclick="setPlanPriority(3)" id="prio-3-btn" class="py-2 rounded-xl font-bold border transition text-center">★3</button>
-                            <button type="button" onclick="setPlanPriority(4)" id="prio-4-btn" class="py-2 rounded-xl font-bold border transition text-center">★4</button>
-                            <button type="button" onclick="setPlanPriority(5)" id="prio-5-btn" class="py-2 rounded-xl font-bold border transition text-center">★5</button>
-                        </div>
-                    </div>
                 </div>
 
                 <div>
@@ -324,23 +306,30 @@
                 </div>
             </div>
 
-            <!-- ページ2-C: 記念日設定 -->
+            <!-- ページ2-C: 記念日設定 (種類選択付き) -->
             <div id="settings-page-anniversaries" class="space-y-4 text-xs overflow-y-auto flex-1 pr-1 hidden">
                 <div class="space-y-3">
                     <div>
-                        <label class="text-slate-400 font-bold block mb-1">新しい記念日を追加</label>
-                        <div class="space-y-2">
-                            <input type="text" id="new-anni-title" placeholder="例: 結婚記念日、誕生日など" class="w-full border rounded-xl px-3 py-2 focus:outline-none">
-                            <div class="flex space-x-2">
-                                <input type="date" id="new-anni-date" class="flex-1 border rounded-xl px-3 py-2 focus:outline-none font-bold">
-                                <button onclick="addNewAnniversary()" id="add-anni-btn" class="px-4 py-2 text-white font-bold rounded-xl transition whitespace-nowrap">追加</button>
-                            </div>
+                        <label class="text-slate-400 font-bold block mb-1">記念日の種類</label>
+                        <select id="new-anni-category" class="w-full border rounded-xl px-3 py-2 font-bold focus:outline-none mb-2">
+                            <option value="love">💛 大切な人との記念日（恋人・家族）</option>
+                            <option value="money">💰 金銭的に大切な記念日（契約日・建立日）</option>
+                            <option value="other">📌 その他いろんな重要ごと</option>
+                        </select>
+
+                        <label class="text-slate-400 font-bold block mb-1">記念日の内容</label>
+                        <input type="text" id="new-anni-title" placeholder="例: 結婚記念日、契約日など" class="w-full border rounded-xl px-3 py-2 focus:outline-none mb-2">
+                        
+                        <label class="text-slate-400 font-bold block mb-1">日付</label>
+                        <div class="flex space-x-2">
+                            <input type="date" id="new-anni-date" class="flex-1 border rounded-xl px-3 py-2 focus:outline-none font-bold">
+                            <button onclick="addNewAnniversary()" id="add-anni-btn" class="px-4 py-2 text-white font-bold rounded-xl transition whitespace-nowrap">追加</button>
                         </div>
                     </div>
 
                     <div>
                         <label class="text-slate-400 font-bold block mb-1">登録済み記念日一覧（毎年自動表示）</label>
-                        <div id="settings-anni-list" class="space-y-1.5 max-h-44 overflow-y-auto p-1 border rounded-2xl"></div>
+                        <div id="settings-anni-list" class="space-y-1.5 max-h-40 overflow-y-auto p-1 border rounded-2xl"></div>
                     </div>
                 </div>
             </div>
@@ -437,7 +426,6 @@
 
         let currentEntryMode = 'tx';
         let currentTxType = 'expense';
-        let currentPlanPriority = 3;
         let selectedDateForModal = '';
 
         const now = new Date();
@@ -569,7 +557,7 @@
             lucide.createIcons();
         }
 
-        // --- 設定画面の2段階ページ切り替え（堅牢化） ---
+        // --- 設定画面の2段階ページ切り替え ---
         function showSettingsMenu() {
             document.getElementById('settings-header-title').innerText = '設定 ⚙️';
             document.getElementById('settings-back-btn').classList.add('hidden');
@@ -624,12 +612,17 @@
             }
 
             anniversaries.forEach((anni) => {
+                const categoryNames = { love: '💛 大切な人', money: '💰 金銭的', other: '📌 その他' };
+                const catLabel = categoryNames[anni.category] || '📌 その他';
                 const item = document.createElement('div');
                 item.className = "flex justify-between items-center bg-white p-2.5 rounded-xl border border-slate-200 shadow-sm";
                 item.innerHTML = `
                     <div>
-                        <p class="font-bold text-slate-700">${anni.title}</p>
-                        <p class="text-[10px] text-slate-400">${anni.date}</p>
+                        <div class="flex items-center space-x-1.5">
+                            <span class="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-bold">${catLabel}</span>
+                            <p class="font-bold text-slate-700">${anni.title}</p>
+                        </div>
+                        <p class="text-[10px] text-slate-400 mt-0.5">${anni.date}</p>
                     </div>
                     <button onclick="deleteAnniversary('${anni.id}')" class="p-1 text-slate-400 hover:text-rose-500 transition">
                         <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
@@ -641,18 +634,22 @@
         }
 
         function addNewAnniversary() {
+            const catSelect = document.getElementById('new-anni-category');
             const titleInput = document.getElementById('new-anni-title');
             const dateInput = document.getElementById('new-anni-date');
-            const title = titleInput.value.trim();
-            const date = dateInput.value;
+            
+            const category = catSelect ? catSelect.value : 'love';
+            const title = titleInput ? titleInput.value.trim() : '';
+            const date = dateInput ? dateInput.value : '';
+
             if (!title || !date) {
                 alert('記念日のタイトルと日付を入力してください。');
                 return;
             }
-            anniversaries.push({ id: 'anni_' + Date.now(), title, date });
+            anniversaries.push({ id: 'anni_' + Date.now(), category, title, date });
             localStorage.setItem('kakeibo_anniversaries', JSON.stringify(anniversaries));
-            titleInput.value = '';
-            dateInput.value = '';
+            if (titleInput) titleInput.value = '';
+            if (dateInput) dateInput.value = '';
             renderSettingsAnniversaryList();
             renderCalendar();
         }
@@ -1098,81 +1095,101 @@
                 });
 
                 const dayPlans = plans.filter(p => p.date === dateStr);
-                let maxPriority = 0;
-                let planInitial = '';
-                if (dayPlans.length > 0) {
-                    dayPlans.forEach(p => {
-                        if (p.priority > maxPriority) {
-                            maxPriority = p.priority;
-                            planInitial = p.title ? p.title.trim().charAt(0) : '予';
-                        }
-                    });
-                }
+                let hasPlan = dayPlans.length > 0;
+                let planInitial = hasPlan ? (dayPlans[0].title ? dayPlans[0].title.trim().charAt(0) : '予') : '';
 
-                let specialClass = '';
-                let symbolIcon = '';
-                if (isAnniversary) {
-                    if (currentTheme === 'cute') {
-                        specialClass = 'bg-gradient-to-br from-pink-200 via-rose-300 to-pink-300 border-rose-400 text-rose-900 shadow-md ring-2 ring-pink-300 anniversary-badge-animation z-10';
-                        symbolIcon = '✨';
-                    } else if (currentTheme === 'simple') {
-                        specialClass = 'bg-rose-50 border-rose-400 text-rose-800 font-bold shadow-sm ring-1 ring-rose-200 z-10';
-                        symbolIcon = '♥';
-                    } else {
-                        specialClass = 'bg-[#f4ebd0] border-[#b89768] text-[#5c4433] font-bold shadow-sm ring-1 ring-[#d4b58e] z-10';
-                        symbolIcon = '👑';
-                    }
-                } else {
-                    if (maxPriority === 5) {
-                        specialClass = 'bg-gradient-to-br from-rose-400 via-rose-500 to-amber-400 border-rose-600 text-white shadow-md shadow-rose-200 ring-2 ring-rose-400 priority-5-animation z-10';
-                    } else if (maxPriority === 4) {
-                        specialClass = 'bg-rose-100/90 border-rose-300 font-bold';
-                    } else if (maxPriority === 3) {
-                        specialClass = 'bg-amber-100/80 border-amber-300 font-bold';
-                    } else if (maxPriority === 2) {
-                        specialClass = 'bg-purple-50/80 border-purple-200';
-                    } else if (maxPriority === 1) {
-                        specialClass = 'bg-blue-50/50 border-blue-200';
-                    }
-                }
-
-                const cell = document.createElement('div');
-                cell.className = `min-h-[48px] p-0.5 sm:p-1 flex flex-col justify-between items-center rounded-xl border transition cursor-pointer relative ${
-                    isToday 
-                        ? 'border-indigo-500 bg-indigo-50/60 shadow-sm' 
-                        : isPayday
-                        ? 'border-amber-400 bg-amber-50/50'
-                        : specialClass || 'border-slate-100 hover:border-indigo-300 hover:bg-slate-50/50'
-                }`;
-
+                // スタイル・マークの決定
+                let cellClass = '';
                 let indicatorHtml = '';
+
                 if (isAnniversary) {
-                    const badgeBg = currentTheme === 'cute' ? 'bg-white/90 text-rose-600' : currentTheme === 'simple' ? 'bg-rose-500 text-white' : 'bg-[#7c5c43] text-amber-50';
-                    indicatorHtml = `<span class="text-[8px] ${badgeBg} px-1 rounded-md font-extrabold shadow-sm">${symbolIcon} 記念日</span>`;
-                } else if (planInitial) {
-                    const badgeBg = maxPriority === 5 ? 'bg-white text-rose-600 font-black shadow-sm' : 'bg-rose-500 text-white font-bold';
-                    indicatorHtml = `<span class="text-[7.5px] ${badgeBg} px-1 rounded-md">${planInitial}</span>`;
+                    const anni = matchedAnniversaries[0];
+                    const cat = anni.category || 'love';
+
+                    if (currentTheme === 'cute') {
+                        if (cat === 'love') {
+                            cellClass = 'bg-gradient-to-br from-pink-200 to-rose-300 border-rose-400 text-rose-900 shadow-sm ring-2 ring-pink-300 anniversary-badge-animation z-10';
+                            indicatorHtml = `<span class="text-[8px] bg-white/90 text-rose-600 px-1 rounded-md font-extrabold shadow-sm">♥ 記念日</span>`;
+                        } else if (cat === 'money') {
+                            cellClass = 'bg-gradient-to-br from-amber-100 to-yellow-200 border-amber-400 text-amber-900 shadow-sm ring-2 ring-yellow-300 anniversary-badge-animation z-10';
+                            indicatorHtml = `<span class="text-[8px] bg-white/90 text-amber-600 px-1 rounded-md font-extrabold shadow-sm">★ 記念日</span>`;
+                        } else {
+                            cellClass = 'bg-gradient-to-br from-purple-100 to-indigo-200 border-purple-400 text-purple-900 shadow-sm ring-2 ring-purple-300 anniversary-badge-animation z-10';
+                            indicatorHtml = `<span class="text-[8px] bg-white/90 text-purple-600 px-1 rounded-md font-extrabold shadow-sm">！ 記念日</span>`;
+                        }
+                    } else if (currentTheme === 'simple') {
+                        if (cat === 'love') {
+                            cellClass = 'bg-rose-50 border-rose-500 text-rose-900 font-bold shadow-sm ring-1 ring-rose-300 z-10';
+                            indicatorHtml = `<span class="text-[8px] bg-rose-500 text-white px-1 rounded-md font-bold">♥ 記念日</span>`;
+                        } else if (cat === 'money') {
+                            cellClass = 'bg-emerald-50 border-emerald-500 text-emerald-900 font-bold shadow-sm ring-1 ring-emerald-300 z-10';
+                            indicatorHtml = `<span class="text-[8px] bg-emerald-600 text-white px-1 rounded-md font-bold">！ 記念日</span>`;
+                        } else {
+                            cellClass = 'bg-blue-50 border-blue-600 text-blue-900 font-bold shadow-sm ring-1 ring-blue-300 z-10';
+                            indicatorHtml = `<span class="text-[8px] bg-blue-700 text-white px-1 rounded-md font-bold">◎ 記念日</span>`;
+                        }
+                    } else { // classic
+                        if (cat === 'love') {
+                            cellClass = 'bg-[#f4ebd0] border-[#b89768] text-[#5c4433] font-bold shadow-sm ring-1 ring-[#d4b58e] z-10';
+                            indicatorHtml = `<span class="text-[8px] bg-[#7c5c43] text-amber-50 px-1 rounded-md font-bold">！ 記念日</span>`;
+                        } else if (cat === 'money') {
+                            cellClass = 'bg-[#f7f1e3] border-[#c4b387] text-[#5c4433] font-bold shadow-sm ring-1 ring-[#dec99b] z-10';
+                            indicatorHtml = `<span class="text-[8px] bg-[#8c7355] text-amber-50 px-1 rounded-md font-bold">＄ 記念日</span>`;
+                        } else {
+                            cellClass = 'bg-[#eee4d4] border-[#a89070] text-[#4a3b32] font-bold shadow-sm ring-1 ring-[#c2ab89] z-10';
+                            indicatorHtml = `<span class="text-[8px] bg-[#5c4433] text-amber-50 px-1 rounded-md font-bold">重 記念日</span>`;
+                        }
+                    }
+                } else if (hasPlan) {
+                    // ご要望の予定日: 目立つ濃い青色系のデザイン
+                    cellClass = 'bg-blue-600 border-blue-700 text-white shadow-md ring-1 ring-blue-400 z-10';
+                    indicatorHtml = `<span class="text-[7.5px] bg-white text-blue-700 px-1 rounded-md font-extrabold shadow-sm">${planInitial}</span>`;
+                }
+
+                // 給料日の円マーク（¥）デザイン
+                let paydayBadgeHtml = '';
+                if (isPayday && !isAnniversary) {
+                    let paySymbolStyle = '';
+                    if (currentTheme === 'cute') {
+                        paySymbolStyle = 'bg-pink-400 text-white font-black rounded-full px-1 text-[7px] shadow-sm';
+                    } else if (currentTheme === 'simple') {
+                        paySymbolStyle = 'bg-amber-500 text-white font-bold rounded px-1 text-[7px]';
+                    } else {
+                        paySymbolStyle = 'bg-[#7c5c43] text-amber-50 font-serif font-bold rounded px-1 text-[7px] border border-[#5c4433]';
+                    }
+                    paydayBadgeHtml = `<span class="${paySymbolStyle}">¥ 給料</span>`;
                 }
 
                 let badgeHtml = '';
                 if (hasTransaction) {
+                    const isDarkCell = isAnniversary || hasPlan;
                     if (dayNetTotal > 0) {
-                        badgeHtml = `<span class="text-[7.5px] sm:text-[9px] ${maxPriority === 5 || isAnniversary ? 'bg-black/20 text-emerald-200' : 'bg-emerald-100 text-emerald-700'} font-extrabold px-0.5 rounded w-full text-center truncate block">+${dayNetTotal.toLocaleString()}</span>`;
+                        badgeHtml = `<span class="text-[7.5px] sm:text-[9px] ${isDarkCell ? 'bg-black/30 text-emerald-200' : 'bg-emerald-100 text-emerald-700'} font-extrabold px-0.5 rounded w-full text-center truncate block">+${dayNetTotal.toLocaleString()}</span>`;
                     } else if (dayNetTotal < 0) {
-                        badgeHtml = `<span class="text-[7.5px] sm:text-[9px] ${maxPriority === 5 || isAnniversary ? 'bg-black/20 text-white' : 'bg-rose-100 text-rose-600'} font-extrabold px-0.5 rounded w-full text-center truncate block">-${Math.abs(dayNetTotal).toLocaleString()}</span>`;
+                        badgeHtml = `<span class="text-[7.5px] sm:text-[9px] ${isDarkCell ? 'bg-black/30 text-rose-200' : 'bg-rose-100 text-rose-600'} font-extrabold px-0.5 rounded w-full text-center truncate block">-${Math.abs(dayNetTotal).toLocaleString()}</span>`;
                     } else {
                         badgeHtml = `<span class="text-[7.5px] sm:text-[9px] bg-slate-100 text-slate-600 font-bold px-0.5 rounded w-full text-center truncate block">0</span>`;
                     }
                 }
 
-                const dayNumColor = (maxPriority === 5 || isAnniversary) ? 'font-black' : isToday ? 'text-indigo-600' : isPayday ? 'text-amber-600' : 'text-slate-600';
+                const dayNumColor = (isAnniversary || hasPlan) ? 'text-white font-black' : isToday ? 'text-indigo-600' : isPayday ? 'text-amber-600' : 'text-slate-600';
+
+                const cell = document.createElement('div');
+                cell.className = `min-h-[48px] p-0.5 sm:p-1 flex flex-col justify-between items-center rounded-xl border transition cursor-pointer relative ${
+                    isToday 
+                        ? 'border-indigo-500 bg-indigo-50/60 shadow-sm' 
+                        : isPayday && !isAnniversary && !hasPlan
+                        ? 'border-amber-400 bg-amber-50/50'
+                        : cellClass || 'border-slate-100 hover:border-indigo-300 hover:bg-slate-50/50'
+                }`;
 
                 cell.innerHTML = `
                     <div class="w-full flex justify-between items-center px-0.5">
                         <span class="text-[11px] sm:text-xs font-bold ${dayNumColor}">${i}</span>
                         <div class="flex items-center space-x-0.5">
                             ${indicatorHtml}
-                            ${!isAnniversary && isPayday ? '<span class="text-[6px] bg-amber-400 text-white px-1 rounded-full font-bold">給料</span>' : ''}
+                            ${paydayBadgeHtml}
+                            {!isAnniversary && !hasPlan && !isPayday && isToday ? '<span class="text-[6px] bg-indigo-500 text-white px-1 rounded-full font-bold">今日</span>' : ''}
                         </div>
                     </div>
                     <div class="w-full pb-0.5">
@@ -1215,7 +1232,6 @@
             
             setEntryMode('tx');
             setTxType('expense');
-            setPlanPriority(3);
             
             const modal = document.getElementById('add-modal');
             if (modal) {
@@ -1271,20 +1287,6 @@
             renderTagSelector();
         }
 
-        function setPlanPriority(prio) {
-            currentPlanPriority = prio;
-            for (let i = 1; i <= 5; i++) {
-                const btn = document.getElementById(`prio-${i}-btn`);
-                if (btn) {
-                    if (i === prio) {
-                        btn.className = "py-2 rounded-xl font-bold border transition text-center bg-amber-400 text-white border-amber-400 shadow-sm";
-                    } else {
-                        btn.className = "py-2 rounded-xl font-bold border transition text-center bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100";
-                    }
-                }
-            }
-        }
-
         function saveEntry() {
             const dateInput = document.getElementById('tx-date');
             const memoInput = document.getElementById('tx-memo');
@@ -1331,7 +1333,6 @@
                 const newPlan = {
                     id: 'plan_' + Date.now(),
                     title: title,
-                    priority: currentPlanPriority,
                     date: date,
                     memo: memo
                 };
@@ -1364,7 +1365,7 @@
                     item.className = "flex justify-between items-center bg-pink-50 p-3 rounded-2xl border border-pink-200";
                     item.innerHTML = `
                         <div class="flex items-center space-x-2">
-                            <span class="text-xs bg-rose-500 text-white px-2 py-0.5 rounded-lg font-bold">記念日 ♥</span>
+                            <span class="text-xs bg-rose-500 text-white px-2 py-0.5 rounded-lg font-bold">記念日</span>
                             <p class="font-extrabold text-slate-800">${a.title}</p>
                         </div>
                     `;
@@ -1373,11 +1374,11 @@
 
                 dayPlans.forEach(p => {
                     const item = document.createElement('div');
-                    item.className = "flex justify-between items-center bg-amber-50/80 p-3 rounded-2xl border border-amber-200";
+                    item.className = "flex justify-between items-center bg-blue-50 p-3 rounded-2xl border border-blue-200";
                     item.innerHTML = `
                         <div>
                             <div class="flex items-center space-x-1.5">
-                                <span class="text-[10px] bg-amber-400 text-white px-1.5 py-0.5 rounded-md font-extrabold">予定★${p.priority}</span>
+                                <span class="text-[10px] bg-blue-600 text-white px-1.5 py-0.5 rounded-md font-extrabold">予定</span>
                                 <p class="font-extrabold text-slate-800">${p.title}</p>
                             </div>
                             ${p.memo ? `<p class="text-[10px] text-slate-500 mt-0.5">${p.memo}</p>` : ''}
