@@ -14,6 +14,7 @@
         .theme-cute { font-family: 'M PLUS Rounded 1c', sans-serif; }
         .theme-simple { font-family: 'Noto Sans JP', sans-serif; }
         .theme-classic { font-family: 'Noto Sans JP', serif; }
+
         @keyframes pulse-attention {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
@@ -63,6 +64,7 @@
             </div>
         </div>
 
+        <!-- タブ切り替えバー -->
         <div id="tabs-bar" class="max-w-xl mx-auto px-3 border-t py-1.5">
             <div id="tabs-container" class="flex items-center justify-center flex-wrap gap-1"></div>
         </div>
@@ -70,6 +72,8 @@
 
     <!-- メインコンテンツ -->
     <main class="max-w-xl mx-auto px-4 mt-3 space-y-3">
+
+        <!-- 1. 収支表示カード -->
         <div id="summary-card" class="rounded-2xl p-4 text-white shadow-lg relative overflow-hidden transition-all duration-300">
             <div class="flex justify-between items-start relative z-10 gap-2">
                 <div>
@@ -105,12 +109,15 @@
                 </div>
             </div>
 
+            <!-- 目標設定パネル -->
             <div id="target-input-box" class="mt-2.5 pt-2.5 border-t border-white/20 hidden relative z-10 transition-all">
                 <div class="flex items-center justify-between text-xs gap-2 flex-wrap">
-                    <select id="target-mode-select" onchange="onTargetModeChange()" class="bg-black/20 border border-white/30 rounded-lg px-2 py-1 text-[11px] font-bold text-white focus:outline-none">
-                        <option value="expense">支出メイン (残金目標)</option>
-                        <option value="income">収入メイン (達成目標)</option>
-                    </select>
+                    <div class="flex items-center space-x-2">
+                        <select id="target-mode-select" onchange="onTargetModeChange()" class="bg-black/20 border border-white/30 rounded-lg px-2 py-1 text-[11px] font-bold text-white focus:outline-none">
+                            <option value="expense">支出メイン (残金目標)</option>
+                            <option value="income">収入メイン (達成目標)</option>
+                        </select>
+                    </div>
                     <div class="flex items-center space-x-1.5 flex-1 max-w-[200px]">
                         <input type="number" id="target-amount-input" placeholder="目標額 (円)" class="w-full bg-black/20 border border-white/30 text-white placeholder-white/60 rounded-lg px-2.5 py-1 text-xs font-bold focus:outline-none">
                         <button onclick="saveTargetSetting()" class="bg-white text-slate-800 font-extrabold px-2.5 py-1 rounded-lg text-[11px] shrink-0 hover:bg-white/90 transition shadow-sm">設定</button>
@@ -118,6 +125,7 @@
                 </div>
             </div>
 
+            <!-- 日割り計算結果インジケーター -->
             <div id="daily-allowance-container" class="mt-2.5 pt-2 border-t border-white/20 relative z-10 hidden">
                 <div class="flex items-center justify-between text-[11px] font-extrabold bg-black/15 backdrop-blur px-2.5 py-1.5 rounded-xl">
                     <span class="flex items-center gap-1"><i data-lucide="calculator" class="w-3.5 h-3.5"></i> <span id="daily-allowance-label">残り日割り目安</span></span>
@@ -127,52 +135,78 @@
             
             <div class="grid grid-cols-2 gap-2 mt-2.5 pt-2 border-t border-white/25 text-xs relative z-10">
                 <div class="flex items-center space-x-2 bg-white/15 backdrop-blur p-2 rounded-xl">
-                    <div id="income-icon-bg" class="bg-white p-1 rounded-lg shadow-sm"><i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i></div>
-                    <div><p class="opacity-80 text-[9px] font-bold">期間内の収入</p><p id="monthly-income" class="font-black text-xs sm:text-sm text-white">¥0</p></div>
+                    <div id="income-icon-bg" class="bg-white p-1 rounded-lg shadow-sm">
+                        <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+                    </div>
+                    <div>
+                        <p class="opacity-80 text-[9px] font-bold">期間内の収入</p>
+                        <p id="monthly-income" class="font-black text-xs sm:text-sm text-white">¥0</p>
+                    </div>
                 </div>
                 <div class="flex items-center space-x-2 bg-white/15 backdrop-blur p-2 rounded-xl">
-                    <div id="expense-icon-bg" class="bg-white p-1 rounded-lg shadow-sm"><i data-lucide="arrow-down-right" class="w-3.5 h-3.5"></i></div>
-                    <div><p class="opacity-80 text-[9px] font-bold">期間内の支出</p><p id="monthly-expense" class="font-black text-xs sm:text-sm text-white">¥0</p></div>
+                    <div id="expense-icon-bg" class="bg-white p-1 rounded-lg shadow-sm">
+                        <i data-lucide="arrow-down-right" class="w-3.5 h-3.5"></i>
+                    </div>
+                    <div>
+                        <p class="opacity-80 text-[9px] font-bold">期間内の支出</p>
+                        <p id="monthly-expense" class="font-black text-xs sm:text-sm text-white">¥0</p>
+                    </div>
                 </div>
             </div>
         </div>
 
+        <!-- 2. カレンダーセクション -->
         <div id="calendar-card" class="rounded-3xl p-3 sm:p-4 border shadow-sm transition-all duration-300">
             <div class="flex items-center justify-between mb-2 px-1">
                 <div class="flex items-center space-x-2">
-                    <div id="calendar-icon-bg" class="p-1.5 rounded-xl"><i data-lucide="calendar" class="w-4 h-4"></i></div>
+                    <div id="calendar-icon-bg" class="p-1.5 rounded-xl">
+                        <i data-lucide="calendar" class="w-4 h-4"></i>
+                    </div>
                     <h2 id="calendar-title" class="text-sm font-extrabold"></h2>
                 </div>
                 <div class="flex items-center space-x-1">
-                    <button onclick="changeMonth(-1)" class="p-1.5 rounded-xl border border-transparent hover:border-slate-200 transition"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
-                    <button onclick="changeMonth(1)" class="p-1.5 rounded-xl border border-transparent hover:border-slate-200 transition"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                    <button onclick="changeMonth(-1)" class="p-1.5 rounded-xl border border-transparent hover:border-slate-200 transition">
+                        <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                    </button>
+                    <button onclick="changeMonth(1)" class="p-1.5 rounded-xl border border-transparent hover:border-slate-200 transition">
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </button>
                 </div>
             </div>
+
             <div id="calendar-weekdays" class="grid grid-cols-7 text-center text-[10px] font-extrabold mb-1">
                 <span class="text-rose-500">日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span class="text-sky-500">土</span>
             </div>
+            
             <div id="calendar-grid" class="grid grid-cols-7 gap-0.5"></div>
         </div>
+
     </main>
 
-    <!-- Modal 1: 収支入力 -->
+    <!-- Modal 1: 収支・予定日・月一括入力モーダル -->
     <div id="add-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div id="add-modal-content" class="rounded-3xl p-5 max-w-lg w-full shadow-2xl space-y-3 border max-h-[90vh] flex flex-col">
             <div class="flex justify-between items-center shrink-0">
                 <h3 id="add-modal-title" class="text-sm font-extrabold">登録する</h3>
                 <button onclick="closeAddModal()" class="text-slate-400 hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
+            
             <div class="space-y-2.5 text-xs overflow-y-auto flex-1 pr-1">
                 <div class="grid grid-cols-3 gap-1 p-1 bg-slate-100 rounded-2xl font-bold text-center">
                     <button type="button" id="mode-tx-btn" onclick="setEntryMode('tx')" class="py-1.5 rounded-xl transition">単発入力 💸</button>
                     <button type="button" id="mode-plan-btn" onclick="setEntryMode('plan')" class="py-1.5 rounded-xl transition">予定日 📅</button>
                     <button type="button" id="mode-bulk-btn" onclick="setEntryMode('bulk')" class="py-1.5 rounded-xl transition">月一括登録 📝</button>
                 </div>
+
                 <div id="form-tx-section" class="space-y-2.5">
                     <div class="bg-slate-100 p-2 rounded-2xl flex items-center justify-between text-xs font-bold text-slate-700">
-                        <span>記帳日:</span>
+                        <div class="flex items-center space-x-1.5">
+                            <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
+                            <span>記帳日:</span>
+                        </div>
                         <input type="date" id="tx-date" class="bg-transparent border-0 font-extrabold focus:outline-none cursor-pointer text-right">
                     </div>
+
                     <div>
                         <label class="text-slate-400 font-bold block mb-1">区分</label>
                         <div class="grid grid-cols-2 gap-2">
@@ -180,25 +214,349 @@
                             <button type="button" id="type-income-btn" onclick="setTxType('income')" class="py-2 rounded-2xl font-bold transition">収入 💰</button>
                         </div>
                     </div>
+
                     <div>
                         <label class="text-slate-400 font-bold block mb-1">ジャンル（タグ）</label>
                         <div id="tag-select-container" class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto p-1.5 rounded-2xl border"></div>
                     </div>
+
                     <div>
                         <label class="text-slate-400 font-bold block mb-1">金額 (円)</label>
                         <input type="number" id="tx-amount" placeholder="例: 1500" class="w-full border rounded-2xl px-3 py-2 font-bold focus:outline-none">
                     </div>
+
                     <div>
                         <label class="text-slate-400 font-bold block mb-1">詳細・メモ（任意）</label>
                         <input type="text" id="tx-memo" placeholder="例: メモ書きなど" class="w-full border rounded-2xl px-3.5 py-2 focus:outline-none">
                     </div>
                 </div>
+
+                <div id="form-plan-section" class="space-y-2.5 hidden">
+                    <div class="bg-slate-100 p-2 rounded-2xl flex items-center justify-between text-xs font-bold text-slate-700">
+                        <div class="flex items-center space-x-1.5">
+                            <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
+                            <span>予定日:</span>
+                        </div>
+                        <input type="date" id="plan-date" class="bg-transparent border-0 font-extrabold focus:outline-none cursor-pointer text-right">
+                    </div>
+
+                    <div>
+                        <label class="text-slate-400 font-bold block mb-1">予定の内容</label>
+                        <input type="text" id="plan-title" placeholder="例: 旅行、美容院など" class="w-full border rounded-2xl px-3 py-2 font-bold focus:outline-none">
+                    </div>
+
+                    <div>
+                        <label class="text-slate-400 font-bold block mb-1">詳細・メモ（任意）</label>
+                        <input type="text" id="plan-memo" placeholder="例: 時間や場所など" class="w-full border rounded-2xl px-3.5 py-2 focus:outline-none">
+                    </div>
+                </div>
+
+                <div id="form-bulk-section" class="space-y-3 hidden">
+                    <div class="flex items-center justify-between bg-slate-100 p-2 rounded-2xl font-bold">
+                        <div class="flex items-center space-x-2">
+                            <i data-lucide="calendar" class="w-4 h-4 text-slate-500"></i>
+                            <span id="bulk-month-label" class="text-slate-700">対象月: ----年--月</span>
+                        </div>
+                        <div class="flex items-center space-x-1">
+                            <button type="button" onclick="changeBulkMonth(-1)" class="p-1 bg-white rounded-lg shadow-sm"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                            <button type="button" onclick="changeBulkMonth(1)" class="p-1 bg-white rounded-lg shadow-sm"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="bg-indigo-50 border border-indigo-200 p-2.5 rounded-2xl space-y-2">
+                        <p class="font-extrabold text-indigo-900 flex items-center gap-1"><i data-lucide="sparkles" class="w-3.5 h-3.5"></i> 一括変更（全日程に適用）</p>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-[10px] text-indigo-700 font-bold block mb-0.5">一括区分</label>
+                                <select id="bulk-default-type" onchange="applyBulkType(this.value)" class="w-full border border-indigo-200 rounded-xl px-2 py-1 bg-white font-bold text-slate-700">
+                                    <option value="expense">支出 💸</option>
+                                    <option value="income">収入 💰</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-indigo-700 font-bold block mb-0.5">一括ジャンル（タグ）</label>
+                                <select id="bulk-default-tag" onchange="applyBulkTag(this.value)" class="w-full border border-indigo-200 rounded-xl px-2 py-1 bg-white font-bold text-slate-700"></select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border rounded-2xl overflow-hidden max-h-56 overflow-y-auto bg-white">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="bg-slate-100 sticky top-0 text-[10px] text-slate-500 font-extrabold border-b z-10">
+                                <tr>
+                                    <th class="p-2 w-16">日付</th>
+                                    <th class="p-2 w-16">区分</th>
+                                    <th class="p-2 w-24">タグ</th>
+                                    <th class="p-2 w-24">金額(円)</th>
+                                    <th class="p-2">メモ / 追加</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bulk-table-body" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
+
             <button onclick="saveEntry()" id="save-tx-btn" class="w-full py-2.5 text-white font-extrabold rounded-2xl text-xs transition shadow-md shrink-0">保存する</button>
         </div>
     </div>
 
-    <!-- Firebase SDK (エラー対策統合版) -->
+    <!-- Modal 2: 期間設定モーダル -->
+    <div id="period-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white border rounded-3xl p-5 max-w-sm w-full shadow-2xl space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-sm font-extrabold">収支の期間設定 📅</h3>
+                <button onclick="closePeriodModal()" class="text-slate-400 hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="text-slate-400 font-bold block mb-1">表示モード</label>
+                    <select id="period-mode-select" onchange="onPeriodModeChange(this.value)" class="w-full border rounded-xl px-3 py-2 font-bold focus:outline-none">
+                        <option value="month">選択中の「月」全体 (デフォルト)</option>
+                        <option value="custom">自由な期間を指定</option>
+                    </select>
+                </div>
+
+                <div id="period-custom-box" class="space-y-2 hidden">
+                    <div>
+                        <label class="text-slate-400 font-bold block mb-1">開始日</label>
+                        <input type="date" id="period-start-date" class="w-full border rounded-xl px-3 py-2 font-bold">
+                    </div>
+                    <div>
+                        <label class="text-slate-400 font-bold block mb-1">終了日</label>
+                        <input type="date" id="period-end-date" class="w-full border rounded-xl px-3 py-2 font-bold">
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="savePeriodSettings()" class="w-full py-2.5 bg-slate-900 text-white font-bold rounded-xl text-xs transition">設定を適用する</button>
+        </div>
+    </div>
+
+    <!-- Modal 3: タブ別・月別資金設定モーダル -->
+    <div id="fund-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white border rounded-3xl p-5 max-w-sm w-full shadow-2xl space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-sm font-extrabold">開始資金の設定 💰</h3>
+                <button onclick="closeFundModal()" class="text-slate-400 hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            
+            <div class="space-y-3 text-xs">
+                <p id="fund-modal-info" class="text-slate-500 font-bold"></p>
+                <div>
+                    <label class="text-slate-400 font-bold block mb-1">今月の開始資金 (円) ※未設定は0</label>
+                    <input type="number" id="tab-monthly-fund-input" placeholder="例: 100000" class="w-full border rounded-xl px-3 py-2 font-bold focus:outline-none">
+                </div>
+            </div>
+
+            <button onclick="saveTabMonthlyFund()" class="w-full py-2.5 bg-slate-900 text-white font-bold rounded-xl text-xs transition">この資金を保存する</button>
+        </div>
+    </div>
+
+    <!-- Modal 4: 日別明細モーダル -->
+    <div id="day-detail-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div id="day-detail-modal-content" class="rounded-3xl p-5 max-w-sm w-full shadow-2xl space-y-3 border max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center shrink-0">
+                <h3 id="day-detail-title" class="text-sm font-extrabold">日付の明細</h3>
+                <button onclick="closeDayDetailModal()" class="text-slate-400 hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+
+            <div class="bg-slate-100 p-2.5 rounded-2xl flex items-center justify-between text-xs font-bold text-slate-700 shrink-0">
+                <label for="exclude-daily-check" class="flex items-center space-x-2 cursor-pointer select-none">
+                    <input type="checkbox" id="exclude-daily-check" onchange="toggleExcludeDate()" class="w-4 h-4 accent-indigo-600 rounded cursor-pointer">
+                    <span>この日を「日割り計算対象外」にする</span>
+                </label>
+            </div>
+            
+            <div id="day-detail-list" class="space-y-2 overflow-y-auto text-xs flex-1 pr-1"></div>
+
+            <button onclick="openAddModalFromDetail()" id="detail-add-btn" class="w-full py-2.5 font-bold rounded-2xl text-xs transition shrink-0">
+                + この日に追加する
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal 5: タブ追加モーダル -->
+    <div id="add-tab-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div id="add-tab-modal-content" class="rounded-3xl p-5 max-w-sm w-full shadow-2xl space-y-4 border">
+            <div class="flex justify-between items-center">
+                <h3 class="text-sm font-extrabold">新しいタブを追加</h3>
+                <button onclick="closeAddTabModal()" class="text-slate-400 hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <input type="text" id="new-tab-name" placeholder="例: プライベート、副業など" class="w-full border rounded-2xl px-3.5 py-2 text-xs focus:outline-none">
+            <button onclick="addNewTab()" id="save-tab-btn" class="w-full py-2.5 text-white font-bold rounded-2xl text-xs transition">追加する</button>
+        </div>
+    </div>
+
+    <!-- Modal 6: 設定モーダル -->
+    <div id="settings-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div id="settings-modal-content" class="rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 border max-h-[85vh] flex flex-col">
+            
+            <div class="flex justify-between items-center border-b pb-3 shrink-0">
+                <div class="flex items-center space-x-2">
+                    <button id="settings-back-btn" onclick="showSettingsMenu()" class="hidden p-1 text-slate-400 hover:text-slate-700 transition">
+                        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                    </button>
+                    <h3 id="settings-header-title" class="text-sm font-extrabold">設定 ⚙️</h3>
+                </div>
+                <button onclick="closeSettingsModal()" class="text-slate-400 hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            
+            <div id="settings-page-menu" class="space-y-2.5 text-xs overflow-y-auto flex-1 pr-1">
+                <button onclick="showSettingsDetail('theme')" class="w-full p-3.5 bg-slate-50/80 hover:bg-slate-100 rounded-2xl border flex items-center justify-between font-bold text-slate-700 transition">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2 bg-indigo-100 text-indigo-600 rounded-xl"><i data-lucide="palette" class="w-4 h-4"></i></div>
+                        <span>デザインテーマ設定</span>
+                    </div>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+                </button>
+
+                <button onclick="showSettingsDetail('tabs')" class="w-full p-3.5 bg-slate-50/80 hover:bg-slate-100 rounded-2xl border flex items-center justify-between font-bold text-slate-700 transition">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2 bg-emerald-100 text-emerald-600 rounded-xl"><i data-lucide="folder" class="w-4 h-4"></i></div>
+                        <span>タブの編集・削除</span>
+                    </div>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+                </button>
+
+                <button onclick="showSettingsDetail('anniversaries')" class="w-full p-3.5 bg-slate-50/80 hover:bg-slate-100 rounded-2xl border flex items-center justify-between font-bold text-slate-700 transition">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2 bg-pink-100 text-pink-600 rounded-xl"><i data-lucide="heart" class="w-4 h-4"></i></div>
+                        <span>記念日の設定</span>
+                    </div>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+                </button>
+
+                <button onclick="showSettingsDetail('salary')" class="w-full p-3.5 bg-slate-50/80 hover:bg-slate-100 rounded-2xl border flex items-center justify-between font-bold text-slate-700 transition">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2 bg-amber-100 text-amber-600 rounded-xl"><i data-lucide="coins" class="w-4 h-4"></i></div>
+                        <span>給料日の設定</span>
+                    </div>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+                </button>
+
+                <button onclick="showSettingsDetail('tags')" class="w-full p-3.5 bg-slate-50/80 hover:bg-slate-100 rounded-2xl border flex items-center justify-between font-bold text-slate-700 transition">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2 bg-rose-100 text-rose-600 rounded-xl"><i data-lucide="tags" class="w-4 h-4"></i></div>
+                        <span>タグの追加・編集（支出/収入別）</span>
+                    </div>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+                </button>
+
+                <div class="pt-2 border-t mt-4">
+                    <button onclick="logout()" class="w-full p-3.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-2xl border border-rose-200 font-bold flex items-center justify-center gap-2 transition">
+                        <i data-lucide="log-out" class="w-4 h-4"></i> ログアウトする
+                    </button>
+                </div>
+            </div>
+
+            <div id="settings-page-theme" class="space-y-4 text-xs overflow-y-auto flex-1 pr-1 hidden">
+                <div class="space-y-3">
+                    <p class="text-slate-400 font-bold">お好みのデザインテーマを選択してください：</p>
+                    <div class="grid grid-cols-1 gap-2.5">
+                        <button onclick="setTheme('cute')" id="theme-cute-btn" class="p-3.5 rounded-2xl font-bold border text-left transition flex items-center justify-between">
+                            <span>🌸 かわいい系 (パステル＆肉球)</span>
+                            <span class="text-xs">🐾</span>
+                        </button>
+                        <button onclick="setTheme('simple')" id="theme-simple-btn" class="p-3.5 rounded-2xl font-bold border text-left transition flex items-center justify-between">
+                            <span>⚪ シンプル (すっきりホワイト)</span>
+                            <span class="text-xs">✨</span>
+                        </button>
+                        <button onclick="setTheme('classic')" id="theme-classic-btn" class="p-3.5 rounded-2xl font-bold border text-left transition flex items-center justify-between">
+                            <span>📜 クラシック (温かみのある木目調)</span>
+                            <span class="text-xs">🪵</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="settings-page-tabs" class="space-y-4 text-xs overflow-y-auto flex-1 pr-1 hidden">
+                <div class="space-y-3">
+                    <div>
+                        <label class="text-slate-400 font-bold block mb-1">新しいタブを追加</label>
+                        <div class="flex space-x-2">
+                            <input type="text" id="settings-new-tab-name" placeholder="例: 仕事、旅行など" class="flex-1 border rounded-xl px-3 py-2 focus:outline-none">
+                            <button onclick="addNewTabFromSettings()" id="add-tab-setting-btn" class="px-4 py-2 text-white font-bold rounded-xl transition whitespace-nowrap">追加</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-slate-400 font-bold block mb-1">登録済みタブ一覧（総合は削除不可）</label>
+                        <div id="settings-tab-list" class="space-y-1.5 max-h-52 overflow-y-auto p-1 border rounded-2xl"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="settings-page-anniversaries" class="space-y-4 text-xs overflow-y-auto flex-1 pr-1 hidden">
+                <div class="space-y-3">
+                    <div>
+                        <label class="text-slate-400 font-bold block mb-1">記念日の種類</label>
+                        <select id="new-anni-category" class="w-full border rounded-xl px-3 py-2 font-bold focus:outline-none mb-2">
+                            <option value="love">💛 大切な人との記念日（恋人・家族）</option>
+                            <option value="money">💰 金銭的に大切な記念日（契約日・建立日）</option>
+                            <option value="other">📌 その他いろんな重要ごと</option>
+                        </select>
+                        <label class="text-slate-400 font-bold block mb-1">記念日の内容</label>
+                        <input type="text" id="new-anni-title" placeholder="例: 結婚記念日、契約日など" class="w-full border rounded-xl px-3 py-2 font-bold focus:outline-none mb-2">
+                        <label class="text-slate-400 font-bold block mb-1">日付</label>
+                        <div class="flex space-x-2">
+                            <input type="date" id="new-anni-date" class="flex-1 border rounded-xl px-3 py-2 font-bold">
+                            <button onclick="addNewAnniversary()" id="add-anni-btn" class="px-4 py-2 text-white font-bold rounded-xl transition whitespace-nowrap">追加</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-slate-400 font-bold block mb-1">登録済み記念日一覧（毎年自動表示）</label>
+                        <div id="settings-anni-list" class="space-y-1.5 max-h-40 overflow-y-auto p-1 border rounded-2xl"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="settings-page-salary" class="space-y-4 text-xs overflow-y-auto flex-1 pr-1 hidden">
+                <div class="space-y-3">
+                    <div>
+                        <label class="text-slate-400 font-bold block mb-1">給料日の指定</label>
+                        <select id="salary-day-select" class="w-full border rounded-xl px-3 py-2 font-bold focus:outline-none">
+                            <option value="0">未設定</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-slate-400 font-bold block mb-1">土日祝日の場合</label>
+                        <select id="salary-holiday-rule" class="w-full border rounded-xl px-3 py-2 font-bold focus:outline-none">
+                            <option value="prev">前日（前営業日）にずらす</option>
+                            <option value="next">翌日（翌営業日）にずらす</option>
+                            <option value="none">そのまま（変更なし）</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-slate-400 font-bold block mb-1">金額設定 (任意)</label>
+                        <input type="number" id="salary-amount" placeholder="未入力の場合は当日手入力" class="w-full border rounded-xl px-3 py-2 font-bold focus:outline-none">
+                    </div>
+                    <button onclick="saveSalarySettings()" id="save-salary-btn" class="w-full py-2.5 text-white font-bold rounded-xl transition">保存する</button>
+                </div>
+            </div>
+
+            <div id="settings-page-tags" class="space-y-4 text-xs overflow-y-auto flex-1 pr-1 hidden">
+                <div class="space-y-3">
+                    <div class="grid grid-cols-2 gap-1 p-1 bg-slate-100 rounded-xl font-bold text-center">
+                        <button type="button" onclick="setSettingTagType('expense')" id="stype-exp-btn" class="py-1 rounded-lg transition">支出タグ</button>
+                        <button type="button" onclick="setSettingTagType('income')" id="stype-inc-btn" class="py-1 rounded-lg transition">収入タグ</button>
+                    </div>
+                    <div>
+                        <div class="flex space-x-2">
+                            <input type="text" id="new-tag-name" placeholder="例: 食費、給与など" class="flex-1 border rounded-xl px-3 py-2 focus:outline-none">
+                            <button onclick="addNewTag()" id="add-tag-btn" class="px-4 py-2 text-white font-bold rounded-xl transition whitespace-nowrap">追加</button>
+                        </div>
+                    </div>
+                    <div>
+                        <div id="settings-tag-list" class="space-y-1.5 max-h-44 overflow-y-auto p-1 border rounded-2xl"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Firebase SDK (エラー対策・認証モジュール) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -265,6 +623,12 @@
             try {
                 const docRef = doc(db, "users", currentUserUid, "data", "main");
                 await setDoc(docRef, window.kakeiboData);
+                const badge = document.getElementById('save-badge');
+                if (badge) {
+                    badge.innerHTML = '<i data-lucide="cloud-check" class="w-3 h-3"></i> 同期完了';
+                    setTimeout(() => badge.innerHTML = '<i data-lucide="cloud-check" class="w-3 h-3"></i> 同期中', 2000);
+                    lucide.createIcons();
+                }
             } catch (e) { console.error("保存エラー:", e); }
         };
 
@@ -300,26 +664,516 @@
             if (typeof lucide !== 'undefined') lucide.createIcons();
         });
     </script>
+
+    <!-- アプリケーション制御スクリプト（全機能統合版） -->
     <script>
         const now = new Date();
         let currentYear = now.getFullYear();
         let currentMonth = now.getMonth() + 1;
         let currentTabId = 'all';
+        let currentEntryMode = 'tx';
+        let currentTxType = 'expense';
+        let selectedTagId = '';
+        let settingTagType = 'expense';
+        let selectedDateForModal = '';
+        let bulkYear = currentYear;
+        let bulkMonth = currentMonth;
 
         function initApp() {
+            const d = window.kakeiboData;
+            applyTheme(d.currentTheme);
+            if (!d.tabs.some(t => t.id === currentTabId)) {
+                currentTabId = d.tabs[0].id;
+            }
             renderTabs();
             renderSummary();
             renderCalendar();
-            if (typeof lucide !== 'undefined') lucide.createIcons();
+            lucide.createIcons();
+        }
+
+        function setTheme(theme) {
+            window.kakeiboData.currentTheme = theme;
+            applyTheme(theme);
+            renderTabs();
+            renderSummary();
+            renderCalendar();
+            window.saveDataToCloud();
+        }
+
+        function applyTheme(theme) {
+            const body = document.getElementById('app-body');
+            body.className = `antialiased min-h-screen pb-12 transition-colors duration-300 theme-${theme}`;
+
+            if (theme === 'cute') {
+                body.classList.add('bg-pink-50/60', 'text-slate-700');
+                document.getElementById('app-header').className = "bg-white/80 backdrop-blur border-b border-pink-100 sticky top-0 z-20 shadow-sm";
+                document.getElementById('header-icon-bg').className = "bg-gradient-to-tr from-pink-400 to-rose-400 text-white p-1.5 rounded-xl shadow-pink-200 shadow-md";
+                document.getElementById('header-title').className = "text-sm font-extrabold text-rose-500 tracking-wide flex items-center gap-1";
+                document.getElementById('header-title').innerHTML = 'My Kakeibo <span class="text-xs">🐾</span>';
+                document.getElementById('save-badge').className = "text-[10px] font-bold px-2 py-0.5 bg-pink-100/80 text-rose-500 border border-pink-200 rounded-full flex items-center gap-1";
+                document.getElementById('settings-btn').className = "p-1.5 text-rose-400 hover:text-rose-600 hover:bg-pink-100/50 rounded-xl transition";
+                document.getElementById('tabs-bar').className = "max-w-xl mx-auto px-3 border-t border-pink-100/60 py-1.5";
+
+                document.getElementById('summary-card').className = "bg-gradient-to-br from-rose-400 via-pink-400 to-amber-300 rounded-2xl p-4 text-white shadow-lg shadow-pink-200/60 relative overflow-hidden transition-all duration-300";
+                document.getElementById('add-tx-btn').className = "bg-white hover:bg-rose-50 text-rose-500 text-xs font-extrabold px-3 py-1.5 rounded-xl shadow transition flex items-center space-x-1 shrink-0";
+                document.getElementById('income-icon-bg').className = "bg-white text-emerald-500 p-1 rounded-lg shadow-sm";
+                document.getElementById('expense-icon-bg').className = "bg-white text-rose-500 p-1 rounded-lg shadow-sm";
+
+                document.getElementById('calendar-card').className = "bg-white rounded-3xl p-3 sm:p-4 border border-pink-100 shadow-sm shadow-pink-100 transition-all duration-300";
+                document.getElementById('calendar-icon-bg').className = "p-1.5 bg-pink-100 text-rose-400 rounded-xl";
+
+                document.querySelectorAll('#add-modal-content, #day-detail-modal-content, #add-tab-modal-content, #settings-modal-content').forEach(el => {
+                    el.className = "bg-white border border-pink-100 rounded-3xl p-5 sm:p-6 max-w-lg w-full shadow-2xl space-y-3 max-h-[85vh] flex flex-col";
+                });
+
+                document.getElementById('save-tx-btn').className = "w-full py-2.5 bg-gradient-to-r from-rose-400 to-pink-400 hover:from-rose-500 hover:to-pink-500 text-white font-extrabold rounded-2xl text-xs transition shadow-md shrink-0";
+                document.getElementById('detail-add-btn').className = "w-full py-2.5 bg-pink-100 hover:bg-pink-200 text-rose-500 font-bold rounded-2xl text-xs transition";
+                document.getElementById('save-tab-btn').className = "w-full py-2.5 bg-rose-400 hover:bg-rose-500 text-white font-bold rounded-2xl text-xs transition";
+                document.getElementById('add-tab-setting-btn').className = "px-4 py-2 bg-rose-400 hover:bg-rose-500 text-white font-bold rounded-xl transition whitespace-nowrap";
+                document.getElementById('add-anni-btn').className = "px-4 py-2 bg-rose-400 hover:bg-rose-500 text-white font-bold rounded-xl transition whitespace-nowrap";
+                document.getElementById('save-salary-btn').className = "w-full py-2.5 bg-rose-400 hover:bg-rose-500 text-white font-bold rounded-xl transition";
+                document.getElementById('add-tag-btn').className = "px-4 py-2 bg-rose-400 hover:bg-rose-500 text-white font-bold rounded-xl transition whitespace-nowrap";
+            } 
+            else if (theme === 'simple') {
+                body.className = "antialiased min-h-screen pb-12 transition-colors duration-300 theme-simple bg-slate-50 text-slate-800";
+                document.getElementById('app-header').className = "bg-white border-b border-slate-200 sticky top-0 z-20 shadow-sm";
+                document.getElementById('header-icon-bg').className = "bg-slate-800 text-white p-1.5 rounded-lg";
+                document.getElementById('header-title').className = "text-sm font-bold text-slate-900 tracking-wide";
+                document.getElementById('header-title').innerText = 'My Kakeibo';
+                document.getElementById('save-badge').className = "text-[10px] font-medium px-2 py-0.5 bg-slate-100 text-slate-600 border border-slate-200 rounded-full flex items-center gap-1";
+                document.getElementById('settings-btn').className = "p-1.5 text-slate-600 hover:bg-slate-100 rounded-lg transition";
+                document.getElementById('tabs-bar').className = "max-w-xl mx-auto px-3 border-t border-slate-200 py-1.5";
+
+                document.getElementById('summary-card').className = "bg-slate-900 rounded-2xl p-4 text-white shadow-md relative overflow-hidden transition-all duration-300";
+                document.getElementById('add-tx-btn').className = "bg-white hover:bg-slate-100 text-slate-900 text-xs font-bold px-3 py-1.5 rounded-xl shadow transition flex items-center space-x-1 shrink-0";
+                document.getElementById('income-icon-bg').className = "bg-slate-800 text-emerald-400 p-1 rounded-md";
+                document.getElementById('expense-icon-bg').className = "bg-slate-800 text-rose-400 p-1 rounded-md";
+
+                document.getElementById('calendar-card').className = "bg-white rounded-2xl p-3 sm:p-4 border border-slate-200 shadow-sm transition-all duration-300";
+                document.getElementById('calendar-icon-bg').className = "p-1.5 bg-slate-100 text-slate-700 rounded-lg";
+
+                document.querySelectorAll('#add-modal-content, #day-detail-modal-content, #add-tab-modal-content, #settings-modal-content').forEach(el => {
+                    el.className = "bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 max-w-lg w-full shadow-xl space-y-3 max-h-[85vh] flex flex-col";
+                });
+
+                document.getElementById('save-tx-btn').className = "w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition shadow shrink-0";
+                document.getElementById('detail-add-btn').className = "w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl text-xs transition";
+                document.getElementById('save-tab-btn').className = "w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition";
+                document.getElementById('add-tab-setting-btn').className = "px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl transition whitespace-nowrap";
+                document.getElementById('add-anni-btn').className = "px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl transition whitespace-nowrap";
+                document.getElementById('save-salary-btn').className = "w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl transition";
+                document.getElementById('add-tag-btn').className = "px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl transition whitespace-nowrap";
+            } 
+            else if (theme === 'classic') {
+                body.className = "antialiased min-h-screen pb-12 transition-colors duration-300 theme-classic bg-[#f7f3ed] text-[#4a3b32]";
+                document.getElementById('app-header').className = "bg-[#efe8de] border-b border-[#d8ccbc] sticky top-0 z-20 shadow-sm";
+                document.getElementById('header-icon-bg').className = "bg-[#7c5c43] text-amber-50 p-1.5 rounded-lg";
+                document.getElementById('header-title').className = "text-sm font-bold text-[#4a3b32] tracking-wide";
+                document.getElementById('header-title').innerText = 'My Kakeibo 📜';
+                document.getElementById('save-badge').className = "text-[10px] font-bold px-2 py-0.5 bg-[#e3d7c7] text-[#5c4433] border border-[#c8b8a4] rounded-full flex items-center gap-1";
+                document.getElementById('settings-btn').className = "p-1.5 text-[#7c5c43] hover:bg-[#e3d7c7] rounded-lg transition";
+                document.getElementById('tabs-bar').className = "max-w-xl mx-auto px-3 border-t border-[#d8ccbc] py-1.5";
+
+                document.getElementById('summary-card').className = "bg-gradient-to-br from-[#6b4e3d] to-[#4a3528] rounded-2xl p-4 text-amber-50 shadow-md relative overflow-hidden transition-all duration-300";
+                document.getElementById('add-tx-btn').className = "bg-[#e8dccb] hover:bg-[#dfcfba] text-[#4a3b32] text-xs font-bold px-3.5 py-1.5 rounded-xl shadow transition flex items-center space-x-1 shrink-0";
+                document.getElementById('income-icon-bg').className = "bg-[#4a3528] text-emerald-300 p-1 rounded-md";
+                document.getElementById('expense-icon-bg').className = "bg-[#4a3528] text-rose-300 p-1 rounded-md";
+
+                document.getElementById('calendar-card').className = "bg-[#fcfaf7] rounded-2xl p-3 sm:p-4 border border-[#d8ccbc] shadow-sm transition-all duration-300";
+                document.getElementById('calendar-icon-bg').className = "p-1.5 bg-[#e8dccb] text-[#5c4433] rounded-lg";
+
+                document.querySelectorAll('#add-modal-content, #day-detail-modal-content, #add-tab-modal-content, #settings-modal-content').forEach(el => {
+                    el.className = "bg-[#fcfaf7] border border-[#d8ccbc] rounded-2xl p-5 sm:p-6 max-w-lg w-full shadow-xl space-y-3 max-h-[85vh] flex flex-col";
+                });
+
+                document.getElementById('save-tx-btn').className = "w-full py-2.5 bg-[#6b4e3d] hover:bg-[#583f30] text-amber-50 font-bold rounded-xl text-xs transition shadow shrink-0";
+                document.getElementById('detail-add-btn').className = "w-full py-2.5 bg-[#e8dccb] hover:bg-[#dfcfba] text-[#4a3b32] font-bold rounded-xl text-xs transition";
+                document.getElementById('save-tab-btn').className = "w-full py-2.5 bg-[#6b4e3d] hover:bg-[#583f30] text-amber-50 font-bold rounded-xl text-xs transition";
+                document.getElementById('add-tab-setting-btn').className = "px-4 py-2 bg-[#6b4e3d] hover:bg-[#583f30] text-amber-50 font-bold rounded-xl transition whitespace-nowrap";
+                document.getElementById('add-anni-btn').className = "px-4 py-2 bg-[#6b4e3d] hover:bg-[#583f30] text-amber-50 font-bold rounded-xl transition whitespace-nowrap";
+                document.getElementById('save-salary-btn').className = "w-full py-2.5 bg-[#6b4e3d] hover:bg-[#583f30] text-amber-50 font-bold rounded-xl transition";
+                document.getElementById('add-tag-btn').className = "px-4 py-2 bg-[#6b4e3d] hover:bg-[#583f30] text-amber-50 font-bold rounded-xl transition whitespace-nowrap";
+            }
+
+            ['cute', 'simple', 'classic'].forEach(t => {
+                const btn = document.getElementById(`theme-${t}-btn`);
+                if (btn) {
+                    if (t === theme) {
+                        btn.className = "p-3.5 rounded-2xl font-bold border text-left transition flex items-center justify-between bg-slate-800 text-white border-slate-800 shadow-sm";
+                    } else {
+                        btn.className = "p-3.5 rounded-2xl font-bold border text-left transition flex items-center justify-between bg-white text-slate-600 border-slate-200 hover:bg-slate-50";
+                    }
+                }
+            });
+            lucide.createIcons();
+        }
+
+        function getScopeKey() {
+            const d = window.kakeiboData;
+            if (d.periodConfig.mode === 'custom' && d.periodConfig.startDate && d.periodConfig.endDate) {
+                return `${currentTabId}_custom_${d.periodConfig.startDate}_${d.periodConfig.endDate}`;
+            }
+            return `${currentTabId}_month_${currentYear}-${String(currentMonth).padStart(2, '0')}`;
+        }
+
+        function toggleTargetBox() {
+            const box = document.getElementById('target-input-box');
+            if (!box) return;
+            box.classList.toggle('hidden');
+            if (!box.classList.contains('hidden')) {
+                const key = getScopeKey();
+                const cfg = window.kakeiboData.targetConfigs[key] || { mode: 'expense', amount: '' };
+                document.getElementById('target-mode-select').value = cfg.mode || 'expense';
+                document.getElementById('target-amount-input').value = cfg.amount !== undefined ? cfg.amount : '';
+            }
+        }
+
+        function onTargetModeChange() {
+            const mode = document.getElementById('target-mode-select').value;
+            const input = document.getElementById('target-amount-input');
+            if (mode === 'expense') {
+                input.placeholder = "残金目標 (例: 30000 または -5000)";
+            } else {
+                input.placeholder = "達成目標 (例: 200000)";
+            }
+        }
+
+        function saveTargetSetting() {
+            const mode = document.getElementById('target-mode-select').value;
+            const amtVal = document.getElementById('target-amount-input').value;
+            const key = getScopeKey();
+
+            if (amtVal !== '') {
+                window.kakeiboData.targetConfigs[key] = { mode: mode, amount: Number(amtVal) };
+            } else {
+                delete window.kakeiboData.targetConfigs[key];
+            }
+            window.saveDataToCloud();
+            toggleTargetBox();
+            renderSummary();
+        }
+
+        function toggleExcludeDate() {
+            if (!selectedDateForModal) return;
+            const ed = window.kakeiboData.excludedDates;
+            const idx = ed.indexOf(selectedDateForModal);
+            if (idx >= 0) {
+                ed.splice(idx, 1);
+            } else {
+                ed.push(selectedDateForModal);
+            }
+            window.saveDataToCloud();
+            renderSummary();
+            renderCalendar();
+        }
+
+        function showSettingsMenu() {
+            document.getElementById('settings-header-title').innerText = '設定 ⚙️';
+            document.getElementById('settings-back-btn').classList.add('hidden');
+            document.getElementById('settings-page-menu').classList.remove('hidden');
+            document.getElementById('settings-page-theme').classList.add('hidden');
+            document.getElementById('settings-page-tabs').classList.add('hidden');
+            document.getElementById('settings-page-anniversaries').classList.add('hidden');
+            document.getElementById('settings-page-salary').classList.add('hidden');
+            document.getElementById('settings-page-tags').classList.add('hidden');
+            lucide.createIcons();
+        }
+
+        function showSettingsDetail(page) {
+            document.getElementById('settings-back-btn').classList.remove('hidden');
+            document.getElementById('settings-page-menu').classList.add('hidden');
+            document.getElementById('settings-page-theme').classList.add('hidden');
+            document.getElementById('settings-page-tabs').classList.add('hidden');
+            document.getElementById('settings-page-anniversaries').classList.add('hidden');
+            document.getElementById('settings-page-salary').classList.add('hidden');
+            document.getElementById('settings-page-tags').classList.add('hidden');
+
+            if (page === 'theme') {
+                document.getElementById('settings-header-title').innerText = 'テーマ設定 🎨';
+                document.getElementById('settings-page-theme').classList.remove('hidden');
+            } else if (page === 'tabs') {
+                document.getElementById('settings-header-title').innerText = 'タブの編集・削除 📁';
+                document.getElementById('settings-page-tabs').classList.remove('hidden');
+                renderSettingsTabList();
+            } else if (page === 'anniversaries') {
+                document.getElementById('settings-header-title').innerText = '記念日の設定 ♥';
+                document.getElementById('settings-page-anniversaries').classList.remove('hidden');
+                renderSettingsAnniversaryList();
+            } else if (page === 'salary') {
+                document.getElementById('settings-header-title').innerText = '給料日設定 💵';
+                document.getElementById('settings-page-salary').classList.remove('hidden');
+            } else if (page === 'tags') {
+                document.getElementById('settings-header-title').innerText = 'タグの編集・追加 🏷️';
+                document.getElementById('settings-page-tags').classList.remove('hidden');
+                setSettingTagType('expense');
+            }
+            lucide.createIcons();
+        }
+
+        function openFundModal() {
+            if (currentTabId === 'all') {
+                alert('「総合」タブの資金は、他のすべてのタブの資金が自動合算されます。個別の資金を設定したい場合は、それぞれのタブに切り替えて設定してください。');
+                return;
+            }
+            const activeTab = window.kakeiboData.tabs.find(t => t.id === currentTabId);
+            const tabName = activeTab ? activeTab.name : '';
+            document.getElementById('fund-modal-info').innerText = `【${tabName}】の ${currentYear}年${currentMonth}月の開始資金を設定します。`;
+
+            const fundKey = `${currentTabId}_${currentYear}-${String(currentMonth).padStart(2, '0')}`;
+            const input = document.getElementById('tab-monthly-fund-input');
+            input.value = window.kakeiboData.tabInitialFunds[fundKey] !== undefined ? window.kakeiboData.tabInitialFunds[fundKey] : '';
+
+            const modal = document.getElementById('fund-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            lucide.createIcons();
+        }
+
+        function closeFundModal() {
+            const modal = document.getElementById('fund-modal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+        }
+
+        function saveTabMonthlyFund() {
+            const val = document.getElementById('tab-monthly-fund-input').value;
+            const fundKey = `${currentTabId}_${currentYear}-${String(currentMonth).padStart(2, '0')}`;
+            if (val !== '' && Number(val) > 0) {
+                window.kakeiboData.tabInitialFunds[fundKey] = Number(val);
+            } else {
+                delete window.kakeiboData.tabInitialFunds[fundKey];
+            }
+            window.saveDataToCloud();
+            closeFundModal();
+            renderSummary();
+            alert('開始資金を保存しました！');
+        }
+
+        function openPeriodModal() {
+            const modeSel = document.getElementById('period-mode-select');
+            const customBox = document.getElementById('period-custom-box');
+            const startInp = document.getElementById('period-start-date');
+            const endInp = document.getElementById('period-end-date');
+            const pc = window.kakeiboData.periodConfig;
+
+            modeSel.value = pc.mode;
+            if (pc.mode === 'custom') {
+                customBox.classList.remove('hidden');
+                startInp.value = pc.startDate || '';
+                endInp.value = pc.endDate || '';
+            } else {
+                customBox.classList.add('hidden');
+                startInp.value = '';
+                endInp.value = '';
+            }
+
+            const modal = document.getElementById('period-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            lucide.createIcons();
+        }
+
+        function closePeriodModal() {
+            const modal = document.getElementById('period-modal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+        }
+
+        function onPeriodModeChange(mode) {
+            const customBox = document.getElementById('period-custom-box');
+            if (mode === 'custom') {
+                customBox.classList.remove('hidden');
+            } else {
+                customBox.classList.add('hidden');
+            }
+        }
+
+        function savePeriodSettings() {
+            const mode = document.getElementById('period-mode-select').value;
+            const start = document.getElementById('period-start-date').value;
+            const end = document.getElementById('period-end-date').value;
+
+            if (mode === 'custom' && (!start || !end)) {
+                alert('開始日と終了日の両方を選択してください。');
+                return;
+            }
+
+            window.kakeiboData.periodConfig = { mode, startDate: start, endDate: end };
+            window.saveDataToCloud();
+            closePeriodModal();
+            renderSummary();
+        }
+
+        function renderSettingsAnniversaryList() {
+            const container = document.getElementById('settings-anni-list');
+            if (!container) return;
+            container.innerHTML = '';
+            const anis = window.kakeiboData.anniversaries;
+            if (anis.length === 0) {
+                container.innerHTML = '<p class="text-slate-400 text-center py-2">登録されている記念日はありません</p>';
+                return;
+            }
+
+            anis.forEach((anni) => {
+                const categoryNames = { love: '💛 大切な人', money: '💰 金銭的', other: '📌 その他' };
+                const catLabel = categoryNames[anni.category] || '📌 その他';
+                const item = document.createElement('div');
+                item.className = "flex justify-between items-center bg-white p-2.5 rounded-xl border border-slate-200 shadow-sm";
+                item.innerHTML = `
+                    <div>
+                        <div class="flex items-center space-x-1.5">
+                            <span class="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-bold">${catLabel}</span>
+                            <p class="font-bold text-slate-700">${anni.title}</p>
+                        </div>
+                        <p class="text-[10px] text-slate-400 mt-0.5">${anni.date}</p>
+                    </div>
+                    <button onclick="deleteAnniversary('${anni.id}')" class="p-1 text-slate-400 hover:text-rose-500 transition">
+                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                    </button>
+                `;
+                container.appendChild(item);
+            });
+            lucide.createIcons();
+        }
+
+        function addNewAnniversary() {
+            const catSelect = document.getElementById('new-anni-category');
+            const titleInput = document.getElementById('new-anni-title');
+            const dateInput = document.getElementById('new-anni-date');
+            
+            const category = catSelect ? catSelect.value : 'love';
+            const title = titleInput ? titleInput.value.trim() : '';
+            const date = dateInput ? dateInput.value : '';
+
+            if (!title || !date) {
+                alert('記念日のタイトルと日付を入力してください。');
+                return;
+            }
+            window.kakeiboData.anniversaries.push({ id: 'anni_' + Date.now(), category, title, date });
+            window.saveDataToCloud();
+            if (titleInput) titleInput.value = '';
+            if (dateInput) dateInput.value = '';
+            renderSettingsAnniversaryList();
+            renderCalendar();
+        }
+
+        function deleteAnniversary(id) {
+            if (!confirm('この記念日を削除しますか？')) return;
+            window.kakeiboData.anniversaries = window.kakeiboData.anniversaries.filter(a => a.id !== id);
+            window.saveDataToCloud();
+            renderSettingsAnniversaryList();
+            renderCalendar();
+        }
+
+        function setSettingTagType(type) {
+            settingTagType = type;
+            const expBtn = document.getElementById('stype-exp-btn');
+            const incBtn = document.getElementById('stype-inc-btn');
+            if (expBtn && incBtn) {
+                if (type === 'expense') {
+                    expBtn.className = "py-1 rounded-lg transition bg-slate-800 text-white shadow-sm font-bold";
+                    incBtn.className = "py-1 rounded-lg transition text-slate-500 hover:text-slate-800 font-bold";
+                } else {
+                    expBtn.className = "py-1 rounded-lg transition text-slate-500 hover:text-slate-800 font-bold";
+                    incBtn.className = "py-1 rounded-lg transition bg-slate-800 text-white shadow-sm font-bold";
+                }
+            }
+            renderSettingsTagList();
+        }
+
+        function renderSettingsTagList() {
+            const container = document.getElementById('settings-tag-list');
+            if (!container) return;
+            container.innerHTML = '';
+            const list = window.kakeiboData.tags[settingTagType] || [];
+
+            if (list.length === 0) {
+                container.innerHTML = '<p class="text-slate-400 text-center py-2">タグがありません</p>';
+                return;
+            }
+
+            list.forEach((tag, index) => {
+                const item = document.createElement('div');
+                item.className = "flex justify-between items-center bg-white p-2.5 rounded-xl border border-slate-200 shadow-sm";
+                item.innerHTML = `
+                    <span class="font-bold text-slate-700">${tag.name}</span>
+                    <div class="flex items-center space-x-1">
+                        <button onclick="moveTag('${settingTagType}', ${index}, -1)" class="p-1 text-slate-400 hover:text-slate-700 ${index === 0 ? 'opacity-30 cursor-not-allowed' : ''}">
+                            <i data-lucide="arrow-up" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <button onclick="moveTag('${settingTagType}', ${index}, 1)" class="p-1 text-slate-400 hover:text-slate-700 ${index === list.length - 1 ? 'opacity-30 cursor-not-allowed' : ''}">
+                            <i data-lucide="arrow-down" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <button onclick="deleteTag('${settingTagType}', '${tag.id}')" class="p-1 text-slate-400 hover:text-rose-500 ml-1">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+            lucide.createIcons();
+        }
+
+        function addNewTag() {
+            const input = document.getElementById('new-tag-name');
+            const name = input.value.trim();
+            if (!name) return;
+            if (!window.kakeiboData.tags[settingTagType]) window.kakeiboData.tags[settingTagType] = [];
+            window.kakeiboData.tags[settingTagType].push({ id: 'tag_' + Date.now(), name: name });
+            window.saveDataToCloud();
+            input.value = '';
+            renderSettingsTagList();
+        }
+
+        function moveTag(type, index, direction) {
+            const list = window.kakeiboData.tags[type];
+            const newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= list.length) return;
+            const temp = list[index];
+            list[index] = list[newIndex];
+            list[newIndex] = temp;
+            window.saveDataToCloud();
+            renderSettingsTagList();
+        }
+
+        function deleteTag(type, id) {
+            if (!confirm('このタグを削除しますか？')) return;
+            window.kakeiboData.tags[type] = window.kakeiboData.tags[type].filter(t => t.id !== id);
+            window.saveDataToCloud();
+            renderSettingsTagList();
         }
 
         function renderTabs() {
             const container = document.getElementById('tabs-container');
             if (!container) return;
             container.innerHTML = '';
-            window.kakeiboData.tabs.forEach(tab => {
+            const tList = window.kakeiboData.tabs;
+            
+            let sizeClass = "px-3 py-1 text-xs font-bold rounded-xl transition whitespace-nowrap";
+            if (tList.length >= 5) {
+                sizeClass = "px-2 py-0.5 text-[10px] font-bold rounded-lg transition whitespace-nowrap";
+            } else if (tList.length >= 4) {
+                sizeClass = "px-2.5 py-1 text-[11px] font-bold rounded-xl transition whitespace-nowrap";
+            }
+
+            tList.forEach(tab => {
+                const isSelected = tab.id === currentTabId;
                 const btn = document.createElement('button');
-                btn.className = `px-3 py-1 text-xs font-bold rounded-xl transition ${tab.id === currentTabId ? 'bg-rose-400 text-white shadow-sm' : 'bg-white/80 text-rose-400'}`;
+                
+                if (window.kakeiboData.currentTheme === 'cute') {
+                    btn.className = `${sizeClass} ${
+                        isSelected ? 'bg-rose-400 text-white shadow-sm shadow-pink-200' : 'bg-white/80 text-rose-400 hover:bg-pink-100 border border-pink-200/60'
+                    }`;
+                } else if (window.kakeiboData.currentTheme === 'simple') {
+                    btn.className = `${sizeClass} ${
+                        isSelected ? 'bg-slate-900 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200'
+                    }`;
+                } else {
+                    btn.className = `${sizeClass} ${
+                        isSelected ? 'bg-[#6b4e3d] text-amber-50 shadow-sm' : 'bg-[#e8dccb] text-[#5c4433] hover:bg-[#dfcfba] border border-[#c8b8a4]'
+                    }`;
+                }
+
                 btn.innerText = tab.name;
                 btn.onclick = () => {
                     currentTabId = tab.id;
@@ -329,11 +1183,538 @@
                 };
                 container.appendChild(btn);
             });
+
+            const addBtn = document.createElement('button');
+            addBtn.className = `${sizeClass} border transition flex items-center space-x-0.5 opacity-80 hover:opacity-100`;
+            addBtn.innerHTML = '<i data-lucide="plus" class="w-3 h-3"></i><span>追加</span>';
+            addBtn.onclick = openAddTabModal;
+            container.appendChild(addBtn);
+
+            const fundBadgeEl = document.getElementById('fund-badge-text');
+            const fundSettingBtn = document.getElementById('fund-setting-btn');
+            if (currentTabId === 'all') {
+                if (fundBadgeEl) fundBadgeEl.innerText = `総合資金 (合算)`;
+                if (fundSettingBtn) fundSettingBtn.title = "総合資金は各タブの合算です";
+            } else {
+                if (fundSettingBtn) fundSettingBtn.title = "資金設定";
+            }
+
+            lucide.createIcons();
+        }
+
+        function renderSettingsTabList() {
+            const container = document.getElementById('settings-tab-list');
+            if (!container) return;
+            container.innerHTML = '';
+
+            window.kakeiboData.tabs.forEach((tab) => {
+                const isAll = tab.id === 'all';
+                const item = document.createElement('div');
+                item.className = "flex justify-between items-center bg-white p-2.5 rounded-xl border border-slate-200 shadow-sm";
+                item.innerHTML = `
+                    <span class="font-bold text-slate-700">${tab.name} ${isAll ? '<span class="text-[10px] text-slate-400 font-normal">(デフォルト)</span>' : ''}</span>
+                    <div class="flex items-center space-x-1">
+                        ${!isAll ? `
+                            <button onclick="deleteTab('${tab.id}')" class="p-1 text-slate-400 hover:text-rose-500 transition">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            </button>
+                        ` : '<span class="text-[10px] text-slate-400">削除不可</span>'}
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+            lucide.createIcons();
+        }
+
+        function addNewTabFromSettings() {
+            const input = document.getElementById('settings-new-tab-name');
+            const name = input.value.trim();
+            if (!name) return;
+            const newId = 'tab_' + Date.now();
+            window.kakeiboData.tabs.push({ id: newId, name: name });
+            window.saveDataToCloud();
+            input.value = '';
+            renderSettingsTabList();
+            renderTabs();
+        }
+
+        function deleteTab(id) {
+            if (id === 'all') {
+                alert('「総合」タブは削除できません。');
+                return;
+            }
+            if (!confirm('このタブを削除しますか？')) return;
+            window.kakeiboData.tabs = window.kakeiboData.tabs.filter(t => t.id !== id);
+            window.saveDataToCloud();
+            if (currentTabId === id) currentTabId = 'all';
+            renderSettingsTabList();
+            renderTabs();
+            renderSummary();
+            renderCalendar();
+        }
+
+        function openAddTabModal() {
+            const modal = document.getElementById('add-tab-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        }
+        function closeAddTabModal() {
+            const modal = document.getElementById('add-tab-modal');
+            if (modal) {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+                const input = document.getElementById('new-tab-name');
+                if (input) input.value = '';
+            }
+        }
+        function addNewTab() {
+            const input = document.getElementById('new-tab-name');
+            const name = input.value.trim();
+            if (!name) return;
+            const newId = 'tab_' + Date.now();
+            window.kakeiboData.tabs.push({ id: newId, name: name });
+            currentTabId = newId;
+            window.saveDataToCloud();
+            closeAddTabModal();
+            initApp();
+        }
+
+        function openSettingsModal() {
+            const select = document.getElementById('salary-day-select');
+            if (select) {
+                select.innerHTML = '<option value="0">未設定</option>';
+                for (let i = 1; i <= 30; i++) {
+                    select.innerHTML += `<option value="${i}">${i}日</option>`;
+                }
+                select.innerHTML += '<option value="99">月末</option>';
+                select.value = window.kakeiboData.salaryConfig.day || 0;
+            }
+            const ruleEl = document.getElementById('salary-holiday-rule');
+            if (ruleEl) ruleEl.value = window.kakeiboData.salaryConfig.rule || 'prev';
+            const amtEl = document.getElementById('salary-amount');
+            if (amtEl) amtEl.value = window.kakeiboData.salaryConfig.amount || '';
+
+            showSettingsMenu();
+            const modal = document.getElementById('settings-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        }
+
+        function closeSettingsModal() {
+            const modal = document.getElementById('settings-modal');
+            if (modal) {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }
+        }
+
+        function saveSalarySettings() {
+            const daySel = document.getElementById('salary-day-select');
+            const ruleSel = document.getElementById('salary-holiday-rule');
+            const amtInp = document.getElementById('salary-amount');
+            const sc = window.kakeiboData.salaryConfig;
+            if (daySel) sc.day = Number(daySel.value);
+            if (ruleSel) sc.rule = ruleSel.value;
+            if (amtInp) {
+                const amt = amtInp.value;
+                sc.amount = amt !== '' ? Number(amt) : '';
+            }
+            window.saveDataToCloud();
+            alert('給料日設定を保存しました');
+            renderSummary();
+            renderCalendar();
+        }
+
+        function renderTagSelector() {
+            const container = document.getElementById('tag-select-container');
+            if (!container) return;
+            container.innerHTML = '';
+            const list = window.kakeiboData.tags[currentTxType] || [];
+
+            if (list.length === 0) {
+                container.innerHTML = '<span class="text-slate-400 p-1">設定からタグを追加できます</span>';
+                return;
+            }
+            if (!list.some(t => t.id === selectedTagId)) {
+                selectedTagId = list[0].id;
+            }
+
+            list.forEach(tag => {
+                const isSelected = tag.id === selectedTagId;
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `px-2.5 py-1 text-xs font-bold rounded-xl transition ${
+                    isSelected ? 'bg-slate-800 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`;
+                btn.innerText = tag.name;
+                btn.onclick = () => {
+                    selectedTagId = tag.id;
+                    renderTagSelector();
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function renderBulkTable() {
+            const labelEl = document.getElementById('bulk-month-label');
+            if (labelEl) labelEl.innerText = `対象月: ${bulkYear}年${bulkMonth}月`;
+
+            const tagSelect = document.getElementById('bulk-default-tag');
+            if (tagSelect) {
+                const defType = document.getElementById('bulk-default-type').value || 'expense';
+                const tagList = window.kakeiboData.tags[defType] || [];
+                tagSelect.innerHTML = '';
+                tagList.forEach(t => {
+                    tagSelect.innerHTML += `<option value="${t.name}">${t.name}</option>`;
+                });
+            }
+
+            const tbody = document.getElementById('bulk-table-body');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            const lastDay = new Date(bulkYear, bulkMonth, 0).getDate();
+            const defType = document.getElementById('bulk-default-type').value || 'expense';
+            const defaultTagName = tagSelect && tagSelect.options.length > 0 ? tagSelect.options[0].value : '未指定';
+
+            for (let i = 1; i <= lastDay; i++) {
+                const dayStr = String(i).padStart(2, '0');
+                const monthStr = String(bulkMonth).padStart(2, '0');
+                const dateKey = `${bulkYear}-${monthStr}-${dayStr}`;
+
+                appendBulkRow(tbody, dateKey, `${bulkMonth}/${i}`, defType, defaultTagName, '', '');
+            }
+            attachBulkKeyNavigation();
+        }
+
+        function appendBulkRow(tbody, dateKey, displayDate, type, tagName, amount, memo, referenceRow = null) {
+            const tr = document.createElement('tr');
+            tr.className = "hover:bg-slate-50 transition border-b border-slate-100 bulk-row";
+            tr.innerHTML = `
+                <td class="p-2 font-bold text-slate-700 whitespace-nowrap date-cell">${displayDate}</td>
+                <td class="p-2">
+                    <select data-date="${dateKey}" class="bulk-type border rounded-lg px-1.5 py-1 text-[11px] font-bold bg-white text-slate-700" onchange="onBulkTypeChange(this)">
+                        <option value="expense" ${type === 'expense' ? 'selected' : ''}>支出</option>
+                        <option value="income" ${type === 'income' ? 'selected' : ''}>収入</option>
+                    </select>
+                </td>
+                <td class="p-2">
+                    <select data-date="${dateKey}" class="bulk-tag border rounded-lg px-1.5 py-1 text-[11px] font-bold bg-white text-slate-700 w-full">
+                        ${generateTagOptions(type, tagName)}
+                    </select>
+                </td>
+                <td class="p-2">
+                    <input type="number" data-date="${dateKey}" value="${amount !== '' ? amount : ''}" placeholder="例: 1200" class="bulk-amount border rounded-lg px-2 py-1 text-[11px] font-bold w-full focus:outline-none">
+                </td>
+                <td class="p-2 flex items-center space-x-1">
+                    <input type="text" data-date="${dateKey}" value="${memo}" placeholder="メモ" class="bulk-memo border rounded-lg px-2 py-1 text-[11px] w-full focus:outline-none">
+                    <button type="button" onclick="addBulkRowForDate(this, '${dateKey}', '${displayDate}')" class="p-1 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 rounded-lg shrink-0 font-extrabold text-xs" title="この日に明細を追加">＋</button>
+                </td>
+            `;
+
+            if (referenceRow) {
+                referenceRow.after(tr);
+            } else {
+                tbody.appendChild(tr);
+            }
+            attachBulkKeyNavigation();
+        }
+
+        function addBulkRowForDate(btn, dateKey, displayDate) {
+            const row = btn.closest('tr');
+            const type = row.querySelector('.bulk-type').value;
+            const tag = row.querySelector('.bulk-tag').value;
+            appendBulkRow(row.parentNode, dateKey, displayDate, type, tag, '', '', row);
+        }
+
+        function attachBulkKeyNavigation() {
+            const amountInputs = document.querySelectorAll('.bulk-amount');
+            amountInputs.forEach((inp, idx) => {
+                inp.onkeydown = (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        if (amountInputs[idx + 1]) {
+                            amountInputs[idx + 1].focus();
+                            amountInputs[idx + 1].select();
+                        }
+                    }
+                };
+            });
+        }
+
+        function generateTagOptions(type, selectedName) {
+            const list = window.kakeiboData.tags[type] || [];
+            return list.map(t => `<option value="${t.name}" ${t.name === selectedName ? 'selected' : ''}>${t.name}</option>`).join('');
+        }
+
+        function changeBulkMonth(dir) {
+            bulkMonth += dir;
+            if (bulkMonth > 12) { bulkMonth = 1; bulkYear++; }
+            else if (bulkMonth < 1) { bulkMonth = 12; bulkYear--; }
+            renderBulkTable();
+        }
+
+        function applyBulkType(type) {
+            document.querySelectorAll('.bulk-type').forEach(el => el.value = type);
+            const tagSelect = document.getElementById('bulk-default-tag');
+            const tagList = window.kakeiboData.tags[type] || [];
+            if (tagSelect) {
+                tagSelect.innerHTML = tagList.map(t => `<option value="${t.name}">${t.name}</option>`).join('');
+            }
+            const defaultTagName = tagList.length > 0 ? tagList[0].name : '';
+            document.querySelectorAll('.bulk-tag').forEach(el => {
+                el.innerHTML = generateTagOptions(type, defaultTagName);
+            });
+        }
+
+        function applyBulkTag(tagName) {
+            document.querySelectorAll('.bulk-tag').forEach(el => el.value = tagName);
+        }
+
+        function onBulkTypeChange(selectEl) {
+            const type = selectEl.value;
+            const row = selectEl.closest('tr');
+            const tagSelect = row.querySelector('.bulk-tag');
+            const tagList = window.kakeiboData.tags[type] || [];
+            const defaultName = tagList.length > 0 ? tagList[0].name : '';
+            tagSelect.innerHTML = generateTagOptions(type, defaultName);
+        }
+
+        function isJapaneseHoliday(year, month, day) {
+            const dateStr = `${month}/${day}`;
+            const fixedHolidays = ["1/1", "1/2", "1/3", "2/11", "2/23", "4/29", "5/3", "5/4", "5/5", "8/11", "11/3", "11/23"];
+            if (fixedHolidays.includes(dateStr)) return true;
+            const dayOfWeek = new Date(year, month - 1, day).getDay();
+            if (dayOfWeek === 1) {
+                if (month === 1 && day >= 8 && day <= 14) return true;
+                if (month === 7 && day >= 15 && day <= 21) return true;
+                if (month === 9 && day >= 15 && day <= 21) return true;
+                if (month === 10 && day >= 8 && day <= 14) return true;
+            }
+            return false;
+        }
+
+        function isHolidayOrWeekend(year, month, day) {
+            const date = new Date(year, month - 1, day);
+            const dayOfWeek = date.getDay();
+            if (dayOfWeek === 0 || dayOfWeek === 6) return true;
+            return isJapaneseHoliday(year, month, day);
+        }
+
+        function calculatePayday(year, month) {
+            const sc = window.kakeiboData.salaryConfig;
+            if (!sc || !sc.day || sc.day == 0) return null;
+            let targetDay = sc.day;
+            const lastDayOfMonth = new Date(year, month, 0).getDate();
+            if (targetDay === 99 || targetDay > lastDayOfMonth) targetDay = lastDayOfMonth;
+            if (sc.rule === 'none') return targetDay;
+
+            let curr = new Date(year, month - 1, targetDay);
+            if (sc.rule === 'prev') {
+                while (isHolidayOrWeekend(curr.getFullYear(), curr.getMonth() + 1, curr.getDate())) {
+                    curr.setDate(curr.getDate() - 1);
+                }
+            } else if (sc.rule === 'next') {
+                while (isHolidayOrWeekend(curr.getFullYear(), curr.getMonth() + 1, curr.getDate())) {
+                    curr.setDate(curr.getDate() + 1);
+                }
+            }
+            if (curr.getMonth() + 1 === month) return curr.getDate();
+            return targetDay;
+        }
+
+        function getFilteredTransactions() {
+            const d = window.kakeiboData;
+            let list = [];
+            if (currentTabId === 'all') {
+                list = [...d.transactions];
+            } else {
+                list = d.transactions.filter(t => t.tabId === currentTabId);
+            }
+
+            if (d.salaryConfig.amount && Number(d.salaryConfig.amount) > 0) {
+                const payday = calculatePayday(currentYear, currentMonth);
+                if (payday) {
+                    const dateStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(payday).padStart(2, '0')}`;
+                    const hasSalaryTx = list.some(t => t.date === dateStr && t.isSalaryAuto);
+                    if (!hasSalaryTx) {
+                        list.push({
+                            id: 'auto_salary',
+                            tabId: currentTabId,
+                            type: 'income',
+                            amount: Number(d.salaryConfig.amount),
+                            date: dateStr,
+                            tagName: '給与',
+                            memo: '定額自動反映',
+                            isSalaryAuto: true
+                        });
+                    }
+                }
+            }
+            return list;
         }
 
         function renderSummary() {
+            const d = window.kakeiboData;
+            const txs = getFilteredTransactions();
+            let periodIncome = 0;
+            let periodExpense = 0;
+
+            const badgeTextEl = document.getElementById('period-badge-text');
+
+            if (d.periodConfig.mode === 'custom' && d.periodConfig.startDate && d.periodConfig.endDate) {
+                if (badgeTextEl) badgeTextEl.innerText = `${d.periodConfig.startDate} 〜 ${d.periodConfig.endDate}`;
+                txs.forEach(t => {
+                    if (t.date >= d.periodConfig.startDate && t.date <= d.periodConfig.endDate) {
+                        if (t.type === 'income') periodIncome += t.amount;
+                        else periodExpense += t.amount;
+                    }
+                });
+            } else {
+                if (badgeTextEl) badgeTextEl.innerText = '月単位';
+                txs.forEach(t => {
+                    const [y, m] = t.date.split('-').map(Number);
+                    if (y === currentYear && m === currentMonth) {
+                        if (t.type === 'income') periodIncome += t.amount;
+                        else periodExpense += t.amount;
+                    }
+                });
+            }
+
+            const monthKeyStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}`;
+            let startFund = 0;
+
+            if (currentTabId === 'all') {
+                d.tabs.forEach(tab => {
+                    if (tab.id !== 'all') {
+                        const k = `${tab.id}_${monthKeyStr}`;
+                        if (d.tabInitialFunds[k] !== undefined) {
+                            startFund += d.tabInitialFunds[k];
+                        }
+                    }
+                });
+            } else {
+                const fundKey = `${currentTabId}_${monthKeyStr}`;
+                startFund = d.tabInitialFunds[fundKey] !== undefined ? d.tabInitialFunds[fundKey] : 0;
+            }
+
+            const netDiff = periodIncome - periodExpense;
+            const netBalance = startFund + netDiff;
+
             const balEl = document.getElementById('total-balance');
-            if (balEl) balEl.innerText = '¥0';
+            const incEl = document.getElementById('monthly-income');
+            const expEl = document.getElementById('monthly-expense');
+            const fundBadgeEl = document.getElementById('fund-badge-text');
+            const diffBadgeEl = document.getElementById('balance-diff-badge');
+            const subDescEl = document.getElementById('sub-balance-desc');
+            const targetBadgeEl = document.getElementById('target-display-badge');
+
+            if (incEl) incEl.innerText = `¥${periodIncome.toLocaleString()}`;
+            if (expEl) expEl.innerText = `¥${periodExpense.toLocaleString()}`;
+
+            const formattedDiff = (netDiff >= 0 ? '+' : '') + `¥${netDiff.toLocaleString()}`;
+
+            if (startFund > 0) {
+                if (fundBadgeEl) fundBadgeEl.innerText = (currentTabId === 'all') ? `総合資金: ¥${startFund.toLocaleString()}` : `資金: ¥${startFund.toLocaleString()}`;
+                if (balEl) balEl.innerText = `¥${netBalance.toLocaleString()}`;
+                if (subDescEl) subDescEl.innerText = `資金ベース残金（当月収支: ${formattedDiff}）`;
+
+                if (diffBadgeEl) {
+                    diffBadgeEl.innerText = formattedDiff;
+                    diffBadgeEl.classList.remove('hidden');
+                    if (netDiff > 0) {
+                        diffBadgeEl.className = "text-xs font-extrabold px-2 py-0.5 rounded-full bg-emerald-500/80 text-white backdrop-blur";
+                    } else if (netDiff < 0) {
+                        diffBadgeEl.className = "text-xs font-extrabold px-2 py-0.5 rounded-full bg-rose-500/80 text-white backdrop-blur";
+                    } else {
+                        diffBadgeEl.className = "text-xs font-extrabold px-2 py-0.5 rounded-full bg-white/20 text-white backdrop-blur";
+                    }
+                }
+            } else {
+                if (fundBadgeEl) fundBadgeEl.innerText = (currentTabId === 'all') ? `総合資金 (未設定)` : `資金設定`;
+                if (balEl) balEl.innerText = formattedDiff;
+                if (subDescEl) subDescEl.innerText = `当月の収支（純増減）`;
+
+                if (diffBadgeEl) diffBadgeEl.classList.add('hidden');
+            }
+
+            const scopeKey = getScopeKey();
+            const targetCfg = d.targetConfigs[scopeKey];
+            const dailyContainer = document.getElementById('daily-allowance-container');
+            const dailyValEl = document.getElementById('daily-allowance-val');
+            const dailyLabelEl = document.getElementById('daily-allowance-label');
+
+            if (targetCfg && targetCfg.amount !== undefined && targetCfg.amount !== '') {
+                const isExpenseMain = (targetCfg.mode === 'expense');
+                const targetAmt = Number(targetCfg.amount);
+
+                if (targetBadgeEl) {
+                    targetBadgeEl.innerText = isExpenseMain ? `目標残金: ¥${targetAmt.toLocaleString()}` : `目標額: ¥${targetAmt.toLocaleString()}`;
+                    targetBadgeEl.classList.remove('hidden');
+                }
+
+                let startDate, endDate;
+                const today = new Date();
+                today.setHours(0,0,0,0);
+
+                if (d.periodConfig.mode === 'custom' && d.periodConfig.startDate && d.periodConfig.endDate) {
+                    startDate = new Date(d.periodConfig.startDate);
+                    endDate = new Date(d.periodConfig.endDate);
+                } else {
+                    startDate = new Date(currentYear, currentMonth - 1, 1);
+                    endDate = new Date(currentYear, currentMonth, 0);
+                }
+
+                let calcStart = today > startDate ? today : startDate;
+                let validDaysCount = 0;
+
+                for (let dt = new Date(calcStart); dt <= endDate; dt.setDate(dt.getDate() + 1)) {
+                    const dateStr = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
+                    if (!d.excludedDates.includes(dateStr)) {
+                        validDaysCount++;
+                    }
+                }
+
+                const currentVal = startFund > 0 ? netBalance : netDiff;
+                let dailyAllowance = 0;
+
+                if (isExpenseMain) {
+                    const remainingMoney = currentVal - targetAmt;
+                    dailyAllowance = validDaysCount > 0 ? Math.floor(remainingMoney / validDaysCount) : 0;
+                    if (dailyLabelEl) dailyLabelEl.innerText = `残り${validDaysCount}日（1日あたり使える目安）`;
+                    if (dailyValEl) {
+                        if (dailyAllowance >= 0) {
+                            dailyValEl.innerText = `あと ¥${dailyAllowance.toLocaleString()} / 日`;
+                            dailyValEl.className = "text-xs font-black text-amber-200";
+                        } else {
+                            dailyValEl.innerText = `超過 ¥${Math.abs(dailyAllowance).toLocaleString()} / 日`;
+                            dailyValEl.className = "text-xs font-black text-rose-300";
+                        }
+                    }
+                } else {
+                    const needMoney = targetAmt - currentVal;
+                    dailyAllowance = validDaysCount > 0 ? Math.ceil(needMoney / validDaysCount) : 0;
+                    if (dailyLabelEl) dailyLabelEl.innerText = `残り${validDaysCount}日（1日あたり必要な目安）`;
+                    if (dailyValEl) {
+                        if (dailyAllowance <= 0) {
+                            dailyValEl.innerText = `目標達成！🎉`;
+                            dailyValEl.className = "text-xs font-black text-emerald-300";
+                        } else {
+                            dailyValEl.innerText = `必要 ¥${dailyAllowance.toLocaleString()} / 日`;
+                            dailyValEl.className = "text-xs font-black text-amber-200";
+                        }
+                    }
+                }
+
+                if (dailyContainer) dailyContainer.classList.remove('hidden');
+            } else {
+                if (targetBadgeEl) targetBadgeEl.classList.add('hidden');
+                if (dailyContainer) dailyContainer.classList.add('hidden');
+            }
         }
 
         function renderCalendar() {
@@ -342,39 +1723,479 @@
             const grid = document.getElementById('calendar-grid');
             if (!grid) return;
             grid.innerHTML = '';
-            for (let i = 1; i <= 30; i++) {
+            const txs = getFilteredTransactions();
+            const d = window.kakeiboData;
+
+            const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+            const payday = calculatePayday(currentYear, currentMonth);
+
+            const firstDayIndex = new Date(currentYear, currentMonth - 1, 1).getDay();
+            const lastDate = new Date(currentYear, currentMonth, 0).getDate();
+
+            for (let i = 0; i < firstDayIndex; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = "min-h-[48px] p-0.5 rounded-xl opacity-10 border border-transparent";
+                grid.appendChild(emptyCell);
+            }
+
+            for (let i = 1; i <= lastDate; i++) {
+                const monthStr = String(currentMonth).padStart(2, '0');
+                const dayStr = String(i).padStart(2, '0');
+                const dateStr = `${currentYear}-${monthStr}-${dayStr}`;
+                const isToday = (dateStr === todayStr);
+                const isPayday = (i === payday);
+                const isExcluded = d.excludedDates.includes(dateStr);
+
+                const matchedAnniversaries = d.anniversaries.filter(a => {
+                    if (!a.date) return false;
+                    const parts = a.date.split('-');
+                    if (parts.length === 3) {
+                        return parseInt(parts[1]) === currentMonth && parseInt(parts[2]) === i;
+                    }
+                    return false;
+                });
+                const isAnniversary = matchedAnniversaries.length > 0;
+
+                const dayTxs = txs.filter(t => t.date === dateStr);
+                let dayNetTotal = 0;
+                let hasTransaction = dayTxs.length > 0;
+                dayTxs.forEach(t => {
+                    if (t.type === 'income') dayNetTotal += t.amount;
+                    else dayNetTotal -= t.amount;
+                });
+
+                const dayPlans = d.plans.filter(p => p.date === dateStr);
+                let hasPlan = dayPlans.length > 0;
+                let planInitial = hasPlan ? (dayPlans[0].title ? dayPlans[0].title.trim().charAt(0) : '予') : '';
+
+                let cellClass = '';
+                let indicatorHtml = '';
+
+                if (isAnniversary) {
+                    const anni = matchedAnniversaries[0];
+                    const cat = anni.category || 'love';
+
+                    if (d.currentTheme === 'cute') {
+                        if (cat === 'love') {
+                            cellClass = 'bg-gradient-to-br from-pink-200 to-rose-300 border-rose-400 text-rose-900 shadow-sm ring-2 ring-pink-300 anniversary-badge-animation z-10';
+                            indicatorHtml = '<span class="text-[9px] bg-white/90 text-rose-600 px-1 py-0.2 rounded-md font-extrabold shadow-sm">♥</span>';
+                        } else if (cat === 'money') {
+                            cellClass = 'bg-gradient-to-br from-amber-100 to-yellow-200 border-amber-400 text-amber-900 shadow-sm ring-2 ring-yellow-300 anniversary-badge-animation z-10';
+                            indicatorHtml = '<span class="text-[9px] bg-white/90 text-amber-600 px-1 py-0.2 rounded-md font-extrabold shadow-sm">★</span>';
+                        } else {
+                            cellClass = 'bg-gradient-to-br from-purple-100 to-indigo-200 border-purple-400 text-purple-900 shadow-sm ring-2 ring-purple-300 anniversary-badge-animation z-10';
+                            indicatorHtml = '<span class="text-[9px] bg-white/90 text-purple-600 px-1 py-0.2 rounded-md font-extrabold shadow-sm">！</span>';
+                        }
+                    } else if (d.currentTheme === 'simple') {
+                        if (cat === 'love') {
+                            cellClass = 'bg-rose-50 border-rose-500 text-rose-900 font-bold shadow-sm ring-1 ring-rose-300 z-10';
+                            indicatorHtml = '<span class="text-[9px] bg-rose-500 text-white px-1 py-0.2 rounded-md font-bold">♥</span>';
+                        } else if (cat === 'money') {
+                            cellClass = 'bg-emerald-50 border-emerald-500 text-emerald-900 font-bold shadow-sm ring-1 ring-emerald-300 z-10';
+                            indicatorHtml = '<span class="text-[9px] bg-emerald-600 text-white px-1 py-0.2 rounded-md font-bold">！</span>';
+                        } else {
+                            cellClass = 'bg-blue-50 border-blue-600 text-blue-900 font-bold shadow-sm ring-1 ring-blue-300 z-10';
+                            indicatorHtml = '<span class="text-[9px] bg-blue-700 text-white px-1 py-0.2 rounded-md font-bold">◎</span>';
+                        }
+                    } else {
+                        if (cat === 'love') {
+                            cellClass = 'bg-[#f4ebd0] border-[#b89768] text-[#5c4433] font-bold shadow-sm ring-1 ring-[#d4b58e] z-10';
+                            indicatorHtml = '<span class="text-[9px] bg-[#7c5c43] text-amber-50 px-1 py-0.2 rounded-md font-bold">！</span>';
+                        } else if (cat === 'money') {
+                            cellClass = 'bg-[#f7f1e3] border-[#c4b387] text-[#5c4433] font-bold shadow-sm ring-1 ring-[#dec99b] z-10';
+                            indicatorHtml = '<span class="text-[9px] bg-[#8c7355] text-amber-50 px-1 py-0.2 rounded-md font-bold">＄</span>';
+                        } else {
+                            cellClass = 'bg-[#eee4d4] border-[#a89070] text-[#4a3b32] font-bold shadow-sm ring-1 ring-[#c2ab89] z-10';
+                            indicatorHtml = '<span class="text-[9px] bg-[#5c4433] text-amber-50 px-1 py-0.2 rounded-md font-bold">重</span>';
+                        }
+                    }
+                } else if (hasPlan) {
+                    cellClass = 'bg-blue-600 border-blue-700 text-white shadow-md ring-1 ring-blue-400 z-10';
+                    indicatorHtml = `<span class="text-[8px] bg-white text-blue-700 px-1 py-0.2 rounded-md font-extrabold shadow-sm">${planInitial}</span>`;
+                }
+
+                let paydayBadgeHtml = '';
+                if (isPayday && !isAnniversary) {
+                    let paySymbolStyle = '';
+                    if (d.currentTheme === 'cute') {
+                        paySymbolStyle = 'bg-pink-400 text-white font-black rounded-full w-4 h-4 inline-flex items-center justify-center text-[9px] shadow-sm';
+                    } else if (d.currentTheme === 'simple') {
+                        paySymbolStyle = 'bg-amber-500 text-white font-bold rounded-full w-4 h-4 inline-flex items-center justify-center text-[9px]';
+                    } else {
+                        paySymbolStyle = 'bg-[#7c5c43] text-amber-50 font-serif font-bold rounded-full w-4 h-4 inline-flex items-center justify-center text-[9px] border border-[#5c4433]';
+                    }
+                    paydayBadgeHtml = `<span class="${paySymbolStyle}" title="給料日">給</span>`;
+                }
+
+                let excludedBadgeHtml = isExcluded ? `<span class="text-[8px] bg-slate-400 text-white px-1 py-0.2 rounded font-extrabold" title="日割り対象外">外</span>` : '';
+
+                let badgeHtml = '';
+                if (hasTransaction) {
+                    const isDarkCell = isAnniversary || hasPlan;
+                    if (dayNetTotal > 0) {
+                        badgeHtml = `<span class="text-[7.5px] sm:text-[9px] ${isDarkCell ? 'bg-black/30 text-emerald-200' : 'bg-emerald-100 text-emerald-700'} font-extrabold px-0.5 rounded w-full text-center truncate block">+${dayNetTotal.toLocaleString()}</span>`;
+                    } else if (dayNetTotal < 0) {
+                        badgeHtml = `<span class="text-[7.5px] sm:text-[9px] ${isDarkCell ? 'bg-black/30 text-rose-200' : 'bg-rose-100 text-rose-600'} font-extrabold px-0.5 rounded w-full text-center truncate block">-${Math.abs(dayNetTotal).toLocaleString()}</span>`;
+                    } else {
+                        badgeHtml = `<span class="text-[7.5px] sm:text-[9px] bg-slate-100 text-slate-600 font-bold px-0.5 rounded w-full text-center truncate block">0</span>`;
+                    }
+                }
+
+                let dayNumberHtml = '';
+                if (isToday && !isAnniversary && !hasPlan) {
+                    dayNumberHtml = `<span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-indigo-600 text-white text-[11px] font-black shadow-sm">${i}</span>`;
+                } else {
+                    const dayNumColor = (isAnniversary || hasPlan) ? 'text-white font-black' : isPayday ? 'text-amber-600' : 'text-slate-600';
+                    dayNumberHtml = `<span class="text-[11px] sm:text-xs font-bold ${dayNumColor}">${i}</span>`;
+                }
+
+                let badgesInnerHtml = '';
+                if (indicatorHtml) badgesInnerHtml += indicatorHtml;
+                if (paydayBadgeHtml) badgesInnerHtml += paydayBadgeHtml;
+                if (excludedBadgeHtml) badgesInnerHtml += excludedBadgeHtml;
+
                 const cell = document.createElement('div');
-                cell.className = "min-h-[48px] p-1 border border-slate-100 rounded-xl bg-white flex flex-col justify-between";
-                cell.innerHTML = `<span class="text-xs font-bold">${i}</span>`;
+                cell.className = `min-h-[48px] p-0.5 sm:p-1 flex flex-col justify-between items-center rounded-xl border transition cursor-pointer relative ${
+                    isExcluded ? 'opacity-60 bg-slate-100/70 border-dashed border-slate-300' : ''
+                } ${
+                    isToday && !isAnniversary && !hasPlan
+                        ? 'border-indigo-400 bg-indigo-50/70 shadow-sm ring-1 ring-indigo-300' 
+                        : isPayday && !isAnniversary && !hasPlan
+                        ? 'border-amber-400 bg-amber-50/50'
+                        : cellClass || 'border-slate-100 hover:border-indigo-300 hover:bg-slate-50/50'
+                }`;
+
+                cell.innerHTML = `
+                    <div class="w-full flex justify-between items-center px-0.5">
+                        ${dayNumberHtml}
+                        <div class="flex items-center space-x-0.5">
+                            ${badgesInnerHtml}
+                        </div>
+                    </div>
+                    <div class="w-full pb-0.5">
+                        ${badgeHtml}
+                    </div>
+                `;
+
+                cell.onclick = () => openDayDetail(dateStr, i, matchedAnniversaries);
                 grid.appendChild(cell);
             }
         }
 
-        function changeMonth(dir) {
-            currentMonth += dir;
-            if (currentMonth > 12) { currentMonth = 1; currentYear++; }
-            else if (currentMonth < 1) { currentMonth = 12; currentYear--; }
+        function changeMonth(direction) {
+            currentMonth += direction;
+            if (currentMonth > 12) {
+                currentMonth = 1;
+                currentYear++;
+            } else if (currentMonth < 1) {
+                currentMonth = 12;
+                currentYear--;
+            }
             renderCalendar();
             renderSummary();
         }
 
-        function openAddModal() {
+        function openAddModal(dateStr = '') {
+            closeDayDetailModal();
+            if (!dateStr) {
+                dateStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+            }
+            bulkYear = currentYear;
+            bulkMonth = currentMonth;
+
+            const dateInput = document.getElementById('tx-date');
+            const planDateInput = document.getElementById('plan-date');
+            const amtInput = document.getElementById('tx-amount');
+            const memoInput = document.getElementById('tx-memo');
+            const planMemoInput = document.getElementById('plan-memo');
+            const titleInput = document.getElementById('plan-title');
+
+            if (dateInput) dateInput.value = dateStr;
+            if (planDateInput) planDateInput.value = dateStr;
+            if (amtInput) amtInput.value = '';
+            if (memoInput) memoInput.value = '';
+            if (planMemoInput) planMemoInput.value = '';
+            if (titleInput) titleInput.value = '';
+            
+            setEntryMode('tx');
+            setTxType('expense');
+            renderBulkTable();
+            
             const modal = document.getElementById('add-modal');
-            if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
         }
+
         function closeAddModal() {
             const modal = document.getElementById('add-modal');
-            if (modal) { modal.classList.remove('flex'); modal.classList.add('hidden'); }
+            if (modal) {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }
         }
-        function setEntryMode() {}
-        function setTxType() {}
-        function saveEntry() { closeAddModal(); }
-        function openPeriodModal() {}
-        function openFundModal() {}
-        function toggleTargetBox() {}
-        function onTargetModeChange() {}
-        function saveTargetSetting() {}
-        function openSettingsModal() {}
+
+        function setEntryMode(mode) {
+            currentEntryMode = mode;
+            const txBtn = document.getElementById('mode-tx-btn');
+            const planBtn = document.getElementById('mode-plan-btn');
+            const bulkBtn = document.getElementById('mode-bulk-btn');
+            const txSection = document.getElementById('form-tx-section');
+            const planSection = document.getElementById('form-plan-section');
+            const bulkSection = document.getElementById('form-bulk-section');
+            const modalTitle = document.getElementById('add-modal-title');
+
+            const inactiveBtnClass = "py-1.5 rounded-xl transition text-slate-400 hover:text-slate-700 font-bold";
+            const activeBtnClass = "py-1.5 rounded-xl transition bg-white text-slate-800 shadow-sm font-bold";
+
+            if (mode === 'tx') {
+                if (txBtn) txBtn.className = activeBtnClass;
+                if (planBtn) planBtn.className = inactiveBtnClass;
+                if (bulkBtn) bulkBtn.className = inactiveBtnClass;
+                if (txSection) txSection.classList.remove('hidden');
+                if (planSection) planSection.classList.add('hidden');
+                if (bulkSection) bulkSection.classList.add('hidden');
+                if (modalTitle) modalTitle.innerText = '収支を入力 💸';
+            } else if (mode === 'plan') {
+                if (txBtn) txBtn.className = inactiveBtnClass;
+                if (planBtn) planBtn.className = activeBtnClass;
+                if (bulkBtn) bulkBtn.className = inactiveBtnClass;
+                if (txSection) txSection.classList.add('hidden');
+                if (planSection) planSection.classList.remove('hidden');
+                if (bulkSection) bulkSection.classList.add('hidden');
+                if (modalTitle) modalTitle.innerText = '予定日を設定 📅';
+            } else if (mode === 'bulk') {
+                if (txBtn) txBtn.className = inactiveBtnClass;
+                if (planBtn) planBtn.className = inactiveBtnClass;
+                if (bulkBtn) bulkBtn.className = activeBtnClass;
+                if (txSection) txSection.classList.add('hidden');
+                if (planSection) planSection.classList.add('hidden');
+                if (bulkSection) bulkSection.classList.remove('hidden');
+                if (modalTitle) modalTitle.innerText = '月一括登録 📝';
+                renderBulkTable();
+            }
+        }
+
+        function setTxType(type) {
+            currentTxType = type;
+            const expBtn = document.getElementById('type-expense-btn');
+            const incBtn = document.getElementById('type-income-btn');
+            if (expBtn && incBtn) {
+                if (type === 'expense') {
+                    expBtn.className = "py-2 rounded-2xl font-bold bg-rose-500 text-white shadow-sm transition";
+                    incBtn.className = "py-2 rounded-2xl font-bold bg-slate-100 text-slate-400 transition";
+                } else {
+                    expBtn.className = "py-2 rounded-2xl font-bold bg-slate-100 text-slate-400 transition";
+                    incBtn.className = "py-2 rounded-2xl font-bold bg-emerald-500 text-white shadow-sm transition";
+                }
+            }
+            renderTagSelector();
+        }
+
+        function saveEntry() {
+            const d = window.kakeiboData;
+            const targetTab = currentTabId === 'all' ? (d.tabs[1] ? d.tabs[1].id : 'general') : currentTabId;
+
+            if (currentEntryMode === 'tx') {
+                const dateInput = document.getElementById('tx-date');
+                const memoInput = document.getElementById('tx-memo');
+                const amtInput = document.getElementById('tx-amount');
+                
+                const date = dateInput ? dateInput.value : '';
+                const memo = memoInput ? memoInput.value.trim() : '';
+                const amount = amtInput ? Number(amtInput.value) : 0;
+
+                if (!date) { alert('日付を選択してください。'); return; }
+                if (!amount || amount <= 0) { alert('有効な金額を入力してください。'); return; }
+
+                const list = d.tags[currentTxType] || [];
+                const activeTag = list.find(t => t.id === selectedTagId);
+                const tagName = activeTag ? activeTag.name : '未指定';
+
+                const newTx = {
+                    id: 'tx_' + Date.now(),
+                    tabId: targetTab,
+                    tagId: selectedTagId,
+                    tagName: tagName,
+                    type: currentTxType,
+                    amount: amount,
+                    date: date,
+                    memo: memo
+                };
+                d.transactions.push(newTx);
+            } 
+            else if (currentEntryMode === 'plan') {
+                const dateInput = document.getElementById('plan-date');
+                const titleInput = document.getElementById('plan-title');
+                const memoInput = document.getElementById('plan-memo');
+
+                const date = dateInput ? dateInput.value : '';
+                const title = titleInput ? titleInput.value.trim() : '';
+                const memo = memoInput ? memoInput.value.trim() : '';
+
+                if (!date) { alert('日付を選択してください。'); return; }
+                if (!title) { alert('予定の内容を入力してください。'); return; }
+
+                const newPlan = {
+                    id: 'plan_' + Date.now(),
+                    title: title,
+                    date: date,
+                    memo: memo
+                };
+                d.plans.push(newPlan);
+            }
+            else if (currentEntryMode === 'bulk') {
+                const rows = document.querySelectorAll('#bulk-table-body tr');
+                let addedCount = 0;
+
+                rows.forEach((row, idx) => {
+                    const amountInput = row.querySelector('.bulk-amount');
+                    const date = amountInput.getAttribute('data-date');
+                    const type = row.querySelector('.bulk-type').value;
+                    const tagName = row.querySelector('.bulk-tag').value;
+                    const amountVal = amountInput.value;
+                    const memo = row.querySelector('.bulk-memo').value.trim();
+
+                    if (amountVal && Number(amountVal) > 0) {
+                        d.transactions.push({
+                            id: 'tx_' + Date.now() + '_' + idx,
+                            tabId: targetTab,
+                            tagId: '',
+                            tagName: tagName,
+                            type: type,
+                            amount: Number(amountVal),
+                            date: date,
+                            memo: memo
+                        });
+                        addedCount++;
+                    }
+                });
+
+                if (addedCount === 0) {
+                    alert('金額が入力されている日が見つかりませんでした。');
+                    return;
+                }
+                alert(`${addedCount}件の収支を一括登録しました！`);
+            }
+
+            window.saveDataToCloud();
+            closeAddModal();
+            initApp();
+        }
+
+        function openDayDetail(dateStr, dayNum, matchedAnniversaries = []) {
+            selectedDateForModal = dateStr;
+            const [y, m, d] = dateStr.split('-');
+            const titleEl = document.getElementById('day-detail-title');
+            if (titleEl) titleEl.innerText = `${y}年${parseInt(m)}月${parseInt(d)}日の明細・予定`;
+
+            const excludeCheck = document.getElementById('exclude-daily-check');
+            if (excludeCheck) {
+                excludeCheck.checked = window.kakeiboData.excludedDates.includes(dateStr);
+            }
+            
+            const txs = getFilteredTransactions().filter(t => t.date === dateStr);
+            const dayPlans = window.kakeiboData.plans.filter(p => p.date === dateStr);
+
+            const listContainer = document.getElementById('day-detail-list');
+            if (!listContainer) return;
+            listContainer.innerHTML = '';
+
+            if (txs.length === 0 && dayPlans.length === 0 && matchedAnniversaries.length === 0) {
+                listContainer.innerHTML = '<p class="text-slate-400 text-center py-4">この日のデータはありません</p>';
+            } else {
+                matchedAnniversaries.forEach(a => {
+                    const item = document.createElement('div');
+                    item.className = "flex justify-between items-center bg-pink-50 p-3 rounded-2xl border border-pink-200";
+                    item.innerHTML = `
+                        <div class="flex items-center space-x-2">
+                            <span class="text-xs bg-rose-500 text-white px-2 py-0.5 rounded-lg font-bold">記念日</span>
+                            <p class="font-extrabold text-slate-800">${a.title}</p>
+                        </div>
+                    `;
+                    listContainer.appendChild(item);
+                });
+
+                dayPlans.forEach(p => {
+                    const item = document.createElement('div');
+                    item.className = "flex justify-between items-center bg-blue-50 p-3 rounded-2xl border border-blue-200";
+                    item.innerHTML = `
+                        <div>
+                            <div class="flex items-center space-x-1.5">
+                                <span class="text-[10px] bg-blue-600 text-white px-1.5 py-0.5 rounded-md font-extrabold">予定</span>
+                                <p class="font-extrabold text-slate-800">${p.title}</p>
+                            </div>
+                            ${p.memo ? `<p class="text-[10px] text-slate-500 mt-0.5">${p.memo}</p>` : ''}
+                        </div>
+                        <button onclick="deletePlan('${p.id}')" class="text-slate-400 hover:text-rose-500 p-1 transition">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    `;
+                    listContainer.appendChild(item);
+                });
+
+                txs.forEach(t => {
+                    const item = document.createElement('div');
+                    item.className = "flex justify-between items-center bg-slate-50 p-3 rounded-2xl border border-slate-200/80";
+                    const isInc = t.type === 'income';
+                    const detailText = t.memo ? `${t.tagName} (${t.memo})` : t.tagName;
+
+                    item.innerHTML = `
+                        <div>
+                            <p class="font-extrabold text-slate-700">${detailText}</p>
+                            <span class="text-[10px] text-slate-400 font-bold">${isInc ? '収入 💰' : '支出 💸'}</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <span class="font-black ${isInc ? 'text-emerald-600' : 'text-rose-600'}">
+                                ${isInc ? '+' : '-'}¥${t.amount.toLocaleString()}
+                            </span>
+                            ${!t.isSalaryAuto ? `
+                                <button onclick="deleteTransaction('${t.id}')" class="text-slate-400 hover:text-rose-500 p-1 transition">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            ` : '<span class="text-[10px] text-slate-400 font-bold">自動</span>'}
+                        </div>
+                    `;
+                    listContainer.appendChild(item);
+                });
+            }
+
+            const modal = document.getElementById('day-detail-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+            lucide.createIcons();
+        }
+
+        function closeDayDetailModal() {
+            const modal = document.getElementById('day-detail-modal');
+            if (modal) {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }
+        }
+
+        function openAddModalFromDetail() {
+            openAddModal(selectedDateForModal);
+        }
+
+        function deleteTransaction(id) {
+            if (!confirm('この明細を削除しますか？')) return;
+            window.kakeiboData.transactions = window.kakeiboData.transactions.filter(t => t.id !== id);
+            window.saveDataToCloud();
+            closeDayDetailModal();
+            initApp();
+        }
+
+        function deletePlan(id) {
+            if (!confirm('この予定を削除しますか？')) return;
+            window.kakeiboData.plans = window.kakeiboData.plans.filter(p => p.id !== id);
+            window.saveDataToCloud();
+            closeDayDetailModal();
+            initApp();
+        }
     </script>
 </body>
 </html>
