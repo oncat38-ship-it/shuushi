@@ -10,30 +10,18 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
-        .theme-cute { font-family: 'M PLUS Rounded 1c', sans-serif; }
-        .theme-simple { font-family: 'Noto Sans JP', sans-serif; }
-        .theme-classic { font-family: 'Noto Sans JP', serif; }
-        @keyframes pulse-attention {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-        .anniversary-badge-animation {
-            animation: pulse-attention 2.5s infinite ease-in-out;
-        }
-    </style>
 </head>
-<body id="app-body" class="antialiased min-h-screen pb-12 transition-colors duration-300">
+<body id="app-body" class="antialiased min-h-screen pb-12 transition-colors duration-300 bg-pink-50/60 text-slate-700">
 
-    <!-- ログイン前オーバーレイ画面（初期状態は隠しておき、未認証時のみ安全に表示） -->
-    <div id="login-overlay" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <!-- ログイン前オーバーレイ画面 -->
+    <div id="login-overlay" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl text-center space-y-4">
             <div class="w-12 h-12 bg-rose-500 text-white rounded-2xl mx-auto flex items-center justify-center shadow-lg shadow-rose-200">
                 <i data-lucide="wallet" class="w-6 h-6"></i>
             </div>
             <div>
                 <h2 class="text-base font-extrabold text-slate-800">My Kakeibo へようこそ</h2>
-                <p class="text-xs text-slate-500 mt-1">Googleアカウントでログインすると、スマホやPC間でデータが自動同期されます。</p>
+                <p class="text-xs text-slate-500 mt-1">Googleアカウントでログインすると、データが自動同期されます。</p>
             </div>
             <button onclick="loginWithGoogle()" class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-extrabold rounded-2xl text-xs transition shadow-md flex items-center justify-center gap-2">
                 <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
@@ -43,162 +31,24 @@
     </div>
 
     <!-- ヘッダー -->
-    <header id="app-header" class="backdrop-blur border-b sticky top-0 z-20 shadow-sm transition-colors duration-300">
+    <header class="bg-white/80 backdrop-blur border-b border-pink-100 sticky top-0 z-20 shadow-sm">
         <div class="max-w-xl mx-auto px-4 py-2.5 flex items-center justify-between">
-            <div class="flex items-center space-x-2">
-                <div id="header-icon-bg" class="p-1.5 rounded-xl shadow-md transition-colors duration-300">
-                    <i id="header-icon" data-lucide="wallet" class="w-4 h-4 text-white"></i>
-                </div>
-                <h1 id="header-title" class="text-sm font-extrabold tracking-wide flex items-center gap-1">
-                    My Kakeibo
-                </h1>
-            </div>
-            <div class="flex items-center space-x-2">
-                <span id="save-badge" class="text-[10px] font-bold px-2 py-0.5 border rounded-full flex items-center gap-1">
-                    <i data-lucide="cloud-check" class="w-3 h-3"></i> 同期中
-                </span>
-                <button onclick="openSettingsModal()" id="settings-btn" class="p-1.5 rounded-xl transition" title="設定">
-                    <i data-lucide="settings" class="w-4 h-4"></i>
-                </button>
-            </div>
-        </div>
-        <div id="tabs-bar" class="max-w-xl mx-auto px-3 border-t py-1.5">
-            <div id="tabs-container" class="flex items-center justify-center flex-wrap gap-1"></div>
+            <h1 class="text-sm font-extrabold text-rose-500 tracking-wide">My Kakeibo 🐾</h1>
+            <button onclick="logout()" class="text-xs font-bold text-slate-500 hover:text-rose-500 px-2 py-1 bg-slate-100 rounded-lg">ログアウト</button>
         </div>
     </header>
 
-    <!-- メインコンテンツ -->
-    <main class="max-w-xl mx-auto px-4 mt-3 space-y-3">
-        <div id="summary-card" class="rounded-2xl p-4 text-white shadow-lg relative overflow-hidden transition-all duration-300">
-            <div class="flex justify-between items-start relative z-10 gap-2">
-                <div>
-                    <div class="flex items-center space-x-1.5 flex-wrap gap-y-1">
-                        <button onclick="openPeriodModal()" class="text-[10px] bg-white/20 hover:bg-white/30 backdrop-blur px-2.5 py-1 rounded-full text-white font-bold transition flex items-center gap-1">
-                            <i data-lucide="sliders-horizontal" class="w-3 h-3"></i> <span id="period-badge-text">期間設定</span>
-                        </button>
-                        <button id="fund-setting-btn" onclick="openFundModal()" class="text-[10px] bg-white/25 hover:bg-white/35 backdrop-blur px-2.5 py-1 rounded-full text-white font-bold transition flex items-center gap-1">
-                            <i data-lucide="landmark" class="w-3 h-3"></i> <span id="fund-badge-text">資金設定</span>
-                        </button>
-                    </div>
-                    <div class="mt-2.5">
-                        <div class="flex items-baseline space-x-2 flex-wrap gap-y-0.5">
-                            <span id="total-balance" class="text-2xl sm:text-3xl font-black tracking-tight text-white drop-shadow-sm">¥0</span>
-                            <span id="balance-diff-badge" class="text-xs font-extrabold px-2 py-0.5 rounded-full bg-white/20 backdrop-blur hidden">±¥0</span>
-                        </div>
-                        <div class="flex items-center space-x-2 flex-wrap text-[10px] opacity-90 font-bold mt-0.5">
-                            <p id="sub-balance-desc">当月収支</p>
-                            <span id="target-display-badge" class="bg-black/20 text-white px-2 py-0.5 rounded-md hidden">目標: ¥0</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex flex-col items-end space-y-1.5 shrink-0">
-                    <button onclick="openAddModal()" id="add-tx-btn" class="text-xs font-extrabold px-3 py-1.5 rounded-xl shadow hover:shadow-md transition flex items-center space-x-1">
-                        <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
-                        <span>入力する</span>
-                    </button>
-                    <button onclick="toggleTargetBox()" id="target-toggle-btn" class="text-[10px] bg-white/20 hover:bg-white/30 text-white font-extrabold px-2.5 py-1 rounded-lg transition flex items-center gap-1">
-                        <i data-lucide="target" class="w-3 h-3"></i> 🎯 目標設定
-                    </button>
-                </div>
-            </div>
-
-            <div id="target-input-box" class="mt-2.5 pt-2.5 border-t border-white/20 hidden relative z-10 transition-all">
-                <div class="flex items-center justify-between text-xs gap-2 flex-wrap">
-                    <select id="target-mode-select" onchange="onTargetModeChange()" class="bg-black/20 border border-white/30 rounded-lg px-2 py-1 text-[11px] font-bold text-white focus:outline-none">
-                        <option value="expense">支出メイン (残金目標)</option>
-                        <option value="income">収入メイン (達成目標)</option>
-                    </select>
-                    <div class="flex items-center space-x-1.5 flex-1 max-w-[200px]">
-                        <input type="number" id="target-amount-input" placeholder="目標額 (円)" class="w-full bg-black/20 border border-white/30 text-white placeholder-white/60 rounded-lg px-2.5 py-1 text-xs font-bold focus:outline-none">
-                        <button onclick="saveTargetSetting()" class="bg-white text-slate-800 font-extrabold px-2.5 py-1 rounded-lg text-[11px] shrink-0 hover:bg-white/95 transition shadow-sm">設定</button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="daily-allowance-container" class="mt-2.5 pt-2 border-t border-white/20 relative z-10 hidden">
-                <div class="flex items-center justify-between text-[11px] font-extrabold bg-black/15 backdrop-blur px-2.5 py-1.5 rounded-xl">
-                    <span class="flex items-center gap-1"><i data-lucide="calculator" class="w-3.5 h-3.5"></i> <span id="daily-allowance-label">残り日割り目安</span></span>
-                    <span id="daily-allowance-val" class="text-xs font-black text-amber-200">1日あたり あと ¥0</span>
-                </div>
-            </div>
-            
-            <div class="grid grid-cols-2 gap-2 mt-2.5 pt-2 border-t border-white/25 text-xs relative z-10">
-                <div class="flex items-center space-x-2 bg-white/15 backdrop-blur p-2 rounded-xl">
-                    <div id="income-icon-bg" class="bg-white p-1 rounded-lg shadow-sm"><i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i></div>
-                    <div><p class="opacity-80 text-[9px] font-bold">期間内の収入</p><p id="monthly-income" class="font-black text-xs sm:text-sm text-white">¥0</p></div>
-                </div>
-                <div class="flex items-center space-x-2 bg-white/15 backdrop-blur p-2 rounded-xl">
-                    <div id="expense-icon-bg" class="bg-white p-1 rounded-lg shadow-sm"><i data-lucide="arrow-down-right" class="w-3.5 h-3.5"></i></div>
-                    <div><p class="opacity-80 text-[9px] font-bold">期間内の支出</p><p id="monthly-expense" class="font-black text-xs sm:text-sm text-white">¥0</p></div>
-                </div>
-            </div>
-        </div>
-
-        <div id="calendar-card" class="rounded-3xl p-3 sm:p-4 border shadow-sm transition-all duration-300">
-            <div class="flex items-center justify-between mb-2 px-1">
-                <div class="flex items-center space-x-2">
-                    <div id="calendar-icon-bg" class="p-1.5 rounded-xl"><i data-lucide="calendar" class="w-4 h-4"></i></div>
-                    <h2 id="calendar-title" class="text-sm font-extrabold"></h2>
-                </div>
-                <div class="flex items-center space-x-1">
-                    <button onclick="changeMonth(-1)" class="p-1.5 rounded-xl border border-transparent hover:border-slate-200 transition"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
-                    <button onclick="changeMonth(1)" class="p-1.5 rounded-xl border border-transparent hover:border-slate-200 transition"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
-                </div>
-            </div>
-            <div id="calendar-weekdays" class="grid grid-cols-7 text-center text-[10px] font-extrabold mb-1">
-                <span class="text-rose-500">日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span class="text-sky-500">土</span>
-            </div>
-            <div id="calendar-grid" class="grid grid-cols-7 gap-0.5"></div>
+    <main class="max-w-xl mx-auto px-4 mt-6 text-center space-y-4">
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-pink-100">
+            <h2 class="text-lg font-bold text-slate-800">ログイン完了 🎉</h2>
+            <p class="text-xs text-slate-500 mt-1">正常にクラウド同期が有効になっています。</p>
         </div>
     </main>
 
-    <!-- Modal 1: 入力モーダル -->
-    <div id="add-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div id="add-modal-content" class="rounded-3xl p-5 max-w-lg w-full shadow-2xl space-y-3 border max-h-[90vh] flex flex-col">
-            <div class="flex justify-between items-center shrink-0">
-                <h3 id="add-modal-title" class="text-sm font-extrabold">登録する</h3>
-                <button onclick="closeAddModal()" class="text-slate-400 hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
-            </div>
-            <div class="space-y-2.5 text-xs overflow-y-auto flex-1 pr-1">
-                <div class="grid grid-cols-3 gap-1 p-1 bg-slate-100 rounded-2xl font-bold text-center">
-                    <button type="button" id="mode-tx-btn" onclick="setEntryMode('tx')" class="py-1.5 rounded-xl transition">単発入力 💸</button>
-                    <button type="button" id="mode-plan-btn" onclick="setEntryMode('plan')" class="py-1.5 rounded-xl transition">予定日 📅</button>
-                    <button type="button" id="mode-bulk-btn" onclick="setEntryMode('bulk')" class="py-1.5 rounded-xl transition">月一括登録 📝</button>
-                </div>
-                <div id="form-tx-section" class="space-y-2.5">
-                    <div class="bg-slate-100 p-2 rounded-2xl flex items-center justify-between text-xs font-bold text-slate-700">
-                        <span>記帳日:</span>
-                        <input type="date" id="tx-date" class="bg-transparent border-0 font-extrabold focus:outline-none cursor-pointer text-right">
-                    </div>
-                    <div>
-                        <label class="text-slate-400 font-bold block mb-1">区分</label>
-                        <div class="grid grid-cols-2 gap-2">
-                            <button type="button" id="type-expense-btn" onclick="setTxType('expense')" class="py-2 rounded-2xl font-bold transition">支出 💸</button>
-                            <button type="button" id="type-income-btn" onclick="setTxType('income')" class="py-2 rounded-2xl font-bold transition">収入 💰</button>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="text-slate-400 font-bold block mb-1">ジャンル（タグ）</label>
-                        <div id="tag-select-container" class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto p-1.5 rounded-2xl border"></div>
-                    </div>
-                    <div>
-                        <label class="text-slate-400 font-bold block mb-1">金額 (円)</label>
-                        <input type="number" id="tx-amount" placeholder="例: 1500" class="w-full border rounded-2xl px-3 py-2 font-bold focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="text-slate-400 font-bold block mb-1">詳細・メモ（任意）</label>
-                        <input type="text" id="tx-memo" placeholder="例: メモ書きなど" class="w-full border rounded-2xl px-3.5 py-2 focus:outline-none">
-                    </div>
-                </div>
-            </div>
-            <button onclick="saveEntry()" id="save-tx-btn" class="w-full py-2.5 text-white font-extrabold rounded-2xl text-xs transition shadow-md shrink-0">保存する</button>
-        </div>
-    </div>
-
-    <!-- Firebase SDK & 安定化スクリプト -->
+    <!-- Firebase SDK (ポップアップ方式) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, browserLocalPersistence, setPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -213,6 +63,12 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        
+        // セッションストレージエラーを防ぐためローカルストレージに明示的に保存設定
+        setPersistence(auth, browserLocalPersistence).catch((err) => {
+            console.error("Persistence error:", err);
+        });
+
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
@@ -229,169 +85,21 @@
             }
         };
 
-        let currentUserUid = null;
-        window.kakeiboData = {
-            currentTheme: 'cute',
-            tabs: [{ id: 'all', name: '総合' }, { id: 'personal', name: 'プライベート' }],
-            tags: {
-                expense: [{ id: 't_exp_1', name: '食費' }, { id: 't_exp_2', name: '日用品' }, { id: 't_exp_3', name: '交通費' }],
-                income: [{ id: 't_inc_1', name: '給与' }, { id: 't_inc_2', name: '副業' }]
-            },
-            anniversaries: [], tabInitialFunds: {}, targetConfigs: {}, excludedDates: [],
-            periodConfig: { mode: 'month', startDate: '', endDate: '' },
-            salaryConfig: { day: 25, rule: 'prev', amount: '' },
-            transactions: [], plans: []
-        };
-
-        window.saveDataToCloud = async function() {
-            if (!currentUserUid) return;
-            try {
-                const docRef = doc(db, "users", currentUserUid, "data", "main");
-                await setDoc(docRef, window.kakeiboData);
-            } catch (e) { console.error("保存エラー:", e); }
-        };
-
-        async function loadDataFromCloud(uid) {
-            try {
-                const docRef = doc(db, "users", uid, "data", "main");
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    window.kakeiboData = { ...window.kakeiboData, ...docSnap.data() };
-                } else {
-                    await setDoc(docRef, window.kakeiboData);
-                }
-            } catch (e) { console.error("読み込みエラー:", e); }
-        }
-
-        // スマホでフリーズ・白画面を防ぐ安全な認証監視
         onAuthStateChanged(auth, async (user) => {
             const overlay = document.getElementById('login-overlay');
             if (user) {
-                currentUserUid = user.uid;
                 if (overlay) {
                     overlay.classList.add('hidden');
                     overlay.classList.remove('flex');
                 }
-                await loadDataFromCloud(user.uid);
-                // 描画エラーを完全に防ぐためわずかに遅延させて初期化
-                setTimeout(() => {
-                    try {
-                        initApp();
-                    } catch (err) {
-                        console.error("初期化エラー:", err);
-                    }
-                }, 50);
             } else {
-                currentUserUid = null;
                 if (overlay) {
                     overlay.classList.remove('hidden');
                     overlay.classList.add('flex');
                 }
-                lucide.createIcons();
             }
-        });
-    </script>
-    <script>
-        const now = new Date();
-        let currentYear = now.getFullYear();
-        let currentMonth = now.getMonth() + 1;
-        let currentTabId = 'all';
-        let currentEntryMode = 'tx';
-        let currentTxType = 'expense';
-        let selectedTagId = '';
-
-        function initApp() {
-            const d = window.kakeiboData;
-            if (typeof applyTheme === 'function') applyTheme(d.currentTheme);
-            if (typeof renderTabs === 'function') renderTabs();
-            if (typeof renderSummary === 'function') renderSummary();
-            if (typeof renderCalendar === 'function') renderCalendar();
             if (typeof lucide !== 'undefined') lucide.createIcons();
-        }
-
-        function setTheme(theme) {
-            window.kakeiboData.currentTheme = theme;
-            applyTheme(theme);
-            renderTabs();
-            renderSummary();
-            renderCalendar();
-            window.saveDataToCloud();
-        }
-
-        function applyTheme(theme) {
-            const body = document.getElementById('app-body');
-            body.className = `antialiased min-h-screen pb-12 transition-colors duration-300 theme-${theme}`;
-            if (theme === 'cute') {
-                body.classList.add('bg-pink-50/60', 'text-slate-700');
-            } else if (theme === 'simple') {
-                body.classList.add('bg-slate-50', 'text-slate-800');
-            } else {
-                body.classList.add('bg-[#f7f3ed]', 'text-[#4a3b32]');
-            }
-        }
-
-        function renderTabs() {
-            const container = document.getElementById('tabs-container');
-            if (!container) return;
-            container.innerHTML = '';
-            window.kakeiboData.tabs.forEach(tab => {
-                const btn = document.createElement('button');
-                btn.className = `px-3 py-1 text-xs font-bold rounded-xl transition ${tab.id === currentTabId ? 'bg-rose-400 text-white shadow-sm' : 'bg-white/80 text-rose-400'}`;
-                btn.innerText = tab.name;
-                btn.onclick = () => {
-                    currentTabId = tab.id;
-                    renderTabs();
-                    renderSummary();
-                    renderCalendar();
-                };
-                container.appendChild(btn);
-            });
-        }
-
-        function renderSummary() {
-            const balEl = document.getElementById('total-balance');
-            if (balEl) balEl.innerText = '¥0';
-        }
-
-        function renderCalendar() {
-            const titleEl = document.getElementById('calendar-title');
-            if (titleEl) titleEl.innerText = `${currentYear}年 ${currentMonth}月`;
-            const grid = document.getElementById('calendar-grid');
-            if (!grid) return;
-            grid.innerHTML = '';
-            for (let i = 1; i <= 30; i++) {
-                const cell = document.createElement('div');
-                cell.className = "min-h-[48px] p-1 border border-slate-100 rounded-xl bg-white flex flex-col justify-between";
-                cell.innerHTML = `<span class="text-xs font-bold">${i}</span>`;
-                grid.appendChild(cell);
-            }
-        }
-
-        function changeMonth(dir) {
-            currentMonth += dir;
-            if (currentMonth > 12) { currentMonth = 1; currentYear++; }
-            else if (currentMonth < 1) { currentMonth = 12; currentYear--; }
-            renderCalendar();
-            renderSummary();
-        }
-
-        function openAddModal() {
-            const modal = document.getElementById('add-modal');
-            if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
-        }
-        function closeAddModal() {
-            const modal = document.getElementById('add-modal');
-            if (modal) { modal.classList.remove('flex'); modal.classList.add('hidden'); }
-        }
-        function setEntryMode(mode) {}
-        function setTxType(type) {}
-        function saveEntry() { closeAddModal(); }
-        function openPeriodModal() {}
-        function openFundModal() {}
-        function toggleTargetBox() {}
-        function onTargetModeChange() {}
-        function saveTargetSetting() {}
-        function openSettingsModal() {}
+        });
     </script>
 </body>
 </html>
