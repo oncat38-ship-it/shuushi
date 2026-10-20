@@ -26,6 +26,23 @@
 </head>
 <body id="app-body" class="antialiased min-h-screen pb-12 transition-colors duration-300">
 
+    <!-- ログイン前オーバーレイ画面 -->
+    <div id="login-overlay" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl text-center space-y-4">
+            <div class="w-12 h-12 bg-rose-500 text-white rounded-2xl mx-auto flex items-center justify-center shadow-lg shadow-rose-200">
+                <i data-lucide="wallet" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <h2 class="text-base font-extrabold text-slate-800">My Kakeibo へようこそ</h2>
+                <p class="text-xs text-slate-500 mt-1">Googleアカウントでログインすると、スマホやPC間でデータが自動同期されます。</p>
+            </div>
+            <button onclick="loginWithGoogle()" class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-extrabold rounded-2xl text-xs transition shadow-md flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+                Googleでログイン
+            </button>
+        </div>
+    </div>
+
     <!-- ヘッダー -->
     <header id="app-header" class="backdrop-blur border-b sticky top-0 z-20 shadow-sm transition-colors duration-300">
         <div class="max-w-xl mx-auto px-4 py-2.5 flex items-center justify-between">
@@ -39,7 +56,7 @@
             </div>
             <div class="flex items-center space-x-2">
                 <span id="save-badge" class="text-[10px] font-bold px-2 py-0.5 border rounded-full flex items-center gap-1">
-                    <i data-lucide="sparkles" class="w-3 h-3"></i> 保存中
+                    <i data-lucide="cloud-check" class="w-3 h-3"></i> 同期中
                 </span>
                 <button onclick="openSettingsModal()" id="settings-btn" class="p-1.5 rounded-xl transition" title="設定">
                     <i data-lucide="settings" class="w-4 h-4"></i>
@@ -56,11 +73,10 @@
     <!-- メインコンテンツ -->
     <main class="max-w-xl mx-auto px-4 mt-3 space-y-3">
 
-        <!-- 1. 収支表示カード（目標設定・日割り機能追加） -->
+        <!-- 1. 収支表示カード -->
         <div id="summary-card" class="rounded-2xl p-4 text-white shadow-lg relative overflow-hidden transition-all duration-300">
             <div class="flex justify-between items-start relative z-10 gap-2">
                 <div>
-                    <!-- 期間・資金設定バッジ -->
                     <div class="flex items-center space-x-1.5 flex-wrap gap-y-1">
                         <button onclick="openPeriodModal()" class="text-[10px] bg-white/20 hover:bg-white/30 backdrop-blur px-2.5 py-1 rounded-full text-white font-bold transition flex items-center gap-1">
                             <i data-lucide="sliders-horizontal" class="w-3 h-3"></i> <span id="period-badge-text">期間設定</span>
@@ -70,7 +86,6 @@
                         </button>
                     </div>
 
-                    <!-- メイン数字（残金 or 収支）と横の小数字バッジ -->
                     <div class="mt-2.5">
                         <div class="flex items-baseline space-x-2 flex-wrap gap-y-0.5">
                             <span id="total-balance" class="text-2xl sm:text-3xl font-black tracking-tight text-white drop-shadow-sm">¥0</span>
@@ -78,13 +93,11 @@
                         </div>
                         <div class="flex items-center space-x-2 flex-wrap text-[10px] opacity-90 font-bold mt-0.5">
                             <p id="sub-balance-desc">当月収支</p>
-                            <!-- 目標金額の表示 -->
                             <span id="target-display-badge" class="bg-black/20 text-white px-2 py-0.5 rounded-md hidden">目標: ¥0</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- 右側ボタンエリア（入力ボタン ＆ コンパクトな目標設定ボタン） -->
                 <div class="flex flex-col items-end space-y-1.5 shrink-0">
                     <button onclick="openAddModal()" id="add-tx-btn" class="text-xs font-extrabold px-3 py-1.5 rounded-xl shadow hover:shadow-md transition flex items-center space-x-1">
                         <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
@@ -96,7 +109,7 @@
                 </div>
             </div>
 
-            <!-- 目標設定パネル（トグル展開式・省スペース） -->
+            <!-- 目標設定パネル -->
             <div id="target-input-box" class="mt-2.5 pt-2.5 border-t border-white/20 hidden relative z-10 transition-all">
                 <div class="flex items-center justify-between text-xs gap-2 flex-wrap">
                     <div class="flex items-center space-x-2">
@@ -112,7 +125,7 @@
                 </div>
             </div>
 
-            <!-- 日割り計算結果のスマートインジケーター -->
+            <!-- 日割り計算結果インジケーター -->
             <div id="daily-allowance-container" class="mt-2.5 pt-2 border-t border-white/20 relative z-10 hidden">
                 <div class="flex items-center justify-between text-[11px] font-extrabold bg-black/15 backdrop-blur px-2.5 py-1.5 rounded-xl">
                     <span class="flex items-center gap-1"><i data-lucide="calculator" class="w-3.5 h-3.5"></i> <span id="daily-allowance-label">残り日割り目安</span></span>
@@ -179,14 +192,12 @@
             </div>
             
             <div class="space-y-2.5 text-xs overflow-y-auto flex-1 pr-1">
-                <!-- モード切り替えタブ -->
                 <div class="grid grid-cols-3 gap-1 p-1 bg-slate-100 rounded-2xl font-bold text-center">
                     <button type="button" id="mode-tx-btn" onclick="setEntryMode('tx')" class="py-1.5 rounded-xl transition">単発入力 💸</button>
                     <button type="button" id="mode-plan-btn" onclick="setEntryMode('plan')" class="py-1.5 rounded-xl transition">予定日 📅</button>
                     <button type="button" id="mode-bulk-btn" onclick="setEntryMode('bulk')" class="py-1.5 rounded-xl transition">月一括登録 📝</button>
                 </div>
 
-                <!-- 1. 単発収支フォーム -->
                 <div id="form-tx-section" class="space-y-2.5">
                     <div class="bg-slate-100 p-2 rounded-2xl flex items-center justify-between text-xs font-bold text-slate-700">
                         <div class="flex items-center space-x-1.5">
@@ -220,7 +231,6 @@
                     </div>
                 </div>
 
-                <!-- 2. 予定日フォーム -->
                 <div id="form-plan-section" class="space-y-2.5 hidden">
                     <div class="bg-slate-100 p-2 rounded-2xl flex items-center justify-between text-xs font-bold text-slate-700">
                         <div class="flex items-center space-x-1.5">
@@ -241,7 +251,6 @@
                     </div>
                 </div>
 
-                <!-- 3. 月一括登録 -->
                 <div id="form-bulk-section" class="space-y-3 hidden">
                     <div class="flex items-center justify-between bg-slate-100 p-2 rounded-2xl font-bold">
                         <div class="flex items-center space-x-2">
@@ -345,7 +354,7 @@
         </div>
     </div>
 
-    <!-- Modal 4: 日別明細モーダル（日割り「対象外」チェック機能付き） -->
+    <!-- Modal 4: 日別明細モーダル -->
     <div id="day-detail-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div id="day-detail-modal-content" class="rounded-3xl p-5 max-w-sm w-full shadow-2xl space-y-3 border max-h-[90vh] flex flex-col">
             <div class="flex justify-between items-center shrink-0">
@@ -353,7 +362,6 @@
                 <button onclick="closeDayDetailModal()" class="text-slate-400 hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
 
-            <!-- 日割り計算対象外チェックボックス -->
             <div class="bg-slate-100 p-2.5 rounded-2xl flex items-center justify-between text-xs font-bold text-slate-700 shrink-0">
                 <label for="exclude-daily-check" class="flex items-center space-x-2 cursor-pointer select-none">
                     <input type="checkbox" id="exclude-daily-check" onchange="toggleExcludeDate()" class="w-4 h-4 accent-indigo-600 rounded cursor-pointer">
@@ -395,7 +403,6 @@
                 <button onclick="closeSettingsModal()" class="text-slate-400 hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             
-            <!-- ページ1: 設定メニュー一覧 -->
             <div id="settings-page-menu" class="space-y-2.5 text-xs overflow-y-auto flex-1 pr-1">
                 <button onclick="showSettingsDetail('theme')" class="w-full p-3.5 bg-slate-50/80 hover:bg-slate-100 rounded-2xl border flex items-center justify-between font-bold text-slate-700 transition">
                     <div class="flex items-center space-x-3">
@@ -436,9 +443,14 @@
                     </div>
                     <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
                 </button>
+
+                <div class="pt-2 border-t mt-4">
+                    <button onclick="logout()" class="w-full p-3.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-2xl border border-rose-200 font-bold flex items-center justify-center gap-2 transition">
+                        <i data-lucide="log-out" class="w-4 h-4"></i> ログアウトする
+                    </button>
+                </div>
             </div>
 
-            <!-- ページ2-A: テーマ設定 -->
             <div id="settings-page-theme" class="space-y-4 text-xs overflow-y-auto flex-1 pr-1 hidden">
                 <div class="space-y-3">
                     <p class="text-slate-400 font-bold">お好みのデザインテーマを選択してください：</p>
@@ -459,7 +471,6 @@
                 </div>
             </div>
 
-            <!-- ページ2-B: タブ管理設定 -->
             <div id="settings-page-tabs" class="space-y-4 text-xs overflow-y-auto flex-1 pr-1 hidden">
                 <div class="space-y-3">
                     <div>
@@ -469,7 +480,6 @@
                             <button onclick="addNewTabFromSettings()" id="add-tab-setting-btn" class="px-4 py-2 text-white font-bold rounded-xl transition whitespace-nowrap">追加</button>
                         </div>
                     </div>
-
                     <div>
                         <label class="text-slate-400 font-bold block mb-1">登録済みタブ一覧（総合は削除不可）</label>
                         <div id="settings-tab-list" class="space-y-1.5 max-h-52 overflow-y-auto p-1 border rounded-2xl"></div>
@@ -477,7 +487,6 @@
                 </div>
             </div>
 
-            <!-- ページ2-C: 記念日設定 -->
             <div id="settings-page-anniversaries" class="space-y-4 text-xs overflow-y-auto flex-1 pr-1 hidden">
                 <div class="space-y-3">
                     <div>
@@ -487,17 +496,14 @@
                             <option value="money">💰 金銭的に大切な記念日（契約日・建立日）</option>
                             <option value="other">📌 その他いろんな重要ごと</option>
                         </select>
-
                         <label class="text-slate-400 font-bold block mb-1">記念日の内容</label>
                         <input type="text" id="new-anni-title" placeholder="例: 結婚記念日、契約日など" class="w-full border rounded-xl px-3 py-2 font-bold focus:outline-none mb-2">
-                        
                         <label class="text-slate-400 font-bold block mb-1">日付</label>
                         <div class="flex space-x-2">
                             <input type="date" id="new-anni-date" class="flex-1 border rounded-xl px-3 py-2 font-bold">
                             <button onclick="addNewAnniversary()" id="add-anni-btn" class="px-4 py-2 text-white font-bold rounded-xl transition whitespace-nowrap">追加</button>
                         </div>
                     </div>
-
                     <div>
                         <label class="text-slate-400 font-bold block mb-1">登録済み記念日一覧（毎年自動表示）</label>
                         <div id="settings-anni-list" class="space-y-1.5 max-h-40 overflow-y-auto p-1 border rounded-2xl"></div>
@@ -505,7 +511,6 @@
                 </div>
             </div>
 
-            <!-- ページ2-D: 給料日設定 -->
             <div id="settings-page-salary" class="space-y-4 text-xs overflow-y-auto flex-1 pr-1 hidden">
                 <div class="space-y-3">
                     <div>
@@ -514,7 +519,6 @@
                             <option value="0">未設定</option>
                         </select>
                     </div>
-
                     <div>
                         <label class="text-slate-400 font-bold block mb-1">土日祝日の場合</label>
                         <select id="salary-holiday-rule" class="w-full border rounded-xl px-3 py-2 font-bold focus:outline-none">
@@ -523,31 +527,26 @@
                             <option value="none">そのまま（変更なし）</option>
                         </select>
                     </div>
-
                     <div>
                         <label class="text-slate-400 font-bold block mb-1">金額設定 (任意)</label>
                         <input type="number" id="salary-amount" placeholder="未入力の場合は当日手入力" class="w-full border rounded-xl px-3 py-2 font-bold focus:outline-none">
                     </div>
-
                     <button onclick="saveSalarySettings()" id="save-salary-btn" class="w-full py-2.5 text-white font-bold rounded-xl transition">保存する</button>
                 </div>
             </div>
 
-            <!-- ページ2-E: タグ設定（支出・収入別） -->
             <div id="settings-page-tags" class="space-y-4 text-xs overflow-y-auto flex-1 pr-1 hidden">
                 <div class="space-y-3">
                     <div class="grid grid-cols-2 gap-1 p-1 bg-slate-100 rounded-xl font-bold text-center">
                         <button type="button" onclick="setSettingTagType('expense')" id="stype-exp-btn" class="py-1 rounded-lg transition">支出タグ</button>
                         <button type="button" onclick="setSettingTagType('income')" id="stype-inc-btn" class="py-1 rounded-lg transition">収入タグ</button>
                     </div>
-
                     <div>
                         <div class="flex space-x-2">
                             <input type="text" id="new-tag-name" placeholder="例: 食費、給与など" class="flex-1 border rounded-xl px-3 py-2 focus:outline-none">
                             <button onclick="addNewTag()" id="add-tag-btn" class="px-4 py-2 text-white font-bold rounded-xl transition whitespace-nowrap">追加</button>
                         </div>
                     </div>
-
                     <div>
                         <div id="settings-tag-list" class="space-y-1.5 max-h-44 overflow-y-auto p-1 border rounded-2xl"></div>
                     </div>
@@ -557,65 +556,130 @@
         </div>
     </div>
 
+    <!-- Firebase SDK (Modular CDN) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // ご提示いただいたFirebase設定を組み込み済み
+        const firebaseConfig = {
+          apiKey: "AIzaSyAoNZm6KwPQuWbC0W65sOh4soLMx1UoUrQ",
+          authDomain: "g-account-6f48b.firebaseapp.com",
+          projectId: "g-account-6f48b",
+          storageBucket: "g-account-6f48b.firebasestorage.app",
+          messagingSenderId: "719634797870",
+          appId: "1:719634797870:web:60b7483bcc07cdea8d16bf",
+          measurementId: "G-9ZPGXN4PWE"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+
+        window.loginWithGoogle = function() {
+            signInWithPopup(auth, provider).catch((error) => {
+                console.error("ログインエラー:", error);
+                alert("ログインに失敗しました: " + error.message);
+            });
+        };
+
+        window.logout = function() {
+            if (confirm('ログアウトしますか？')) {
+                signOut(auth).then(() => {
+                    location.reload();
+                });
+            }
+        };
+
+        let currentUserUid = null;
+
+        window.kakeiboData = {
+            currentTheme: 'cute',
+            tabs: [{ id: 'all', name: '総合' }, { id: 'personal', name: 'プライベート' }],
+            tags: {
+                expense: [{ id: 't_exp_1', name: '食費' }, { id: 't_exp_2', name: '日用品' }, { id: 't_exp_3', name: '交通費' }],
+                income: [{ id: 't_inc_1', name: '給与' }, { id: 't_inc_2', name: '副業' }]
+            },
+            anniversaries: [],
+            tabInitialFunds: {},
+            targetConfigs: {},
+            excludedDates: [],
+            periodConfig: { mode: 'month', startDate: '', endDate: '' },
+            salaryConfig: { day: 25, rule: 'prev', amount: '' },
+            transactions: [],
+            plans: []
+        };
+
+        window.saveDataToCloud = async function() {
+            if (!currentUserUid) return;
+            try {
+                const docRef = doc(db, "users", currentUserUid, "data", "main");
+                await setDoc(docRef, window.kakeiboData);
+                const badge = document.getElementById('save-badge');
+                if (badge) {
+                    badge.innerHTML = '<i data-lucide="cloud-check" class="w-3 h-3"></i> 同期完了';
+                    setTimeout(() => badge.innerHTML = '<i data-lucide="cloud-check" class="w-3 h-3"></i> 同期中', 2000);
+                    lucide.createIcons();
+                }
+            } catch (e) {
+                console.error("保存エラー:", e);
+            }
+        };
+
+        async function loadDataFromCloud(uid) {
+            try {
+                const docRef = doc(db, "users", uid, "data", "main");
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const cloudData = docSnap.data();
+                    window.kakeiboData = { ...window.kakeiboData, ...cloudData };
+                } else {
+                    await setDoc(docRef, window.kakeiboData);
+                }
+            } catch (e) {
+                console.error("読み込みエラー:", e);
+            }
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            const overlay = document.getElementById('login-overlay');
+            if (user) {
+                currentUserUid = user.uid;
+                overlay.classList.add('hidden');
+                overlay.classList.remove('flex');
+                await loadDataFromCloud(user.uid);
+                initApp();
+            } else {
+                currentUserUid = null;
+                overlay.classList.remove('hidden');
+                overlay.classList.add('flex');
+                lucide.createIcons();
+            }
+        });
+    </script>
+
     <!-- アプリケーション制御スクリプト -->
     <script>
         const now = new Date();
         let currentYear = now.getFullYear();
         let currentMonth = now.getMonth() + 1;
-
-        let currentTheme = localStorage.getItem('kakeibo_theme') || 'cute';
-        let tabs = JSON.parse(localStorage.getItem('kakeibo_tabs')) || [
-            { id: 'all', name: '総合' },
-            { id: 'personal', name: 'プライベート' }
-        ];
-        let currentTabId = tabs[0].id;
-        
-        let tags = JSON.parse(localStorage.getItem('kakeibo_tags')) || {
-            expense: [
-                { id: 't_exp_1', name: '食費' },
-                { id: 't_exp_2', name: '日用品' },
-                { id: 't_exp_3', name: '交通費' }
-            ],
-            income: [
-                { id: 't_inc_1', name: '給与' },
-                { id: 't_inc_2', name: '副業' }
-            ]
-        };
-        if (Array.isArray(tags)) {
-            tags = { expense: tags, income: [{ id: 't_inc_1', name: '給与' }] };
-        }
-
-        let anniversaries = JSON.parse(localStorage.getItem('kakeibo_anniversaries')) || [];
-        let tabInitialFunds = JSON.parse(localStorage.getItem('kakeibo_tab_initial_funds')) || {};
-        let targetConfigs = JSON.parse(localStorage.getItem('kakeibo_target_configs')) || {};
-        let excludedDates = JSON.parse(localStorage.getItem('kakeibo_excluded_dates')) || [];
-
-        let periodConfig = JSON.parse(localStorage.getItem('kakeibo_period_config')) || {
-            mode: 'month',
-            startDate: '',
-            endDate: ''
-        };
-
-        let selectedTagId = '';
-        let settingTagType = 'expense';
-
-        let salaryConfig = JSON.parse(localStorage.getItem('kakeibo_salary_config')) || {
-            day: 25,
-            rule: 'prev',
-            amount: ''
-        };
-
-        let transactions = JSON.parse(localStorage.getItem('kakeibo_transactions')) || [];
-        let plans = JSON.parse(localStorage.getItem('kakeibo_plans')) || [];
-
+        let currentTabId = 'all';
         let currentEntryMode = 'tx';
         let currentTxType = 'expense';
+        let selectedTagId = '';
+        let settingTagType = 'expense';
         let selectedDateForModal = '';
         let bulkYear = currentYear;
         let bulkMonth = currentMonth;
 
         function initApp() {
-            applyTheme(currentTheme);
+            const d = window.kakeiboData;
+            applyTheme(d.currentTheme);
+            if (!d.tabs.some(t => t.id === currentTabId)) {
+                currentTabId = d.tabs[0].id;
+            }
             renderTabs();
             renderSummary();
             renderCalendar();
@@ -623,12 +687,12 @@
         }
 
         function setTheme(theme) {
-            currentTheme = theme;
-            localStorage.setItem('kakeibo_theme', theme);
+            window.kakeiboData.currentTheme = theme;
             applyTheme(theme);
             renderTabs();
             renderSummary();
             renderCalendar();
+            window.saveDataToCloud();
         }
 
         function applyTheme(theme) {
@@ -739,10 +803,10 @@
             lucide.createIcons();
         }
 
-        // --- 目標設定・日割りロジック ---
         function getScopeKey() {
-            if (periodConfig.mode === 'custom' && periodConfig.startDate && periodConfig.endDate) {
-                return `${currentTabId}_custom_${periodConfig.startDate}_${periodConfig.endDate}`;
+            const d = window.kakeiboData;
+            if (d.periodConfig.mode === 'custom' && d.periodConfig.startDate && d.periodConfig.endDate) {
+                return `${currentTabId}_custom_${d.periodConfig.startDate}_${d.periodConfig.endDate}`;
             }
             return `${currentTabId}_month_${currentYear}-${String(currentMonth).padStart(2, '0')}`;
         }
@@ -753,7 +817,7 @@
             box.classList.toggle('hidden');
             if (!box.classList.contains('hidden')) {
                 const key = getScopeKey();
-                const cfg = targetConfigs[key] || { mode: 'expense', amount: '' };
+                const cfg = window.kakeiboData.targetConfigs[key] || { mode: 'expense', amount: '' };
                 document.getElementById('target-mode-select').value = cfg.mode || 'expense';
                 document.getElementById('target-amount-input').value = cfg.amount !== undefined ? cfg.amount : '';
             }
@@ -775,29 +839,29 @@
             const key = getScopeKey();
 
             if (amtVal !== '') {
-                targetConfigs[key] = { mode: mode, amount: Number(amtVal) };
+                window.kakeiboData.targetConfigs[key] = { mode: mode, amount: Number(amtVal) };
             } else {
-                delete targetConfigs[key];
+                delete window.kakeiboData.targetConfigs[key];
             }
-            localStorage.setItem('kakeibo_target_configs', JSON.stringify(targetConfigs));
+            window.saveDataToCloud();
             toggleTargetBox();
             renderSummary();
         }
 
         function toggleExcludeDate() {
             if (!selectedDateForModal) return;
-            const idx = excludedDates.indexOf(selectedDateForModal);
+            const ed = window.kakeiboData.excludedDates;
+            const idx = ed.indexOf(selectedDateForModal);
             if (idx >= 0) {
-                excludedDates.splice(idx, 1);
+                ed.splice(idx, 1);
             } else {
-                excludedDates.push(selectedDateForModal);
+                ed.push(selectedDateForModal);
             }
-            localStorage.setItem('kakeibo_excluded_dates', JSON.stringify(excludedDates));
+            window.saveDataToCloud();
             renderSummary();
             renderCalendar();
         }
 
-        // --- 設定画面の2段階ページ切り替え ---
         function showSettingsMenu() {
             document.getElementById('settings-header-title').innerText = '設定 ⚙️';
             document.getElementById('settings-back-btn').classList.add('hidden');
@@ -841,19 +905,18 @@
             lucide.createIcons();
         }
 
-        // --- タブ別・月別資金設定モーダル ---
         function openFundModal() {
             if (currentTabId === 'all') {
                 alert('「総合」タブの資金は、他のすべてのタブの資金が自動合算されます。個別の資金を設定したい場合は、それぞれのタブに切り替えて設定してください。');
                 return;
             }
-            const activeTab = tabs.find(t => t.id === currentTabId);
+            const activeTab = window.kakeiboData.tabs.find(t => t.id === currentTabId);
             const tabName = activeTab ? activeTab.name : '';
             document.getElementById('fund-modal-info').innerText = `【${tabName}】の ${currentYear}年${currentMonth}月の開始資金を設定します。`;
 
             const fundKey = `${currentTabId}_${currentYear}-${String(currentMonth).padStart(2, '0')}`;
             const input = document.getElementById('tab-monthly-fund-input');
-            input.value = tabInitialFunds[fundKey] !== undefined ? tabInitialFunds[fundKey] : '';
+            input.value = window.kakeiboData.tabInitialFunds[fundKey] !== undefined ? window.kakeiboData.tabInitialFunds[fundKey] : '';
 
             const modal = document.getElementById('fund-modal');
             modal.classList.remove('hidden');
@@ -871,28 +934,28 @@
             const val = document.getElementById('tab-monthly-fund-input').value;
             const fundKey = `${currentTabId}_${currentYear}-${String(currentMonth).padStart(2, '0')}`;
             if (val !== '' && Number(val) > 0) {
-                tabInitialFunds[fundKey] = Number(val);
+                window.kakeiboData.tabInitialFunds[fundKey] = Number(val);
             } else {
-                delete tabInitialFunds[fundKey];
+                delete window.kakeiboData.tabInitialFunds[fundKey];
             }
-            localStorage.setItem('kakeibo_tab_initial_funds', JSON.stringify(tabInitialFunds));
+            window.saveDataToCloud();
             closeFundModal();
             renderSummary();
             alert('開始資金を保存しました！');
         }
 
-        // --- 期間設定モーダル ---
         function openPeriodModal() {
             const modeSel = document.getElementById('period-mode-select');
             const customBox = document.getElementById('period-custom-box');
             const startInp = document.getElementById('period-start-date');
             const endInp = document.getElementById('period-end-date');
+            const pc = window.kakeiboData.periodConfig;
 
-            modeSel.value = periodConfig.mode;
-            if (periodConfig.mode === 'custom') {
+            modeSel.value = pc.mode;
+            if (pc.mode === 'custom') {
                 customBox.classList.remove('hidden');
-                startInp.value = periodConfig.startDate || '';
-                endInp.value = periodConfig.endDate || '';
+                startInp.value = pc.startDate || '';
+                endInp.value = pc.endDate || '';
             } else {
                 customBox.classList.add('hidden');
                 startInp.value = '';
@@ -930,23 +993,23 @@
                 return;
             }
 
-            periodConfig = { mode, startDate: start, endDate: end };
-            localStorage.setItem('kakeibo_period_config', JSON.stringify(periodConfig));
+            window.kakeiboData.periodConfig = { mode, startDate: start, endDate: end };
+            window.saveDataToCloud();
             closePeriodModal();
             renderSummary();
         }
 
-        // --- 記念日管理機能 ---
         function renderSettingsAnniversaryList() {
             const container = document.getElementById('settings-anni-list');
             if (!container) return;
             container.innerHTML = '';
-            if (anniversaries.length === 0) {
+            const anis = window.kakeiboData.anniversaries;
+            if (anis.length === 0) {
                 container.innerHTML = '<p class="text-slate-400 text-center py-2">登録されている記念日はありません</p>';
                 return;
             }
 
-            anniversaries.forEach((anni) => {
+            anis.forEach((anni) => {
                 const categoryNames = { love: '💛 大切な人', money: '💰 金銭的', other: '📌 その他' };
                 const catLabel = categoryNames[anni.category] || '📌 その他';
                 const item = document.createElement('div');
@@ -981,8 +1044,8 @@
                 alert('記念日のタイトルと日付を入力してください。');
                 return;
             }
-            anniversaries.push({ id: 'anni_' + Date.now(), category, title, date });
-            localStorage.setItem('kakeibo_anniversaries', JSON.stringify(anniversaries));
+            window.kakeiboData.anniversaries.push({ id: 'anni_' + Date.now(), category, title, date });
+            window.saveDataToCloud();
             if (titleInput) titleInput.value = '';
             if (dateInput) dateInput.value = '';
             renderSettingsAnniversaryList();
@@ -991,8 +1054,8 @@
 
         function deleteAnniversary(id) {
             if (!confirm('この記念日を削除しますか？')) return;
-            anniversaries = anniversaries.filter(a => a.id !== id);
-            localStorage.setItem('kakeibo_anniversaries', JSON.stringify(anniversaries));
+            window.kakeiboData.anniversaries = window.kakeiboData.anniversaries.filter(a => a.id !== id);
+            window.saveDataToCloud();
             renderSettingsAnniversaryList();
             renderCalendar();
         }
@@ -1017,7 +1080,7 @@
             const container = document.getElementById('settings-tag-list');
             if (!container) return;
             container.innerHTML = '';
-            const list = tags[settingTagType] || [];
+            const list = window.kakeiboData.tags[settingTagType] || [];
 
             if (list.length === 0) {
                 container.innerHTML = '<p class="text-slate-400 text-center py-2">タグがありません</p>';
@@ -1050,53 +1113,53 @@
             const input = document.getElementById('new-tag-name');
             const name = input.value.trim();
             if (!name) return;
-            if (!tags[settingTagType]) tags[settingTagType] = [];
-            tags[settingTagType].push({ id: 'tag_' + Date.now(), name: name });
-            localStorage.setItem('kakeibo_tags', JSON.stringify(tags));
+            if (!window.kakeiboData.tags[settingTagType]) window.kakeiboData.tags[settingTagType] = [];
+            window.kakeiboData.tags[settingTagType].push({ id: 'tag_' + Date.now(), name: name });
+            window.saveDataToCloud();
             input.value = '';
             renderSettingsTagList();
         }
 
         function moveTag(type, index, direction) {
-            const list = tags[type];
+            const list = window.kakeiboData.tags[type];
             const newIndex = index + direction;
             if (newIndex < 0 || newIndex >= list.length) return;
             const temp = list[index];
             list[index] = list[newIndex];
             list[newIndex] = temp;
-            localStorage.setItem('kakeibo_tags', JSON.stringify(tags));
+            window.saveDataToCloud();
             renderSettingsTagList();
         }
 
         function deleteTag(type, id) {
             if (!confirm('このタグを削除しますか？')) return;
-            tags[type] = tags[type].filter(t => t.id !== id);
-            localStorage.setItem('kakeibo_tags', JSON.stringify(tags));
+            window.kakeiboData.tags[type] = window.kakeiboData.tags[type].filter(t => t.id !== id);
+            window.saveDataToCloud();
             renderSettingsTagList();
         }
 
-        // --- タブ機能 ---
         function renderTabs() {
             const container = document.getElementById('tabs-container');
             if (!container) return;
             container.innerHTML = '';
+            const tList = window.kakeiboData.tabs;
             
             let sizeClass = "px-3 py-1 text-xs font-bold rounded-xl transition whitespace-nowrap";
-            if (tabs.length >= 5) {
+            if (tList.length >= 5) {
                 sizeClass = "px-2 py-0.5 text-[10px] font-bold rounded-lg transition whitespace-nowrap";
-            } else if (tabs.length >= 4) {
+            } else if (tList.length >= 4) {
                 sizeClass = "px-2.5 py-1 text-[11px] font-bold rounded-xl transition whitespace-nowrap";
             }
 
-            tabs.forEach(tab => {
+            tList.forEach(tab => {
                 const isSelected = tab.id === currentTabId;
                 const btn = document.createElement('button');
                 
-                if (currentTheme === 'cute') {
+                if (window.kakeiboData.currentTheme === 'cute') {
                     btn.className = `${sizeClass} ${
                         isSelected ? 'bg-rose-400 text-white shadow-sm shadow-pink-200' : 'bg-white/80 text-rose-400 hover:bg-pink-100 border border-pink-200/60'
                     }`;
-                } else if (currentTheme === 'simple') {
+                } else if (window.kakeiboData.currentTheme === 'simple') {
                     btn.className = `${sizeClass} ${
                         isSelected ? 'bg-slate-900 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200'
                     }`;
@@ -1139,7 +1202,7 @@
             if (!container) return;
             container.innerHTML = '';
 
-            tabs.forEach((tab, index) => {
+            window.kakeiboData.tabs.forEach((tab) => {
                 const isAll = tab.id === 'all';
                 const item = document.createElement('div');
                 item.className = "flex justify-between items-center bg-white p-2.5 rounded-xl border border-slate-200 shadow-sm";
@@ -1163,8 +1226,8 @@
             const name = input.value.trim();
             if (!name) return;
             const newId = 'tab_' + Date.now();
-            tabs.push({ id: newId, name: name });
-            localStorage.setItem('kakeibo_tabs', JSON.stringify(tabs));
+            window.kakeiboData.tabs.push({ id: newId, name: name });
+            window.saveDataToCloud();
             input.value = '';
             renderSettingsTabList();
             renderTabs();
@@ -1176,8 +1239,8 @@
                 return;
             }
             if (!confirm('このタブを削除しますか？')) return;
-            tabs = tabs.filter(t => t.id !== id);
-            localStorage.setItem('kakeibo_tabs', JSON.stringify(tabs));
+            window.kakeiboData.tabs = window.kakeiboData.tabs.filter(t => t.id !== id);
+            window.saveDataToCloud();
             if (currentTabId === id) currentTabId = 'all';
             renderSettingsTabList();
             renderTabs();
@@ -1206,9 +1269,9 @@
             const name = input.value.trim();
             if (!name) return;
             const newId = 'tab_' + Date.now();
-            tabs.push({ id: newId, name: name });
-            localStorage.setItem('kakeibo_tabs', JSON.stringify(tabs));
+            window.kakeiboData.tabs.push({ id: newId, name: name });
             currentTabId = newId;
+            window.saveDataToCloud();
             closeAddTabModal();
             initApp();
         }
@@ -1221,12 +1284,12 @@
                     select.innerHTML += `<option value="${i}">${i}日</option>`;
                 }
                 select.innerHTML += '<option value="99">月末</option>';
-                select.value = salaryConfig.day || 0;
+                select.value = window.kakeiboData.salaryConfig.day || 0;
             }
             const ruleEl = document.getElementById('salary-holiday-rule');
-            if (ruleEl) ruleEl.value = salaryConfig.rule || 'prev';
+            if (ruleEl) ruleEl.value = window.kakeiboData.salaryConfig.rule || 'prev';
             const amtEl = document.getElementById('salary-amount');
-            if (amtEl) amtEl.value = salaryConfig.amount || '';
+            if (amtEl) amtEl.value = window.kakeiboData.salaryConfig.amount || '';
 
             showSettingsMenu();
             const modal = document.getElementById('settings-modal');
@@ -1248,13 +1311,14 @@
             const daySel = document.getElementById('salary-day-select');
             const ruleSel = document.getElementById('salary-holiday-rule');
             const amtInp = document.getElementById('salary-amount');
-            if (daySel) salaryConfig.day = Number(daySel.value);
-            if (ruleSel) salaryConfig.rule = ruleSel.value;
+            const sc = window.kakeiboData.salaryConfig;
+            if (daySel) sc.day = Number(daySel.value);
+            if (ruleSel) sc.rule = ruleSel.value;
             if (amtInp) {
                 const amt = amtInp.value;
-                salaryConfig.amount = amt !== '' ? Number(amt) : '';
+                sc.amount = amt !== '' ? Number(amt) : '';
             }
-            localStorage.setItem('kakeibo_salary_config', JSON.stringify(salaryConfig));
+            window.saveDataToCloud();
             alert('給料日設定を保存しました');
             renderSummary();
             renderCalendar();
@@ -1264,7 +1328,7 @@
             const container = document.getElementById('tag-select-container');
             if (!container) return;
             container.innerHTML = '';
-            const list = tags[currentTxType] || [];
+            const list = window.kakeiboData.tags[currentTxType] || [];
 
             if (list.length === 0) {
                 container.innerHTML = '<span class="text-slate-400 p-1">設定からタグを追加できます</span>';
@@ -1297,7 +1361,7 @@
             const tagSelect = document.getElementById('bulk-default-tag');
             if (tagSelect) {
                 const defType = document.getElementById('bulk-default-type').value || 'expense';
-                const tagList = tags[defType] || [];
+                const tagList = window.kakeiboData.tags[defType] || [];
                 tagSelect.innerHTML = '';
                 tagList.forEach(t => {
                     tagSelect.innerHTML += `<option value="${t.name}">${t.name}</option>`;
@@ -1378,7 +1442,7 @@
         }
 
         function generateTagOptions(type, selectedName) {
-            const list = tags[type] || [];
+            const list = window.kakeiboData.tags[type] || [];
             return list.map(t => `<option value="${t.name}" ${t.name === selectedName ? 'selected' : ''}>${t.name}</option>`).join('');
         }
 
@@ -1392,7 +1456,7 @@
         function applyBulkType(type) {
             document.querySelectorAll('.bulk-type').forEach(el => el.value = type);
             const tagSelect = document.getElementById('bulk-default-tag');
-            const tagList = tags[type] || [];
+            const tagList = window.kakeiboData.tags[type] || [];
             if (tagSelect) {
                 tagSelect.innerHTML = tagList.map(t => `<option value="${t.name}">${t.name}</option>`).join('');
             }
@@ -1410,7 +1474,7 @@
             const type = selectEl.value;
             const row = selectEl.closest('tr');
             const tagSelect = row.querySelector('.bulk-tag');
-            const tagList = tags[type] || [];
+            const tagList = window.kakeiboData.tags[type] || [];
             const defaultName = tagList.length > 0 ? tagList[0].name : '';
             tagSelect.innerHTML = generateTagOptions(type, defaultName);
         }
@@ -1437,18 +1501,19 @@
         }
 
         function calculatePayday(year, month) {
-            if (!salaryConfig || !salaryConfig.day || salaryConfig.day == 0) return null;
-            let targetDay = salaryConfig.day;
+            const sc = window.kakeiboData.salaryConfig;
+            if (!sc || !sc.day || sc.day == 0) return null;
+            let targetDay = sc.day;
             const lastDayOfMonth = new Date(year, month, 0).getDate();
             if (targetDay === 99 || targetDay > lastDayOfMonth) targetDay = lastDayOfMonth;
-            if (salaryConfig.rule === 'none') return targetDay;
+            if (sc.rule === 'none') return targetDay;
 
             let curr = new Date(year, month - 1, targetDay);
-            if (salaryConfig.rule === 'prev') {
+            if (sc.rule === 'prev') {
                 while (isHolidayOrWeekend(curr.getFullYear(), curr.getMonth() + 1, curr.getDate())) {
                     curr.setDate(curr.getDate() - 1);
                 }
-            } else if (salaryConfig.rule === 'next') {
+            } else if (sc.rule === 'next') {
                 while (isHolidayOrWeekend(curr.getFullYear(), curr.getMonth() + 1, curr.getDate())) {
                     curr.setDate(curr.getDate() + 1);
                 }
@@ -1458,14 +1523,15 @@
         }
 
         function getFilteredTransactions() {
+            const d = window.kakeiboData;
             let list = [];
             if (currentTabId === 'all') {
-                list = [...transactions];
+                list = [...d.transactions];
             } else {
-                list = transactions.filter(t => t.tabId === currentTabId);
+                list = d.transactions.filter(t => t.tabId === currentTabId);
             }
 
-            if (salaryConfig.amount && Number(salaryConfig.amount) > 0) {
+            if (d.salaryConfig.amount && Number(d.salaryConfig.amount) > 0) {
                 const payday = calculatePayday(currentYear, currentMonth);
                 if (payday) {
                     const dateStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(payday).padStart(2, '0')}`;
@@ -1475,7 +1541,7 @@
                             id: 'auto_salary',
                             tabId: currentTabId,
                             type: 'income',
-                            amount: Number(salaryConfig.amount),
+                            amount: Number(d.salaryConfig.amount),
                             date: dateStr,
                             tagName: '給与',
                             memo: '定額自動反映',
@@ -1488,16 +1554,17 @@
         }
 
         function renderSummary() {
+            const d = window.kakeiboData;
             const txs = getFilteredTransactions();
             let periodIncome = 0;
             let periodExpense = 0;
 
             const badgeTextEl = document.getElementById('period-badge-text');
 
-            if (periodConfig.mode === 'custom' && periodConfig.startDate && periodConfig.endDate) {
-                if (badgeTextEl) badgeTextEl.innerText = `${periodConfig.startDate} 〜 ${periodConfig.endDate}`;
+            if (d.periodConfig.mode === 'custom' && d.periodConfig.startDate && d.periodConfig.endDate) {
+                if (badgeTextEl) badgeTextEl.innerText = `${d.periodConfig.startDate} 〜 ${d.periodConfig.endDate}`;
                 txs.forEach(t => {
-                    if (t.date >= periodConfig.startDate && t.date <= periodConfig.endDate) {
+                    if (t.date >= d.periodConfig.startDate && t.date <= d.periodConfig.endDate) {
                         if (t.type === 'income') periodIncome += t.amount;
                         else periodExpense += t.amount;
                     }
@@ -1517,23 +1584,22 @@
             let startFund = 0;
 
             if (currentTabId === 'all') {
-                tabs.forEach(tab => {
+                d.tabs.forEach(tab => {
                     if (tab.id !== 'all') {
                         const k = `${tab.id}_${monthKeyStr}`;
-                        if (tabInitialFunds[k] !== undefined) {
-                            startFund += tabInitialFunds[k];
+                        if (d.tabInitialFunds[k] !== undefined) {
+                            startFund += d.tabInitialFunds[k];
                         }
                     }
                 });
             } else {
                 const fundKey = `${currentTabId}_${monthKeyStr}`;
-                startFund = tabInitialFunds[fundKey] !== undefined ? tabInitialFunds[fundKey] : 0;
+                startFund = d.tabInitialFunds[fundKey] !== undefined ? d.tabInitialFunds[fundKey] : 0;
             }
 
-            const netDiff = periodIncome - periodExpense; // 純収支（増減額）
-            const netBalance = startFund + netDiff;       // 残金（資金ありの場合）
+            const netDiff = periodIncome - periodExpense;
+            const netBalance = startFund + netDiff;
 
-            // Element 参照
             const balEl = document.getElementById('total-balance');
             const incEl = document.getElementById('monthly-income');
             const expEl = document.getElementById('monthly-expense');
@@ -1547,7 +1613,6 @@
 
             const formattedDiff = (netDiff >= 0 ? '+' : '') + `¥${netDiff.toLocaleString()}`;
 
-            // 1. メイン数値の表示切り替え
             if (startFund > 0) {
                 if (fundBadgeEl) fundBadgeEl.innerText = (currentTabId === 'all') ? `総合資金: ¥${startFund.toLocaleString()}` : `資金: ¥${startFund.toLocaleString()}`;
                 if (balEl) balEl.innerText = `¥${netBalance.toLocaleString()}`;
@@ -1572,9 +1637,8 @@
                 if (diffBadgeEl) diffBadgeEl.classList.add('hidden');
             }
 
-            // 2. 目標設定 ＆ 日割り計算処理
             const scopeKey = getScopeKey();
-            const targetCfg = targetConfigs[scopeKey];
+            const targetCfg = d.targetConfigs[scopeKey];
             const dailyContainer = document.getElementById('daily-allowance-container');
             const dailyValEl = document.getElementById('daily-allowance-val');
             const dailyLabelEl = document.getElementById('daily-allowance-label');
@@ -1588,26 +1652,24 @@
                     targetBadgeEl.classList.remove('hidden');
                 }
 
-                // 期間・日数計算（今日から期間終了日までの「日割り対象日数」）
                 let startDate, endDate;
                 const today = new Date();
                 today.setHours(0,0,0,0);
 
-                if (periodConfig.mode === 'custom' && periodConfig.startDate && periodConfig.endDate) {
-                    startDate = new Date(periodConfig.startDate);
-                    endDate = new Date(periodConfig.endDate);
+                if (d.periodConfig.mode === 'custom' && d.periodConfig.startDate && d.periodConfig.endDate) {
+                    startDate = new Date(d.periodConfig.startDate);
+                    endDate = new Date(d.periodConfig.endDate);
                 } else {
                     startDate = new Date(currentYear, currentMonth - 1, 1);
                     endDate = new Date(currentYear, currentMonth, 0);
                 }
 
-                // 計算の起点日（期間内なら今日、過去なら終了日）
                 let calcStart = today > startDate ? today : startDate;
                 let validDaysCount = 0;
 
-                for (let d = new Date(calcStart); d <= endDate; d.setDate(d.getDate() + 1)) {
-                    const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-                    if (!excludedDates.includes(dateStr)) {
+                for (let dt = new Date(calcStart); dt <= endDate; dt.setDate(dt.getDate() + 1)) {
+                    const dateStr = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
+                    if (!d.excludedDates.includes(dateStr)) {
                         validDaysCount++;
                     }
                 }
@@ -1616,7 +1678,6 @@
                 let dailyAllowance = 0;
 
                 if (isExpenseMain) {
-                    // 支出メイン：残り使える額 ÷ 日数
                     const remainingMoney = currentVal - targetAmt;
                     dailyAllowance = validDaysCount > 0 ? Math.floor(remainingMoney / validDaysCount) : 0;
                     if (dailyLabelEl) dailyLabelEl.innerText = `残り${validDaysCount}日（1日あたり使える目安）`;
@@ -1630,7 +1691,6 @@
                         }
                     }
                 } else {
-                    // 収入メイン：目標までの不足額 ÷ 日数
                     const needMoney = targetAmt - currentVal;
                     dailyAllowance = validDaysCount > 0 ? Math.ceil(needMoney / validDaysCount) : 0;
                     if (dailyLabelEl) dailyLabelEl.innerText = `残り${validDaysCount}日（1日あたり必要な目安）`;
@@ -1659,6 +1719,7 @@
             if (!grid) return;
             grid.innerHTML = '';
             const txs = getFilteredTransactions();
+            const d = window.kakeiboData;
 
             const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
             const payday = calculatePayday(currentYear, currentMonth);
@@ -1678,9 +1739,9 @@
                 const dateStr = `${currentYear}-${monthStr}-${dayStr}`;
                 const isToday = (dateStr === todayStr);
                 const isPayday = (i === payday);
-                const isExcluded = excludedDates.includes(dateStr);
+                const isExcluded = d.excludedDates.includes(dateStr);
 
-                const matchedAnniversaries = anniversaries.filter(a => {
+                const matchedAnniversaries = d.anniversaries.filter(a => {
                     if (!a.date) return false;
                     const parts = a.date.split('-');
                     if (parts.length === 3) {
@@ -1698,7 +1759,7 @@
                     else dayNetTotal -= t.amount;
                 });
 
-                const dayPlans = plans.filter(p => p.date === dateStr);
+                const dayPlans = d.plans.filter(p => p.date === dateStr);
                 let hasPlan = dayPlans.length > 0;
                 let planInitial = hasPlan ? (dayPlans[0].title ? dayPlans[0].title.trim().charAt(0) : '予') : '';
 
@@ -1709,7 +1770,7 @@
                     const anni = matchedAnniversaries[0];
                     const cat = anni.category || 'love';
 
-                    if (currentTheme === 'cute') {
+                    if (d.currentTheme === 'cute') {
                         if (cat === 'love') {
                             cellClass = 'bg-gradient-to-br from-pink-200 to-rose-300 border-rose-400 text-rose-900 shadow-sm ring-2 ring-pink-300 anniversary-badge-animation z-10';
                             indicatorHtml = '<span class="text-[9px] bg-white/90 text-rose-600 px-1 py-0.2 rounded-md font-extrabold shadow-sm">♥</span>';
@@ -1720,7 +1781,7 @@
                             cellClass = 'bg-gradient-to-br from-purple-100 to-indigo-200 border-purple-400 text-purple-900 shadow-sm ring-2 ring-purple-300 anniversary-badge-animation z-10';
                             indicatorHtml = '<span class="text-[9px] bg-white/90 text-purple-600 px-1 py-0.2 rounded-md font-extrabold shadow-sm">！</span>';
                         }
-                    } else if (currentTheme === 'simple') {
+                    } else if (d.currentTheme === 'simple') {
                         if (cat === 'love') {
                             cellClass = 'bg-rose-50 border-rose-500 text-rose-900 font-bold shadow-sm ring-1 ring-rose-300 z-10';
                             indicatorHtml = '<span class="text-[9px] bg-rose-500 text-white px-1 py-0.2 rounded-md font-bold">♥</span>';
@@ -1751,9 +1812,9 @@
                 let paydayBadgeHtml = '';
                 if (isPayday && !isAnniversary) {
                     let paySymbolStyle = '';
-                    if (currentTheme === 'cute') {
+                    if (d.currentTheme === 'cute') {
                         paySymbolStyle = 'bg-pink-400 text-white font-black rounded-full w-4 h-4 inline-flex items-center justify-center text-[9px] shadow-sm';
-                    } else if (currentTheme === 'simple') {
+                    } else if (d.currentTheme === 'simple') {
                         paySymbolStyle = 'bg-amber-500 text-white font-bold rounded-full w-4 h-4 inline-flex items-center justify-center text-[9px]';
                     } else {
                         paySymbolStyle = 'bg-[#7c5c43] text-amber-50 font-serif font-bold rounded-full w-4 h-4 inline-flex items-center justify-center text-[9px] border border-[#5c4433]';
@@ -1761,7 +1822,6 @@
                     paydayBadgeHtml = `<span class="${paySymbolStyle}" title="給料日">給</span>`;
                 }
 
-                // 日割り対象外の斜線アイコンバッジ
                 let excludedBadgeHtml = isExcluded ? `<span class="text-[8px] bg-slate-400 text-white px-1 py-0.2 rounded font-extrabold" title="日割り対象外">外</span>` : '';
 
                 let badgeHtml = '';
@@ -1929,7 +1989,8 @@
         }
 
         function saveEntry() {
-            const targetTab = currentTabId === 'all' ? (tabs[1] ? tabs[1].id : 'general') : currentTabId;
+            const d = window.kakeiboData;
+            const targetTab = currentTabId === 'all' ? (d.tabs[1] ? d.tabs[1].id : 'general') : currentTabId;
 
             if (currentEntryMode === 'tx') {
                 const dateInput = document.getElementById('tx-date');
@@ -1943,7 +2004,7 @@
                 if (!date) { alert('日付を選択してください。'); return; }
                 if (!amount || amount <= 0) { alert('有効な金額を入力してください。'); return; }
 
-                const list = tags[currentTxType] || [];
+                const list = d.tags[currentTxType] || [];
                 const activeTag = list.find(t => t.id === selectedTagId);
                 const tagName = activeTag ? activeTag.name : '未指定';
 
@@ -1957,8 +2018,7 @@
                     date: date,
                     memo: memo
                 };
-                transactions.push(newTx);
-                localStorage.setItem('kakeibo_transactions', JSON.stringify(transactions));
+                d.transactions.push(newTx);
             } 
             else if (currentEntryMode === 'plan') {
                 const dateInput = document.getElementById('plan-date');
@@ -1978,8 +2038,7 @@
                     date: date,
                     memo: memo
                 };
-                plans.push(newPlan);
-                localStorage.setItem('kakeibo_plans', JSON.stringify(plans));
+                d.plans.push(newPlan);
             }
             else if (currentEntryMode === 'bulk') {
                 const rows = document.querySelectorAll('#bulk-table-body tr');
@@ -1994,7 +2053,7 @@
                     const memo = row.querySelector('.bulk-memo').value.trim();
 
                     if (amountVal && Number(amountVal) > 0) {
-                        transactions.push({
+                        d.transactions.push({
                             id: 'tx_' + Date.now() + '_' + idx,
                             tabId: targetTab,
                             tagId: '',
@@ -2012,10 +2071,10 @@
                     alert('金額が入力されている日が見つかりませんでした。');
                     return;
                 }
-                localStorage.setItem('kakeibo_transactions', JSON.stringify(transactions));
                 alert(`${addedCount}件の収支を一括登録しました！`);
             }
 
+            window.saveDataToCloud();
             closeAddModal();
             initApp();
         }
@@ -2026,14 +2085,13 @@
             const titleEl = document.getElementById('day-detail-title');
             if (titleEl) titleEl.innerText = `${y}年${parseInt(m)}月${parseInt(d)}日の明細・予定`;
 
-            // 日割り対象外チェックの連動
             const excludeCheck = document.getElementById('exclude-daily-check');
             if (excludeCheck) {
-                excludeCheck.checked = excludedDates.includes(dateStr);
+                excludeCheck.checked = window.kakeiboData.excludedDates.includes(dateStr);
             }
             
             const txs = getFilteredTransactions().filter(t => t.date === dateStr);
-            const dayPlans = plans.filter(p => p.date === dateStr);
+            const dayPlans = window.kakeiboData.plans.filter(p => p.date === dateStr);
 
             const listContainer = document.getElementById('day-detail-list');
             if (!listContainer) return;
@@ -2120,21 +2178,19 @@
 
         function deleteTransaction(id) {
             if (!confirm('この明細を削除しますか？')) return;
-            transactions = transactions.filter(t => t.id !== id);
-            localStorage.setItem('kakeibo_transactions', JSON.stringify(transactions));
+            window.kakeiboData.transactions = window.kakeiboData.transactions.filter(t => t.id !== id);
+            window.saveDataToCloud();
             closeDayDetailModal();
             initApp();
         }
 
         function deletePlan(id) {
             if (!confirm('この予定を削除しますか？')) return;
-            plans = plans.filter(p => p.id !== id);
-            localStorage.setItem('kakeibo_plans', JSON.stringify(plans));
+            window.kakeiboData.plans = window.kakeiboData.plans.filter(p => p.id !== id);
+            window.saveDataToCloud();
             closeDayDetailModal();
             initApp();
         }
-
-        initApp();
     </script>
 </body>
 </html>
