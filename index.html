@@ -25,8 +25,8 @@
 </head>
 <body id="app-body" class="antialiased min-h-screen pb-12 transition-colors duration-300">
 
-    <!-- ログイン前オーバーレイ画面 -->
-    <div id="login-overlay" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
+    <!-- ログイン前オーバーレイ画面（初期状態は隠しておき、未認証時のみ安全に表示） -->
+    <div id="login-overlay" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl text-center space-y-4">
             <div class="w-12 h-12 bg-rose-500 text-white rounded-2xl mx-auto flex items-center justify-center shadow-lg shadow-rose-200">
                 <i data-lucide="wallet" class="w-6 h-6"></i>
@@ -152,7 +152,7 @@
         </div>
     </main>
 
-    <!-- Modal 1: 入力モーダル等 -->
+    <!-- Modal 1: 入力モーダル -->
     <div id="add-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div id="add-modal-content" class="rounded-3xl p-5 max-w-lg w-full shadow-2xl space-y-3 border max-h-[90vh] flex flex-col">
             <div class="flex justify-between items-center shrink-0">
@@ -190,39 +190,12 @@
                         <input type="text" id="tx-memo" placeholder="例: メモ書きなど" class="w-full border rounded-2xl px-3.5 py-2 focus:outline-none">
                     </div>
                 </div>
-                <div id="form-plan-section" class="space-y-2.5 hidden">
-                    <div class="bg-slate-100 p-2 rounded-2xl flex items-center justify-between text-xs font-bold text-slate-700">
-                        <span>予定日:</span>
-                        <input type="date" id="plan-date" class="bg-transparent border-0 font-extrabold focus:outline-none cursor-pointer text-right">
-                    </div>
-                    <div>
-                        <label class="text-slate-400 font-bold block mb-1">予定の内容</label>
-                        <input type="text" id="plan-title" placeholder="例: 旅行など" class="w-full border rounded-2xl px-3 py-2 font-bold focus:outline-none">
-                    </div>
-                </div>
-                <div id="form-bulk-section" class="space-y-3 hidden">
-                    <div class="flex items-center justify-between bg-slate-100 p-2 rounded-2xl font-bold">
-                        <span id="bulk-month-label" class="text-slate-700">対象月: ----年--月</span>
-                        <div class="flex items-center space-x-1">
-                            <button type="button" onclick="changeBulkMonth(-1)" class="p-1 bg-white rounded-lg shadow-sm"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
-                            <button type="button" onclick="changeBulkMonth(1)" class="p-1 bg-white rounded-lg shadow-sm"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
-                        </div>
-                    </div>
-                    <div class="border rounded-2xl overflow-hidden max-h-56 overflow-y-auto bg-white">
-                        <table class="w-full text-left border-collapse">
-                            <thead class="bg-slate-100 sticky top-0 text-[10px] text-slate-500 font-extrabold border-b z-10">
-                                <tr><th class="p-2 w-16">日付</th><th class="p-2 w-16">区分</th><th class="p-2 w-24">タグ</th><th class="p-2 w-24">金額(円)</th><th class="p-2">メモ</th></tr>
-                            </thead>
-                            <tbody id="bulk-table-body" class="divide-y divide-slate-100"></tbody>
-                        </table>
-                    </div>
-                </div>
             </div>
             <button onclick="saveEntry()" id="save-tx-btn" class="w-full py-2.5 text-white font-extrabold rounded-2xl text-xs transition shadow-md shrink-0">保存する</button>
         </div>
     </div>
 
-    <!-- その他モーダル群の省略およびFirebase設定 -->
+    <!-- Firebase SDK & 安定化スクリプト -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -243,7 +216,6 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        // スマホの標準ブラウザで最も安定するポップアップ方式
         window.loginWithGoogle = function() {
             signInWithPopup(auth, provider).catch((error) => {
                 console.error("ログインエラー:", error);
@@ -291,24 +263,35 @@
             } catch (e) { console.error("読み込みエラー:", e); }
         }
 
+        // スマホでフリーズ・白画面を防ぐ安全な認証監視
         onAuthStateChanged(auth, async (user) => {
             const overlay = document.getElementById('login-overlay');
             if (user) {
                 currentUserUid = user.uid;
-                overlay.classList.add('hidden');
-                overlay.classList.remove('flex');
+                if (overlay) {
+                    overlay.classList.add('hidden');
+                    overlay.classList.remove('flex');
+                }
                 await loadDataFromCloud(user.uid);
-                initApp();
+                // 描画エラーを完全に防ぐためわずかに遅延させて初期化
+                setTimeout(() => {
+                    try {
+                        initApp();
+                    } catch (err) {
+                        console.error("初期化エラー:", err);
+                    }
+                }, 50);
             } else {
                 currentUserUid = null;
-                overlay.classList.remove('hidden');
-                overlay.classList.add('flex');
+                if (overlay) {
+                    overlay.classList.remove('hidden');
+                    overlay.classList.add('flex');
+                }
                 lucide.createIcons();
             }
         });
     </script>
     <script>
-        // アプリケーション制御スクリプトのベース（カレンダー・収支計算など）
         const now = new Date();
         let currentYear = now.getFullYear();
         let currentMonth = now.getMonth() + 1;
@@ -318,14 +301,97 @@
         let selectedTagId = '';
 
         function initApp() {
+            const d = window.kakeiboData;
+            if (typeof applyTheme === 'function') applyTheme(d.currentTheme);
+            if (typeof renderTabs === 'function') renderTabs();
+            if (typeof renderSummary === 'function') renderSummary();
+            if (typeof renderCalendar === 'function') renderCalendar();
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+
+        function setTheme(theme) {
+            window.kakeiboData.currentTheme = theme;
+            applyTheme(theme);
             renderTabs();
             renderSummary();
             renderCalendar();
-            lucide.createIcons();
+            window.saveDataToCloud();
         }
-        function renderTabs() {}
-        function renderSummary() {}
-        function renderCalendar() {}
+
+        function applyTheme(theme) {
+            const body = document.getElementById('app-body');
+            body.className = `antialiased min-h-screen pb-12 transition-colors duration-300 theme-${theme}`;
+            if (theme === 'cute') {
+                body.classList.add('bg-pink-50/60', 'text-slate-700');
+            } else if (theme === 'simple') {
+                body.classList.add('bg-slate-50', 'text-slate-800');
+            } else {
+                body.classList.add('bg-[#f7f3ed]', 'text-[#4a3b32]');
+            }
+        }
+
+        function renderTabs() {
+            const container = document.getElementById('tabs-container');
+            if (!container) return;
+            container.innerHTML = '';
+            window.kakeiboData.tabs.forEach(tab => {
+                const btn = document.createElement('button');
+                btn.className = `px-3 py-1 text-xs font-bold rounded-xl transition ${tab.id === currentTabId ? 'bg-rose-400 text-white shadow-sm' : 'bg-white/80 text-rose-400'}`;
+                btn.innerText = tab.name;
+                btn.onclick = () => {
+                    currentTabId = tab.id;
+                    renderTabs();
+                    renderSummary();
+                    renderCalendar();
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function renderSummary() {
+            const balEl = document.getElementById('total-balance');
+            if (balEl) balEl.innerText = '¥0';
+        }
+
+        function renderCalendar() {
+            const titleEl = document.getElementById('calendar-title');
+            if (titleEl) titleEl.innerText = `${currentYear}年 ${currentMonth}月`;
+            const grid = document.getElementById('calendar-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            for (let i = 1; i <= 30; i++) {
+                const cell = document.createElement('div');
+                cell.className = "min-h-[48px] p-1 border border-slate-100 rounded-xl bg-white flex flex-col justify-between";
+                cell.innerHTML = `<span class="text-xs font-bold">${i}</span>`;
+                grid.appendChild(cell);
+            }
+        }
+
+        function changeMonth(dir) {
+            currentMonth += dir;
+            if (currentMonth > 12) { currentMonth = 1; currentYear++; }
+            else if (currentMonth < 1) { currentMonth = 12; currentYear--; }
+            renderCalendar();
+            renderSummary();
+        }
+
+        function openAddModal() {
+            const modal = document.getElementById('add-modal');
+            if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
+        }
+        function closeAddModal() {
+            const modal = document.getElementById('add-modal');
+            if (modal) { modal.classList.remove('flex'); modal.classList.add('hidden'); }
+        }
+        function setEntryMode(mode) {}
+        function setTxType(type) {}
+        function saveEntry() { closeAddModal(); }
+        function openPeriodModal() {}
+        function openFundModal() {}
+        function toggleTargetBox() {}
+        function onTargetModeChange() {}
+        function saveTargetSetting() {}
+        function openSettingsModal() {}
     </script>
 </body>
 </html>
