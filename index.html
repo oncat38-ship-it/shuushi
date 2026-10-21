@@ -444,6 +444,15 @@
                     <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
                 </button>
 
+                <!-- 新機能：リクエスト・不具合報告 -->
+                <button onclick="showSettingsDetail('feedback')" class="w-full p-3.5 bg-sky-50/80 hover:bg-sky-100 rounded-2xl border border-sky-200 flex items-center justify-between font-bold text-sky-800 transition">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2 bg-sky-500 text-white rounded-xl"><i data-lucide="message-square-plus" class="w-4 h-4"></i></div>
+                        <span>💡 ご要望・不具合報告</span>
+                    </div>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-sky-400"></i>
+                </button>
+
                 <div class="pt-2 border-t mt-4">
                     <button onclick="logout()" class="w-full p-3.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-2xl border border-rose-200 font-bold flex items-center justify-center gap-2 transition">
                         <i data-lucide="log-out" class="w-4 h-4"></i> ログアウトする
@@ -553,14 +562,36 @@
                 </div>
             </div>
 
+            <!-- リクエスト・問い合わせ画面 -->
+            <div id="settings-page-feedback" class="space-y-4 text-xs overflow-y-auto flex-1 pr-1 hidden">
+                <div class="space-y-3">
+                    <p class="text-slate-500 font-bold leading-relaxed">
+                        アプリへのご要望や不具合報告など、お気軽にお寄せください！開発者に直接送信されます。
+                    </p>
+                    <div>
+                        <label class="text-slate-400 font-bold block mb-1">カテゴリ</label>
+                        <select id="feedback-category" class="w-full border rounded-xl px-3 py-2 font-bold focus:outline-none mb-2 bg-white">
+                            <option value="request">💡 新機能のご要望</option>
+                            <option value="bug">🐛 不具合の報告</option>
+                            <option value="other">💬 その他・感想</option>
+                        </select>
+                        <label class="text-slate-400 font-bold block mb-1">内容</label>
+                        <textarea id="feedback-content" rows="4" placeholder="例: ○○ができる機能が欲しいです！" class="w-full border rounded-2xl p-3 font-medium focus:outline-none focus:ring-2 focus:ring-sky-300"></textarea>
+                    </div>
+                    <button onclick="submitFeedback()" id="submit-feedback-btn" class="w-full py-3 bg-sky-500 hover:bg-sky-600 text-white font-extrabold rounded-2xl transition shadow-md flex items-center justify-center gap-1.5">
+                        <i data-lucide="send" class="w-4 h-4"></i> 開発者に送信する
+                    </button>
+                </div>
+            </div>
+
         </div>
     </div>
 
-    <!-- Firebase SDK (エラー対策・認証モジュール) -->
+    <!-- Firebase SDK (エラー対策統合版) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyAoNZm6KwPQuWbC0W65sOh4soLMx1UoUrQ",
@@ -601,6 +632,43 @@
                 } catch (e) {
                     console.error("ログアウトエラー:", e);
                 }
+            }
+        };
+
+        // 問い合わせ送信関数
+        window.submitFeedback = async function() {
+            const cat = document.getElementById('feedback-category').value;
+            const content = document.getElementById('feedback-content').value.trim();
+
+            if (!content) {
+                alert('内容を入力してください。');
+                return;
+            }
+
+            const btn = document.getElementById('submit-feedback-btn');
+            btn.disabled = true;
+            btn.innerText = '送信中...';
+
+            try {
+                // Firestoreの user_requests コレクションに保存
+                await addDoc(collection(db, "user_requests"), {
+                    uid: currentUserUid || 'anonymous',
+                    category: cat,
+                    content: content,
+                    createdAt: new Date().toISOString(),
+                    status: 'unread'
+                });
+
+                document.getElementById('feedback-content').value = '';
+                alert('送信が完了しました！ご意見ありがとうございました。');
+                showSettingsMenu();
+            } catch (e) {
+                console.error("送信エラー:", e);
+                alert('送信に失敗しました。時間をおいて再度お試しください。');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i data-lucide="send" class="w-4 h-4"></i> 開発者に送信する';
+                lucide.createIcons();
             }
         };
 
@@ -876,6 +944,7 @@
             document.getElementById('settings-page-anniversaries').classList.add('hidden');
             document.getElementById('settings-page-salary').classList.add('hidden');
             document.getElementById('settings-page-tags').classList.add('hidden');
+            document.getElementById('settings-page-feedback').classList.add('hidden');
             lucide.createIcons();
         }
 
@@ -887,6 +956,7 @@
             document.getElementById('settings-page-anniversaries').classList.add('hidden');
             document.getElementById('settings-page-salary').classList.add('hidden');
             document.getElementById('settings-page-tags').classList.add('hidden');
+            document.getElementById('settings-page-feedback').classList.add('hidden');
 
             if (page === 'theme') {
                 document.getElementById('settings-header-title').innerText = 'テーマ設定 🎨';
@@ -906,6 +976,9 @@
                 document.getElementById('settings-header-title').innerText = 'タグの編集・追加 🏷️';
                 document.getElementById('settings-page-tags').classList.remove('hidden');
                 setSettingTagType('expense');
+            } else if (page === 'feedback') {
+                document.getElementById('settings-header-title').innerText = '💡 ご要望・不具合報告';
+                document.getElementById('settings-page-feedback').classList.remove('hidden');
             }
             lucide.createIcons();
         }
@@ -917,7 +990,7 @@
             }
             const activeTab = window.kakeiboData.tabs.find(t => t.id === currentTabId);
             const tabName = activeTab ? activeTab.name : '';
-            document.getElementById('fund-modal-info').innerText = `【${tabName}】の ${currentYear}年${currentMonth}月の開始資金を設定します。`;
+            document.getElementById('fund-modal-info').innerText = `【${tabName}】の ${currentYear}年${currentMonth}月的開始資金を設定します。`;
 
             const fundKey = `${currentTabId}_${currentYear}-${String(currentMonth).padStart(2, '0')}`;
             const input = document.getElementById('tab-monthly-fund-input');
