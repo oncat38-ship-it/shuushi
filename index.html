@@ -650,17 +650,47 @@
             btn.innerText = '送信中...';
 
             try {
-                // Firestoreの user_requests コレクションに保存
+                // 既存どおりFirestoreへ先に保存。メール通知が失敗しても報告データは失われません。
+                const createdAt = new Date().toISOString();
                 await addDoc(collection(db, "user_requests"), {
                     uid: currentUserUid || 'anonymous',
                     category: cat,
                     content: content,
-                    createdAt: new Date().toISOString(),
+                    createdAt,
                     status: 'unread'
                 });
 
+                // サーバー側のVercel Functionへ通知依頼。Resendの秘密鍵はブラウザに置きません。
+                let emailNoticeSent = false;
+                try {
+                    const idToken = auth.currentUser ? await auth.currentUser.getIdToken() : null;
+                    if (idToken) {
+                        const noticeResponse = await fetch('/api/feedback', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${idToken}`
+                            },
+                            body: JSON.stringify({ category: cat, content, createdAt })
+                        });
+                        emailNoticeSent = noticeResponse.ok;
+                        if (!noticeResponse.ok) {
+                            console.error('メール通知に失敗しました:', await noticeResponse.text());
+                        }
+                    } else {
+                        console.warn('ログインしていないため、メール通知は送信されませんでした。');
+                    }
+                } catch (noticeError) {
+                    // Firestore保存は完了済みなので、通知エラーで送信全体を失敗扱いにしない
+                    console.error('メール通知エラー:', noticeError);
+                }
+
                 document.getElementById('feedback-content').value = '';
-                alert('送信が完了しました！ご意見ありがとうございました。');
+                if (emailNoticeSent) {
+                    alert('送信が完了しました！ご意見ありがとうございました。\n開発者へのメール通知も送信しました。');
+                } else {
+                    alert('報告内容は保存されました。\nただし、メール通知は送信できませんでした。必要に応じて、後で設定を確認してください。');
+                }
                 showSettingsMenu();
             } catch (e) {
                 console.error("送信エラー:", e);
