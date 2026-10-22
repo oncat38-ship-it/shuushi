@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>My Kakeibo</title>
+    <title>Saldo Note</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
@@ -33,16 +33,37 @@
                 <i data-lucide="wallet" class="w-6 h-6"></i>
             </div>
             <div>
-                <h2 class="text-base font-extrabold text-slate-800">My Kakeibo へようこそ</h2>
-                <p class="text-xs text-slate-500 mt-1">Googleアカウントでログインすると、スマホやPC間でデータが自動同期されます。</p>
+                <h2 class="text-base font-extrabold text-slate-800">Saldo Note へようこそ</h2>
+                <p class="text-xs text-slate-500 mt-1">収支を記録して、スマホやPCで同期できる家計簿です。</p>
             </div>
+            <div class="grid grid-cols-2 gap-2 p-1 bg-slate-100 rounded-xl">
+                <button id="auth-mode-login" type="button" onclick="setAuthMode('login')" class="py-2 rounded-lg text-xs font-bold bg-white shadow text-slate-800">ログイン</button>
+                <button id="auth-mode-signup" type="button" onclick="setAuthMode('signup')" class="py-2 rounded-lg text-xs font-bold text-slate-500">新規登録</button>
+            </div>
+            <form id="email-auth-form" onsubmit="submitEmailAuth(event)" class="space-y-3 text-left">
+                <div>
+                    <label for="auth-email" class="block text-xs font-bold text-slate-600 mb-1">メールアドレス（ログインID）</label>
+                    <input id="auth-email" type="email" autocomplete="email" required placeholder="name@example.com" class="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-100">
+                </div>
+                <div>
+                    <label for="auth-password" class="block text-xs font-bold text-slate-600 mb-1">パスワード</label>
+                    <input id="auth-password" type="password" autocomplete="current-password" minlength="6" required placeholder="6文字以上" class="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-100">
+                </div>
+                <div id="auth-confirm-wrap" class="hidden">
+                    <label for="auth-password-confirm" class="block text-xs font-bold text-slate-600 mb-1">パスワード（確認）</label>
+                    <input id="auth-password-confirm" type="password" autocomplete="new-password" minlength="6" placeholder="同じパスワードを再入力" class="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-100">
+                </div>
+                <button id="email-auth-submit" type="submit" class="w-full py-3 bg-rose-500 hover:bg-rose-600 text-white font-extrabold rounded-2xl text-xs transition shadow-md">メールアドレスでログイン</button>
+            </form>
+            <button id="reset-password-btn" type="button" onclick="resetPassword()" class="w-full text-xs font-bold text-slate-500 hover:text-rose-600">パスワードを忘れた場合</button>
+            <div class="flex items-center gap-3 text-[10px] text-slate-400"><span class="h-px bg-slate-200 flex-1"></span>または<span class="h-px bg-slate-200 flex-1"></span></div>
             <button onclick="loginWithGoogle()" class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-extrabold rounded-2xl text-xs transition shadow-md flex items-center justify-center gap-2">
-                <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+                <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 4.97 14.97 4 12 4 7.7 4 3.99 6.47 2.18 10.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
                 Googleでログイン
             </button>
+            <p class="text-[10px] leading-relaxed text-slate-400">※メールアドレスはログインIDとして使います。メール自体のパスワードではなく、このアプリ用のパスワードを設定してください。</p>
         </div>
     </div>
-
     <!-- ヘッダー -->
     <header id="app-header" class="backdrop-blur border-b sticky top-0 z-20 shadow-sm transition-colors duration-300">
         <div class="max-w-xl mx-auto px-4 py-2.5 flex items-center justify-between">
@@ -51,7 +72,7 @@
                     <i id="header-icon" data-lucide="wallet" class="w-4 h-4 text-white"></i>
                 </div>
                 <h1 id="header-title" class="text-sm font-extrabold tracking-wide flex items-center gap-1">
-                    My Kakeibo
+                    Saldo Note
                 </h1>
             </div>
             <div class="flex items-center space-x-2">
@@ -590,7 +611,7 @@
     <!-- Firebase SDK (エラー対策統合版) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -606,6 +627,72 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+
+        let authMode = 'login';
+        window.setAuthMode = function(mode) {
+            authMode = mode === 'signup' ? 'signup' : 'login';
+            const signup = authMode === 'signup';
+            document.getElementById('auth-mode-login').className = signup ? 'py-2 rounded-lg text-xs font-bold text-slate-500' : 'py-2 rounded-lg text-xs font-bold bg-white shadow text-slate-800';
+            document.getElementById('auth-mode-signup').className = signup ? 'py-2 rounded-lg text-xs font-bold bg-white shadow text-slate-800' : 'py-2 rounded-lg text-xs font-bold text-slate-500';
+            document.getElementById('auth-confirm-wrap').classList.toggle('hidden', !signup);
+            document.getElementById('auth-password-confirm').required = signup;
+            document.getElementById('auth-password').autocomplete = signup ? 'new-password' : 'current-password';
+            document.getElementById('email-auth-submit').textContent = signup ? 'アカウントを作成' : 'メールアドレスでログイン';
+            document.getElementById('reset-password-btn').classList.toggle('hidden', signup);
+        };
+
+        window.submitEmailAuth = async function(event) {
+            event.preventDefault();
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value;
+            const confirmPassword = document.getElementById('auth-password-confirm').value;
+            const btn = document.getElementById('email-auth-submit');
+            if (authMode === 'signup' && password !== confirmPassword) {
+                alert('確認用パスワードが一致しません。');
+                return;
+            }
+            btn.disabled = true;
+            btn.textContent = authMode === 'signup' ? '登録中...' : 'ログイン中...';
+            try {
+                if (authMode === 'signup') {
+                    await createUserWithEmailAndPassword(auth, email, password);
+                } else {
+                    await signInWithEmailAndPassword(auth, email, password);
+                }
+            } catch (error) {
+                console.error('メール認証エラー:', error);
+                const messages = {
+                    'auth/email-already-in-use': 'このメールアドレスは既に登録されています。ログインをお試しください。',
+                    'auth/invalid-email': 'メールアドレスの形式を確認してください。',
+                    'auth/weak-password': 'パスワードは6文字以上で設定してください。',
+                    'auth/invalid-credential': 'メールアドレスまたはパスワードが正しくありません。',
+                    'auth/user-not-found': 'アカウントが見つかりません。メールアドレスを確認するか、新規登録してください。',
+                    'auth/wrong-password': 'パスワードが正しくありません。',
+                    'auth/operation-not-allowed': 'Firebaseでメールアドレスとパスワードによるログインがまだ有効になっていません。設定手順を確認してください。',
+                    'auth/too-many-requests': '試行回数が多すぎます。しばらく待ってから再度お試しください。'
+                };
+                alert(messages[error.code] || ('認証に失敗しました: ' + (error.message || error.code)));
+            } finally {
+                btn.disabled = false;
+                btn.textContent = authMode === 'signup' ? 'アカウントを作成' : 'メールアドレスでログイン';
+            }
+        };
+
+        window.resetPassword = async function() {
+            const email = document.getElementById('auth-email').value.trim();
+            if (!email) {
+                alert('先にメールアドレスを入力してください。');
+                document.getElementById('auth-email').focus();
+                return;
+            }
+            try {
+                await sendPasswordResetEmail(auth, email);
+                alert('パスワード再設定用のメールを送信しました。受信トレイをご確認ください。');
+            } catch (error) {
+                console.error('パスワード再設定エラー:', error);
+                alert('再設定メールを送信できませんでした。メールアドレスを確認して再度お試しください。');
+            }
+        };
 
         window.loginWithGoogle = async function() {
             try {
@@ -650,47 +737,17 @@
             btn.innerText = '送信中...';
 
             try {
-                // 既存どおりFirestoreへ先に保存。メール通知が失敗しても報告データは失われません。
-                const createdAt = new Date().toISOString();
+                // Firestoreの user_requests コレクションに保存
                 await addDoc(collection(db, "user_requests"), {
                     uid: currentUserUid || 'anonymous',
                     category: cat,
                     content: content,
-                    createdAt,
+                    createdAt: new Date().toISOString(),
                     status: 'unread'
                 });
 
-                // サーバー側のVercel Functionへ通知依頼。Resendの秘密鍵はブラウザに置きません。
-                let emailNoticeSent = false;
-                try {
-                    const idToken = auth.currentUser ? await auth.currentUser.getIdToken() : null;
-                    if (idToken) {
-                        const noticeResponse = await fetch('/api/feedback', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${idToken}`
-                            },
-                            body: JSON.stringify({ category: cat, content, createdAt })
-                        });
-                        emailNoticeSent = noticeResponse.ok;
-                        if (!noticeResponse.ok) {
-                            console.error('メール通知に失敗しました:', await noticeResponse.text());
-                        }
-                    } else {
-                        console.warn('ログインしていないため、メール通知は送信されませんでした。');
-                    }
-                } catch (noticeError) {
-                    // Firestore保存は完了済みなので、通知エラーで送信全体を失敗扱いにしない
-                    console.error('メール通知エラー:', noticeError);
-                }
-
                 document.getElementById('feedback-content').value = '';
-                if (emailNoticeSent) {
-                    alert('送信が完了しました！ご意見ありがとうございました。\n開発者へのメール通知も送信しました。');
-                } else {
-                    alert('報告内容は保存されました。\nただし、メール通知は送信できませんでした。必要に応じて、後で設定を確認してください。');
-                }
+                alert('送信が完了しました！ご意見ありがとうございました。');
                 showSettingsMenu();
             } catch (e) {
                 console.error("送信エラー:", e);
@@ -742,6 +799,7 @@
             } catch (e) { console.error("読み込みエラー:", e); }
         }
 
+        window.setAuthMode('login');
         onAuthStateChanged(auth, async (user) => {
             const overlay = document.getElementById('login-overlay');
             if (user) {
@@ -807,7 +865,7 @@
                 document.getElementById('app-header').className = "bg-white/80 backdrop-blur border-b border-pink-100 sticky top-0 z-20 shadow-sm";
                 document.getElementById('header-icon-bg').className = "bg-gradient-to-tr from-pink-400 to-rose-400 text-white p-1.5 rounded-xl shadow-pink-200 shadow-md";
                 document.getElementById('header-title').className = "text-sm font-extrabold text-rose-500 tracking-wide flex items-center gap-1";
-                document.getElementById('header-title').innerHTML = 'My Kakeibo <span class="text-xs">🐾</span>';
+                document.getElementById('header-title').innerHTML = 'Saldo Note <span class="text-xs">🐾</span>';
                 document.getElementById('save-badge').className = "text-[10px] font-bold px-2 py-0.5 bg-pink-100/80 text-rose-500 border border-pink-200 rounded-full flex items-center gap-1";
                 document.getElementById('settings-btn').className = "p-1.5 text-rose-400 hover:text-rose-600 hover:bg-pink-100/50 rounded-xl transition";
                 document.getElementById('tabs-bar').className = "max-w-xl mx-auto px-3 border-t border-pink-100/60 py-1.5";
@@ -837,7 +895,7 @@
                 document.getElementById('app-header').className = "bg-white border-b border-slate-200 sticky top-0 z-20 shadow-sm";
                 document.getElementById('header-icon-bg').className = "bg-slate-800 text-white p-1.5 rounded-lg";
                 document.getElementById('header-title').className = "text-sm font-bold text-slate-900 tracking-wide";
-                document.getElementById('header-title').innerText = 'My Kakeibo';
+                document.getElementById('header-title').innerText = 'Saldo Note';
                 document.getElementById('save-badge').className = "text-[10px] font-medium px-2 py-0.5 bg-slate-100 text-slate-600 border border-slate-200 rounded-full flex items-center gap-1";
                 document.getElementById('settings-btn').className = "p-1.5 text-slate-600 hover:bg-slate-100 rounded-lg transition";
                 document.getElementById('tabs-bar').className = "max-w-xl mx-auto px-3 border-t border-slate-200 py-1.5";
@@ -867,7 +925,7 @@
                 document.getElementById('app-header').className = "bg-[#efe8de] border-b border-[#d8ccbc] sticky top-0 z-20 shadow-sm";
                 document.getElementById('header-icon-bg').className = "bg-[#7c5c43] text-amber-50 p-1.5 rounded-lg";
                 document.getElementById('header-title').className = "text-sm font-bold text-[#4a3b32] tracking-wide";
-                document.getElementById('header-title').innerText = 'My Kakeibo 📜';
+                document.getElementById('header-title').innerText = 'Saldo Note 📜';
                 document.getElementById('save-badge').className = "text-[10px] font-bold px-2 py-0.5 bg-[#e3d7c7] text-[#5c4433] border border-[#c8b8a4] rounded-full flex items-center gap-1";
                 document.getElementById('settings-btn').className = "p-1.5 text-[#7c5c43] hover:bg-[#e3d7c7] rounded-lg transition";
                 document.getElementById('tabs-bar').className = "max-w-xl mx-auto px-3 border-t border-[#d8ccbc] py-1.5";
